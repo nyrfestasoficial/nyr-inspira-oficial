@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Creepster&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Caveat:wght@700&display=swap">
     <style>
         :root {
             --white: #ffffff;
@@ -17,10 +17,18 @@
             --gray-text: #6b6b6b;
             --radius-card: 16px;
             --transition: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-            /* sazonalidade corrente do site = Halloween */
-            --season-badge: #FF7800;
-            --season-label: #FF9A40;
-            --season-mid: #6A0080;
+            /* sazonalidade corrente da seção = Carnaval (Bloquinho) —
+               paleta oficial herdada do SEASONS.carnaval do index.html,
+               mesmos nomes de variável usados no applySeason() do site
+               principal, pra já nascer compatível se um dia essa seção
+               for costurada dentro dele */
+            --season-primary: #C2185B;
+            --season-cta: #FF5722;
+            --season-light: #FCE4EC;
+            --season-mid: #FF4081;
+            --season-badge: #FF1744;
+            --season-label: #880E4F;
+            --season-border: #C2185B;
         }
 
         * {
@@ -67,7 +75,7 @@
            SEÇÃO
         ═══════════════════════════════════════════════ */
         .inspira {
-            background: var(--black);
+            background: var(--season-light);
             padding: 80px 0 90px;
         }
 
@@ -84,14 +92,14 @@
         }
 
         .inspira-header-eyebrow {
-            font-family: 'Creepster', cursive;
+            font-family: 'Anton', sans-serif;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             font-size: 22px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--season-badge);
+            color: var(--season-primary);
             margin-bottom: 10px;
         }
 
@@ -99,7 +107,7 @@
             font-family: 'Anton', sans-serif;
             font-size: clamp(28px, 3vw, 38px);
             text-transform: uppercase;
-            color: var(--white);
+            color: var(--season-label);
             letter-spacing: 0.4px;
         }
 
@@ -119,23 +127,23 @@
             font-weight: 600;
             letter-spacing: 0.6px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.55);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(136, 14, 79, 0.55);
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.25);
             padding: 10px 24px;
             border-radius: 100px;
             transition: color var(--transition), background var(--transition), border-color var(--transition);
         }
 
         .inspira-tab:hover {
-            color: var(--white);
-            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--season-label);
+            border-color: rgba(194, 24, 91, 0.5);
         }
 
         .inspira-tab.active {
-            color: var(--black);
-            background: var(--season-badge);
-            border-color: var(--season-badge);
+            color: #ffffff;
+            background: var(--season-cta);
+            border-color: var(--season-cta);
         }
 
         .inspira-grid {
@@ -164,80 +172,126 @@
             text-align: left;
         }
 
+        .col-left-decor {
+            margin-top: clamp(8px, 1.36vw + 0.34px, 18px);
+        }
+
+        .kit-stat-badge {
+            display: flex;
+            text-align: left;
+            align-items: flex-start;
+            gap: clamp(6px, 0.82vw + 1.40px, 12px);
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.15);
+            border-radius: 14px;
+            padding: clamp(8px, 1.09vw + 1.87px, 16px) clamp(9px, 1.22vw + 2.10px, 18px);
+            width: 100%;
+        }
+
+        .kit-stat-icon {
+            flex-shrink: 0;
+            width: clamp(21px, 1.49vw + 12.57px, 32px);
+            height: clamp(21px, 1.49vw + 12.57px, 32px);
+            border-radius: 50%;
+            background: var(--season-cta);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(11px, 0.68vw + 7.17px, 16px);
+            font-weight: 700;
+        }
+
+        .kit-stat-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(11px, 0.48vw + 8.32px, 14.5px);
+            color: var(--season-label);
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
+
+        .kit-stat-desc {
+            font-size: clamp(9px, 0.41vw + 6.70px, 12px);
+            line-height: 1.45;
+            color: rgba(136, 14, 79, 0.65);
+        }
+
         .inspira-eyebrow {
-            font-family: 'Creepster', cursive;
+            font-family: 'Caveat', cursive;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            font-size: 22px;
+            gap: clamp(5px, 0.68vw + 1.17px, 10px);
+            font-size: clamp(14px, 1.09vw + 7.87px, 22px);
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--season-badge);
-            margin-bottom: 16px;
+            color: var(--season-primary);
+            margin-bottom: clamp(2px, 0.27vw + 0.47px, 4px);
         }
 
         .inspira-eyebrow::before {
             content: '';
-            width: 26px;
+            width: clamp(11px, 2.04vw - 0.49px, 26px);
             height: 3px;
-            background: var(--season-badge);
+            background: var(--season-primary);
         }
 
         .inspira-title {
-            font-family: 'Creepster', cursive;
-            font-size: clamp(46px, 5vw, 68px);
-            text-transform: uppercase;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: clamp(28px, 5.43vw - 2.65px, 68px);
             line-height: 1.02;
-            color: var(--white);
+            color: var(--season-label);
         }
 
         .inspira-sub {
-            font-size: 14.5px;
+            font-size: clamp(11px, 0.48vw + 8.32px, 14.5px);
             line-height: 1.5;
-            color: rgba(255, 255, 255, 0.6);
-            margin: 14px 0 26px;
+            color: rgba(136, 14, 79, 0.7);
+            margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
         }
 
         .kit-summary-card {
-            background: rgba(255, 120, 0, 0.08);
-            border: 1px solid rgba(255, 120, 0, 0.28);
+            background: rgba(194, 24, 91, 0.06);
+            border: 1px solid rgba(194, 24, 91, 0.25);
             border-radius: 14px;
-            padding: 18px;
+            padding: clamp(9px, 1.22vw + 2.10px, 18px);
         }
 
         .kit-summary-label {
             display: inline-block;
-            background: var(--season-badge);
-            color: var(--black);
+            background: var(--season-cta);
+            color: #ffffff;
             font-family: 'Barlow Condensed', sans-serif;
-            font-size: 11px;
+            font-size: clamp(8.5px, 0.34vw + 6.58px, 11px);
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            padding: 4px 10px;
+            padding: clamp(2px, 0.27vw + 0.47px, 4px) clamp(6px, 0.54vw + 2.93px, 10px);
             border-radius: 100px;
-            margin-bottom: 14px;
+            margin-bottom: clamp(6px, 1.09vw - 0.13px, 14px);
         }
 
         .kit-summary-icons {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 14px;
+            flex-wrap: wrap;
+            row-gap: 8px;
+            gap: clamp(3px, 0.41vw + 0.70px, 6px);
+            margin-bottom: clamp(6px, 1.09vw - 0.13px, 14px);
         }
 
         .kit-summary-icons img {
-            width: 46px;
-            height: 46px;
+            width: clamp(27px, 2.58vw + 12.44px, 46px);
+            height: clamp(27px, 2.58vw + 12.44px, 46px);
             border-radius: 8px;
             object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(194, 24, 91, 0.2);
         }
 
         .kit-summary-icons span {
             font-family: 'Anton', sans-serif;
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.35);
+            font-size: clamp(10px, 0.68vw + 6.17px, 15px);
+            color: rgba(255, 64, 129, 0.8);
         }
 
         /* swatch placeholder — usado enquanto não há foto real da peça */
@@ -245,18 +299,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px dashed rgba(255, 255, 255, 0.25);
-            color: rgba(255, 255, 255, 0.4);
+            background: rgba(194, 24, 91, 0.05);
+            border: 1px dashed rgba(194, 24, 91, 0.3);
+            color: rgba(136, 14, 79, 0.5);
             font-family: 'Barlow Condensed', sans-serif;
             text-align: center;
             line-height: 1.2;
         }
 
         .kit-summary-card p {
-            font-size: 12.5px;
+            font-size: clamp(9.5px, 0.41vw + 7.20px, 12.5px);
             line-height: 1.5;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(136, 14, 79, 0.7);
         }
 
         /* ─── COLUNA 2 — Foto + hotspots ───
@@ -278,7 +332,7 @@
 
         .model-frame {
             position: relative;
-            height: clamp(480px, 58vw, 760px);
+            height: clamp(480px, 64.4vw, 760px);
             width: fit-content;
             margin-left: clamp(-30px, 8vw - 104px, 0px);
             /* nudge fluido: 0px em telas largas (~1300px+), aumenta
@@ -330,7 +384,7 @@
             border-radius: 50%;
             background: var(--season-badge);
             border: 3px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 4px rgba(255, 120, 0, 0.25);
+            box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.25);
             transform: translate(-50%, -50%);
             z-index: 3;
         }
@@ -340,7 +394,7 @@
             position: absolute;
             inset: -8px;
             border-radius: 50%;
-            border: 1.5px solid rgba(255, 120, 0, 0.5);
+            border: 1.5px solid rgba(255, 23, 68, 0.5);
             animation: hotspot-pulse 2.2s ease-out infinite;
         }
 
@@ -356,23 +410,40 @@
             }
         }
 
-        /* posições validadas medindo pixel a pixel contra o screenshot
-           renderizado (1786107789839_image.png) — rosto e garra já
-           estavam certos; capa estava caindo em cima da mão nua e foi
-           movida pro tecido preto da capa, próximo ao ombro direito */
-        #hs-capa {
-            top: 25%;
-            left: 70%;
-        }
-
+        /* posições calibradas medindo diretamente o canal alpha/cor da
+           imagem landingPage_nyr-inspira.png (800×1536) — mesma
+           metodologia usada no Vampiro, mas agora com 5 peças em vez de 3 */
         #hs-mascara {
-            top: 8%;
-            left: 49%;
+            top: 13%;
+            left: 52%;
+            /* corrigido: a versão anterior (top:8% left:55%) caía nas
+               penas, não na máscara — recalibrado isolando só o dourado
+               da máscara e excluindo o magenta/amarelo das penas */
         }
 
         #hs-luva {
-            top: 18%;
-            left: 14%;
+            top: 13%;
+            left: 71%;
+            /* luva erguida (mão direita) — a modelo usa luva nos dois
+               braços, mas o produto é vendido como par único; escolhi a
+               mão erguida por ficar mais destacada visualmente, igual à
+               garra do Vampiro. A outra luva mediu top:53% left:15% se
+               preferir trocar */
+        }
+
+        #hs-colar {
+            top: 30%;
+            left: 51%;
+        }
+
+        #hs-saia {
+            top: 51%;
+            left: 45%;
+        }
+
+        #hs-meia {
+            top: 73%;
+            left: 51%;
         }
 
         /* ─── linhas conectoras (SVG overlay) ─── */
@@ -388,7 +459,7 @@
 
         .connector-svg path {
             fill: none;
-            stroke: rgba(255, 120, 0, 0.55);
+            stroke: rgba(255, 23, 68, 0.55);
             stroke-width: 1.5;
             stroke-dasharray: 4 4;
         }
@@ -402,8 +473,8 @@
 
         .product-callout {
             position: relative;
-            background: #171717;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.15);
             border-radius: 12px;
             padding: clamp(10px, 1.2vw, 14px);
             display: flex;
@@ -413,7 +484,7 @@
         }
 
         .product-callout:hover {
-            border-color: var(--season-badge);
+            border-color: var(--season-cta);
         }
 
         .product-callout-photo {
@@ -451,7 +522,7 @@
             font-size: clamp(9.5px, 0.9vw, 11px);
             font-weight: 600;
             letter-spacing: 1.2px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(136, 14, 79, 0.45);
             flex-shrink: 0;
         }
 
@@ -465,7 +536,7 @@
             font-family: 'Anton', sans-serif;
             font-size: clamp(13px, 1.35vw, 15.5px);
             letter-spacing: 0.2px;
-            color: var(--white);
+            color: var(--season-label);
             line-height: 1.22;
         }
 
@@ -473,7 +544,7 @@
             font-family: 'Barlow', sans-serif;
             font-size: clamp(11px, 1.05vw, 12.5px);
             line-height: 1.45;
-            color: rgba(255, 255, 255, 0.55);
+            color: rgba(136, 14, 79, 0.65);
             margin-bottom: 10px;
         }
 
@@ -482,9 +553,9 @@
             align-items: center;
             gap: 6px;
             padding: clamp(5px, 0.6vw, 6px) clamp(9px, 1vw, 12px);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(194, 24, 91, 0.3);
             border-radius: 100px;
-            color: rgba(255, 255, 255, 0.75);
+            color: var(--season-primary);
             font-family: 'Barlow Condensed', sans-serif;
             font-size: clamp(10px, 1vw, 11.5px);
             font-weight: 700;
@@ -494,8 +565,8 @@
         }
 
         .product-callout-video-btn:hover {
-            border-color: var(--season-badge);
-            color: var(--season-badge);
+            border-color: var(--season-cta);
+            color: var(--season-cta);
         }
 
         .product-callout-video-btn svg {
@@ -526,25 +597,25 @@
             justify-content: space-between;
             gap: 24px;
             flex-wrap: wrap;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(194, 24, 91, 0.15);
             padding-top: 28px;
         }
 
         .inspira-tip {
             font-size: 13.5px;
             line-height: 1.5;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(136, 14, 79, 0.7);
             max-width: 520px;
         }
 
         .inspira-tip strong {
-            color: var(--white);
+            color: var(--season-label);
         }
 
         .inspira-btn {
             flex-shrink: 0;
-            background: var(--season-badge);
-            color: var(--black);
+            background: var(--season-cta);
+            color: #ffffff;
             font-family: 'Barlow Condensed', sans-serif;
             font-size: 14px;
             font-weight: 700;
@@ -636,6 +707,19 @@
                 align-items: stretch;
             }
 
+            .kit-summary-icons {
+                justify-content: center;
+                /* text-align:center do .col-left não afeta um flex row —
+                   os ícones ficavam colados à esquerda sem isso */
+            }
+
+            .product-callout-body {
+                text-align: left;
+                /* sobrescreve o text-align:center herdado do .col-right —
+                   o card em si fica centralizado na coluna, mas o texto
+                   dentro dele continua alinhado à esquerda */
+            }
+
             .col-model {
                 justify-content: center;
             }
@@ -658,11 +742,11 @@
 <body>
 
     <div class="sandbox-note">
-        🧪 Protótipo v3.2 — <b>clamp do modelo recalibrado</b>: mínimo subiu de 250px para <b>280px</b>,
-        máximo reduziu de 560px para <b>480px</b>. <b>Modelo centralizado</b> dentro da célula da coluna
-        (<code>justify-content: center</code> no <code>.col-model</code>, sobrescrevendo o
-        <code>flex-start</code> do desktop). <b>Breakpoint B recalculado de 535px pra 564px</b> — matemática
-        exata (280 + 200 col-left + 36 gap + 48 padding = 564px).
+        🧪 Protótipo v6.0 — <b>Creepster removida, fontes de Carnaval aplicadas</b>: os 3 eyebrows ("NYR
+        Inspira" no cabeçalho fixo e "Monte Seu Look" na col-left) agora usam <b>Anton</b>; o título do kit
+        ("Bloquinho") usa <b>Caveat</b> (script, peso 700). Removi o <code>text-transform: uppercase</code> do
+        título — fontes script perdem a caligrafia em caixa alta, como vimos no comparativo. Import do Google
+        Fonts atualizado (Creepster trocada por Caveat).
     </div>
 
     <section class="inspira">
@@ -675,9 +759,9 @@
 
                 <!-- SEASON-TABS (placeholder) — trocam o kit exibido dentro da sazonalidade corrente -->
                 <div class="inspira-tabs">
-                    <button class="inspira-tab active">Vampiro</button>
-                    <button class="inspira-tab">Bruxa</button>
-                    <button class="inspira-tab">Monstro</button>
+                    <button class="inspira-tab active">Bloquinho</button>
+                    <button class="inspira-tab">Sereia</button>
+                    <button class="inspira-tab">Tropical</button>
                 </div>
             </div>
 
@@ -686,7 +770,7 @@
                 <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
                 <div class="col-left">
                     <span class="inspira-eyebrow">Monte Seu Look</span>
-                    <h2 class="inspira-title">Vampiro Sombrio</h2>
+                    <h2 class="inspira-title">Bloquinho</h2>
                     <p class="inspira-sub">Combine peças do catálogo e monte um visual completo pra sua vitrine
                         — ideias prontas, giro garantido.</p>
 
@@ -694,16 +778,33 @@
                         <span class="kit-summary-label">Monte Seu Kit</span>
                         <div class="kit-summary-icons">
                             <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">CAPA</span>
+                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">SAIA</span>
                             <span>+</span>
                             <span class="placeholder-swatch"
                                 style="width:46px;height:46px;border-radius:8px;font-size:9px;">MÁSCARA</span>
                             <span>+</span>
                             <span class="placeholder-swatch"
+                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">MEIA</span>
+                            <span>+</span>
+                            <span class="placeholder-swatch"
+                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">COLAR</span>
+                            <span>+</span>
+                            <span class="placeholder-swatch"
                                 style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
                         </div>
-                        <p>Tudo que sua loja precisa pra montar um look completo de Halloween. <em
-                                style="opacity:.6">(peças placeholder — sem SKU real ainda)</em></p>
+                        <p>Tudo que sua loja precisa pra montar um look completo de Carnaval.</p>
+                    </div>
+
+                    <!-- selo de performance do kit — placeholder, sem dado real ainda -->
+                    <div class="col-left-decor">
+                        <div class="kit-stat-badge">
+                            <span class="kit-stat-icon">✓</span>
+                            <div>
+                                <div class="kit-stat-title">Alto giro no Carnaval</div>
+                                <p class="kit-stat-desc">Kit com alta demanda na temporada — indicado pra
+                                    reposição rápida.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -714,46 +815,29 @@
                         <svg class="connector-svg" id="connectorSvg"></svg>
 
                         <img class="model-photo"
-                            src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786107060/vampiro-transparente_800x1536_fmn7i4.png"
-                            alt="Modelo vestindo capa de vampiro, máscara de vampiro e luva com garras">
+                            src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
+                            alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
 
-                        <span class="hotspot" id="hs-capa" data-target="card-capa"></span>
                         <span class="hotspot" id="hs-mascara" data-target="card-mascara"></span>
                         <span class="hotspot" id="hs-luva" data-target="card-luva"></span>
+                        <span class="hotspot" id="hs-colar" data-target="card-colar"></span>
+                        <span class="hotspot" id="hs-saia" data-target="card-saia"></span>
+                        <span class="hotspot" id="hs-meia" data-target="card-meia"></span>
                     </div>
                 </div>
 
                 <!-- COLUNA 3 — cards de produto -->
                 <div class="col-right">
-                    <div class="product-callout" id="card-capa">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">FOTO<br>CAPA
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Capa de Vampiro</h3>
-                            </div>
-                            <p class="product-callout-desc">Capa longa em cetim
-                                preto e vinho, gola alta e caimento dramático.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="product-callout" id="card-mascara">
                         <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">FOTO<br>MÁSCARA
                         </div>
                         <div class="product-callout-body">
                             <div class="product-callout-title-row">
                                 <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Máscara de Vampiro</h3>
+                                <h3 class="product-callout-name">Máscara de Carnaval</h3>
                             </div>
-                            <p class="product-callout-desc">Máscara realista em
-                                látex, presas afiadas e acabamento profissional.</p>
+                            <p class="product-callout-desc">Máscara decorada com glitter e penas coloridas,
+                                acabamento de destaque.</p>
                             <button class="product-callout-video-btn">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z" />
@@ -769,10 +853,67 @@
                         <div class="product-callout-body">
                             <div class="product-callout-title-row">
                                 <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Luva com Garras</h3>
+                                <h3 class="product-callout-name">Luva de Tecido</h3>
                             </div>
-                            <p class="product-callout-desc">Luva preta com
-                                garras longas em relevo — o detalhe final do look.</p>
+                            <p class="product-callout-desc">Par de luvas em tecido fosco, cores vibrantes
+                                combinando com o look.</p>
+                            <button class="product-callout-video-btn">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                                Ver Vídeo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-callout" id="card-colar">
+                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>COLAR
+                        </div>
+                        <div class="product-callout-body">
+                            <div class="product-callout-title-row">
+                                <span class="product-callout-ref">XXXXX</span>
+                                <h3 class="product-callout-name">Colar Havaiano</h3>
+                            </div>
+                            <p class="product-callout-desc">Colar de flores coloridas sortidas, clássico item
+                                de Bloquinho.</p>
+                            <button class="product-callout-video-btn">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                                Ver Vídeo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-callout" id="card-saia">
+                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>SAIA
+                        </div>
+                        <div class="product-callout-body">
+                            <div class="product-callout-title-row">
+                                <span class="product-callout-ref">XXXXX</span>
+                                <h3 class="product-callout-name">Saia de Franjas</h3>
+                            </div>
+                            <p class="product-callout-desc">Saia metalizada de franjas coloridas, rodada,
+                                acabamento brilhante.</p>
+                            <button class="product-callout-video-btn">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                                Ver Vídeo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-callout" id="card-meia">
+                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>MEIA
+                        </div>
+                        <div class="product-callout-body">
+                            <div class="product-callout-title-row">
+                                <span class="product-callout-ref">XXXXX</span>
+                                <h3 class="product-callout-name">Meia Arrastão</h3>
+                            </div>
+                            <p class="product-callout-desc">Meia-calça arrastão preta, cobertura até a coxa,
+                                acabamento sensual.</p>
                             <button class="product-callout-video-btn">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z" />
