@@ -578,6 +578,28 @@
                 width: 100%;
             }
 
+            /* modelo passa a ser dimensionado pela LARGURA disponível da
+               coluna (não mais pela altura via vw) — cresce pra preencher
+               o espaço ao lado da col-left em vez de sobrar vão vazio.
+               aspect-ratio trava a proporção (800:1536), então a altura
+               sempre acompanha corretamente, nunca esprememdo/esticando.
+               Calibrado: 280px em 564px de viewport (piso, ver breakpoint
+               B) até 480px em 900px de viewport (teto) */
+            .model-frame {
+                width: clamp(280px, 59.5vw - 56px, 480px);
+                height: auto;
+                aspect-ratio: 800 / 1536;
+                margin-left: 0;
+            }
+
+            .col-model {
+                justify-content: center;
+                /* centraliza o modelo dentro da célula — a coluna (1fr)
+                   costuma ser mais larga que o frame, então sobra espaço
+                   nas laterais; sem isso ele ficaria colado à esquerda
+                   (herda flex-start do desktop) */
+            }
+
             .connector-svg {
                 display: none;
             }
@@ -587,9 +609,14 @@
             }
         }
 
-        /* ─── BREAKPOINT B (testando: 620px) — col-left e col-model já não
-           cabem mais lado a lado; tudo empilha numa coluna só. ─── */
-        @media (max-width: 620px) {
+        /* ─── BREAKPOINT B (564px — recalculado, não é mais 535px) —
+           col-left e col-model já não cabem mais lado a lado; tudo
+           empilha numa coluna só. O valor 564px não é arredondamento
+           livre: é o ponto exato em que o orçamento de espaço fecha com
+           o novo piso de 280px do modelo (280 + 200 col-left + 36 gap +
+           48 padding = 564px) — abaixo disso, o modelo não cabe mais no
+           mínimo definido, então empilha. ─── */
+        @media (max-width: 564px) {
             .inspira-grid {
                 grid-template-columns: 1fr;
                 grid-template-areas:
@@ -631,12 +658,11 @@
 <body>
 
     <div class="sandbox-note">
-        🧪 Protótipo v3.0 — <b>layout mobile em dois estágios</b>, via <code>grid-template-areas</code>.
-        <b>Breakpoint A (≤900px, valor de teste)</b>: só a <code>col-right</code> quebra pra baixo — ocupa a
-        largura toda, <code>col-left</code> e <code>col-model</code> continuam lado a lado. Linhas conectoras
-        e o pontinho de origem do card já desligam aqui. <b>Breakpoint B (≤620px, valor de teste)</b>: tudo
-        empilha numa coluna só (comportamento mobile de antes). Os dois valores são pontos de partida — ajustar
-        testando no navegador. Placeholder "(descrição placeholder)" removido dos 3 cards.
+        🧪 Protótipo v3.2 — <b>clamp do modelo recalibrado</b>: mínimo subiu de 250px para <b>280px</b>,
+        máximo reduziu de 560px para <b>480px</b>. <b>Modelo centralizado</b> dentro da célula da coluna
+        (<code>justify-content: center</code> no <code>.col-model</code>, sobrescrevendo o
+        <code>flex-start</code> do desktop). <b>Breakpoint B recalculado de 535px pra 564px</b> — matemática
+        exata (280 + 200 col-left + 36 gap + 48 padding = 564px).
     </div>
 
     <section class="inspira">
