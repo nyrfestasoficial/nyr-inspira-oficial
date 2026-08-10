@@ -77,12 +77,10 @@
         .inspira {
             background: var(--season-light);
             padding: 80px 0 90px;
-            zoom: 0.95;
-            /* valor de fallback estático — o JS abaixo (updateInspiraZoom)
-               recalcula isso dinamicamente com base na altura real do
-               viewport, porque calc()/clamp() dentro de zoom não tem
-               suporte confiável nos navegadores (zoom é uma propriedade
-               legada, não totalmente padronizada) */
+            position: relative;
+            /* position:relative — âncora pras setas de navegação (bordas
+               da seção) e pra alavanca Acessórios/Decoração (canto
+               superior direito) */
         }
 
         .inspira .container {
@@ -110,11 +108,142 @@
         }
 
         .inspira-header-title {
+            display: none;
+            /* elemento removido do HTML (tagline cortada por pedido —
+               "poluía" o cabeçalho antes das tabs); regra mantida vazia
+               só por precaução, pode ser deletada com segurança */
+        }
+
+        /* ─── ALAVANCA ACESSÓRIOS/DECORAÇÃO — canto superior direito da
+           seção, grande, tipo switch de tema claro/escuro. Página inicia
+           em Acessórios. ─── */
+        /* ─── ALAVANCA ACESSÓRIOS/DECORAÇÃO — canto superior direito da
+           seção, acima do eyebrow (não mais na mesma faixa vertical, pra
+           não sobrepor em telas estreitas). Página inicia em Acessórios.
+           Pílula interna desliza via JS (updateModePill), medindo o botão
+           ativo de verdade — mais robusto que calc() com gap de flex. ─── */
+        .inspira-mode-toggle {
+            position: absolute;
+            top: 14px;
+            right: 32px;
+            display: inline-flex;
+            background: #ffffff;
+            border-radius: 100px;
+            padding: 4px;
+            gap: 2px;
+            box-shadow:
+                0 1px 2px rgba(194, 24, 91, 0.06),
+                0 6px 16px rgba(194, 24, 91, 0.10),
+                0 16px 32px rgba(194, 24, 91, 0.06);
+            /* borda com leve gradiente em vez de linha sólida cinza-rosa —
+               truque do duplo background (padding-box + border-box) */
+            border: 1px solid transparent;
+            background-image:
+                linear-gradient(#ffffff, #ffffff),
+                linear-gradient(135deg, rgba(194, 24, 91, 0.35), rgba(255, 87, 34, 0.35));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            z-index: 6;
+        }
+
+        .inspira-mode-pill {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: 0;
+            background: var(--season-cta);
+            border-radius: 100px;
+            transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1), width 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+            z-index: 0;
+        }
+
+        .inspira-mode-btn {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
             font-family: 'Anton', sans-serif;
-            font-size: clamp(28px, 3vw, 38px);
+            font-size: clamp(12px, 1vw, 14px);
+            letter-spacing: 0.3px;
             text-transform: uppercase;
+            padding: 9px 20px;
+            border-radius: 100px;
+            color: var(--season-primary);
+            background: transparent;
+            transition: color var(--transition);
+            white-space: nowrap;
+        }
+
+        .inspira-mode-btn:not(.active):hover {
+            color: var(--season-cta);
+        }
+
+        .inspira-mode-btn.active {
+            color: #ffffff;
+        }
+
+        /* pontinho que só aparece no botão ativo — micro-detalhe que
+           reforça o estado além da cor, com uma leve animação de entrada */
+        .mode-dot {
+            width: 0;
+            height: 5px;
+            border-radius: 50%;
+            background: #ffffff;
+            opacity: 0;
+            transform: scale(0.4);
+            transition: width var(--transition), opacity var(--transition), transform var(--transition), margin var(--transition);
+        }
+
+        .inspira-mode-btn.active .mode-dot {
+            width: 5px;
+            opacity: 1;
+            transform: scale(1);
+            margin-right: 7px;
+        }
+
+        /* ─── VIEWS (Acessórios / Decoração) — troca com fade+slide sutil ─── */
+        .inspira-view {
+            animation: inspiraViewIn 0.35s ease;
+        }
+
+        @keyframes inspiraViewIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inspira-decor-placeholder {
+            text-align: center;
+            padding: 80px 24px;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        .inspira-decor-placeholder-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .inspira-decor-placeholder h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 22px;
             color: var(--season-label);
-            letter-spacing: 0.4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .inspira-decor-placeholder p {
+            font-size: 14px;
+            color: rgba(136, 14, 79, 0.65);
+            line-height: 1.5;
         }
 
         /* ─── SEASON-TABS — trocam o kit exibido dentro da sazonalidade corrente ─── */
@@ -167,6 +296,16 @@
 
         .col-model {
             grid-area: model;
+        }
+
+        .model-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* agrupa .model-frame + .kit-switcher-indicator num único
+               filho de .col-model, pra empilhar verticalmente sem
+               depender da direção do flex de .col-model (que é
+               horizontal, pra alinhar a coluna toda no grid) */
         }
 
         .col-right {
@@ -339,13 +478,14 @@
         .model-frame {
             position: relative;
             width: fit-content;
-            margin-left: clamp(-30px, -8.11vw + 125.68px, 30px);
-            /* oscila de -30px em 1920px até +30px em 1180px. Acima de
-               1920px trava em -30px; entre 1180px e 900px vira -40px fixo
-               (ver media query abaixo) — de 900px pra baixo, o breakpoint
-               tablet assume e força margin-left:0 (regra já existente,
-               não alterada aqui).
-               height segue removido, a pedido, pra teste em andamento */
+            margin-left: clamp(-30px, -18.75vw + 330px, 30px);
+            /* oscila de -30px em 1920px até +30px em 1600px (transição
+               mais rápida que antes). Acima de 1920px trava em -30px;
+               abaixo de 1600px trava em +30px, até a faixa fixa de
+               -40px assumir em 1179px (ver media query abaixo) — de
+               900px pra baixo, o breakpoint tablet assume e força
+               margin-left:0 (regra já existente, não alterada aqui).
+               height segue removida, a pedido */
         }
 
         .model-photo {
@@ -353,6 +493,92 @@
             height: 100%;
             width: auto;
             object-fit: contain;
+        }
+
+        /* ─── setas de navegação — ciclam entre os kits. Ancoradas nas
+           bordas da SEÇÃO (.inspira), não mais coladas no modelo — porque
+           trocar de kit muda tudo (foto, texto, produtos), não só a foto,
+           então a navegação merece ser um controle de nível de seção.
+           "top" é definido via JS (updateNavArrowPosition), pra alinhar
+           verticalmente com o centro do .model-frame mesmo a seção
+           inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
+        .model-nav-arrow {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.2);
+            color: var(--season-primary);
+            font-size: 26px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(194, 24, 91, 0.1);
+            transition: background var(--transition), color var(--transition), border-color var(--transition);
+            z-index: 5;
+        }
+
+        .model-nav-arrow:hover {
+            background: var(--season-cta);
+            color: #ffffff;
+            border-color: var(--season-cta);
+        }
+
+        .model-nav-prev {
+            left: clamp(-15px, 8.67vw - 93px, 24px);
+            /* 24px travado em ≥1350px, desce fluidamente até -15px em
+               900px, travado nesse valor daí pra baixo (tablet). Mobile
+               (≤564px) sobrescreve pra 10px — ver media query abaixo */
+        }
+
+        .model-nav-next {
+            right: clamp(-15px, 8.67vw - 93px, 24px);
+        }
+
+        /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
+        .kit-switcher-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .kit-switcher-label {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(18px, 1.8vw, 24px);
+            font-weight: 400;
+            color: var(--season-label);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .kit-switcher-count {
+            opacity: 0.6;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+        }
+
+        .kit-switcher-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .kit-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(194, 24, 91, 0.25);
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+        }
+
+        .kit-dot.active {
+            background: var(--season-cta);
+            transform: scale(1.3);
         }
 
         /* mantido apenas como referência de fallback, não é mais usado no momento */
@@ -476,7 +702,7 @@
         .col-right {
             display: flex;
             flex-direction: column;
-            gap: clamp(10px, 1.3vw, 14px);
+            gap: clamp(6.5px, 0.85vw, 9.1px);
         }
 
         .product-callout {
@@ -484,9 +710,9 @@
             background: #ffffff;
             border: 1px solid rgba(194, 24, 91, 0.15);
             border-radius: 12px;
-            padding: clamp(10px, 1.2vw, 14px);
+            padding: clamp(6.5px, 0.78vw, 9.1px);
             display: flex;
-            gap: clamp(10px, 1.6vw, 16px);
+            gap: clamp(6.5px, 1.04vw, 10.4px);
             align-items: flex-start;
             transition: border-color var(--transition);
         }
@@ -553,14 +779,14 @@
             font-size: clamp(11px, 1.05vw, 12.5px);
             line-height: 1.45;
             color: rgba(136, 14, 79, 0.65);
-            margin-bottom: 10px;
+            margin-bottom: 7px;
         }
 
         .product-callout-video-btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: clamp(5px, 0.6vw, 6px) clamp(9px, 1vw, 12px);
+            gap: 4px;
+            padding: clamp(3.25px, 0.39vw, 3.9px) clamp(5.85px, 0.65vw, 7.8px);
             border: 1.5px solid rgba(194, 24, 91, 0.3);
             border-radius: 100px;
             color: var(--season-primary);
@@ -705,6 +931,14 @@
            48 padding = 564px) — abaixo disso, o modelo não cabe mais no
            mínimo definido, então empilha. ─── */
         @media (max-width: 564px) {
+            .model-nav-prev {
+                left: 10px;
+            }
+
+            .model-nav-next {
+                right: 10px;
+            }
+
             .inspira-grid {
                 grid-template-columns: 1fr;
                 grid-template-areas:
@@ -767,12 +1001,27 @@
     </div>
 
     <section class="inspira">
+        <!-- setas de navegação — ancoradas nas bordas da SEÇÃO (não mais
+             coladas no modelo), ciclam entre os kits. Posição vertical
+             (top) calculada via JS em updateNavArrowPosition() -->
+        <button class="model-nav-arrow model-nav-prev" aria-label="Kit anterior">‹</button>
+        <button class="model-nav-arrow model-nav-next" aria-label="Próximo kit">›</button>
+
         <div class="container">
 
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
             <div class="inspira-header">
-                <span class="inspira-header-eyebrow">NYR Inspira</span>
-                <h2 class="inspira-header-title">Inspire-se. Combine. Venda mais.</h2>
+                <span class="inspira-header-eyebrow">NYR Inspira <span class="inspira-mode-word">·
+                        Acessórios</span></span>
+
+                <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
+                <div class="inspira-mode-toggle" role="tablist">
+                    <span class="inspira-mode-pill" aria-hidden="true"></span>
+                    <button class="inspira-mode-btn active" data-mode="acessorios" role="tab" aria-selected="true"><span
+                            class="mode-dot"></span>Acessórios</button>
+                    <button class="inspira-mode-btn" data-mode="decoracao" role="tab" aria-selected="false"><span
+                            class="mode-dot"></span>Decoração</button>
+                </div>
 
                 <!-- SEASON-TABS (placeholder) — trocam o kit exibido dentro da sazonalidade corrente -->
                 <div class="inspira-tabs">
@@ -782,189 +1031,301 @@
                 </div>
             </div>
 
-            <div class="inspira-grid">
+            <!-- VIEW: ACESSÓRIOS (visível por padrão) -->
+            <div id="inspira-view-acessorios" class="inspira-view">
+                <div class="inspira-grid">
 
-                <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
-                <div class="col-left">
-                    <span class="inspira-eyebrow">Monte Seu Look</span>
-                    <h2 class="inspira-title">Bloquinho</h2>
-                    <p class="inspira-sub">Combine peças do catálogo e monte um visual completo pra sua vitrine
-                        — ideias prontas, giro garantido.</p>
+                    <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
+                    <div class="col-left">
+                        <span class="inspira-eyebrow">Sugestão de Kit</span>
+                        <h2 class="inspira-title">Bloquinho</h2>
+                        <p class="inspira-sub">Peças do catálogo já combinadas numa sugestão pronta pra vitrine —
+                            use como está, ou adapte do seu jeito.</p>
 
-                    <div class="kit-summary-card">
-                        <span class="kit-summary-label">Monte Seu Kit</span>
-                        <div class="kit-summary-icons">
-                            <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">SAIA</span>
-                            <span>+</span>
-                            <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">MÁSCARA</span>
-                            <span>+</span>
-                            <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">MEIA</span>
-                            <span>+</span>
-                            <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">COLAR</span>
-                            <span>+</span>
-                            <span class="placeholder-swatch"
-                                style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
+                        <div class="kit-summary-card">
+                            <span class="kit-summary-label">Peças Deste Kit</span>
+                            <div class="kit-summary-icons">
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">SAIA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MÁSCARA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MEIA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">COLAR</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
+                            </div>
+                            <p>Tudo que sua loja precisa pra montar um look completo de Carnaval.</p>
                         </div>
-                        <p>Tudo que sua loja precisa pra montar um look completo de Carnaval.</p>
-                    </div>
 
-                    <!-- selo de performance do kit — placeholder, sem dado real ainda -->
-                    <div class="col-left-decor">
-                        <div class="kit-stat-badge">
-                            <span class="kit-stat-icon">✓</span>
-                            <div>
-                                <div class="kit-stat-title">Alto giro no Carnaval</div>
-                                <p class="kit-stat-desc">Kit com alta demanda na temporada — indicado pra
-                                    reposição rápida.</p>
+                        <!-- selo de performance do kit — placeholder, sem dado real ainda -->
+                        <div class="col-left-decor">
+                            <div class="kit-stat-badge">
+                                <span class="kit-stat-icon">✓</span>
+                                <div>
+                                    <div class="kit-stat-title">Alto giro no Carnaval</div>
+                                    <p class="kit-stat-desc">Kit com alta demanda na temporada — indicado pra
+                                        reposição rápida.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- COLUNA 2 — foto do modelo + hotspots -->
+                    <div class="col-model">
+                        <div class="model-stack">
+                            <div class="model-frame">
+                                <!-- overlay de linhas — desenhadas via JS abaixo, ligando cada hotspot ao card correspondente -->
+                                <svg class="connector-svg" id="connectorSvg"></svg>
+
+                                <img class="model-photo"
+                                    src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
+                                    alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
+
+                                <span class="hotspot" id="hs-mascara" data-target="card-mascara"></span>
+                                <span class="hotspot" id="hs-luva" data-target="card-luva"></span>
+                                <span class="hotspot" id="hs-colar" data-target="card-colar"></span>
+                                <span class="hotspot" id="hs-saia" data-target="card-saia"></span>
+                                <span class="hotspot" id="hs-meia" data-target="card-meia"></span>
+                            </div>
+
+                            <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
+                            <div class="kit-switcher-indicator">
+                                <span class="kit-switcher-label">Bloquinho · <span class="kit-switcher-count">1 de
+                                        3</span></span>
+                                <div class="kit-switcher-dots">
+                                    <span class="kit-dot active" data-index="0"></span>
+                                    <span class="kit-dot" data-index="1"></span>
+                                    <span class="kit-dot" data-index="2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 3 — cards de produto -->
+                    <div class="col-right">
+                        <div class="product-callout" id="card-mascara">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">
+                                FOTO<br>MÁSCARA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Máscara de Carnaval</h3>
+                                </div>
+                                <p class="product-callout-desc">Máscara decorada com glitter e penas coloridas,
+                                    acabamento de destaque.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-luva">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>LUVA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Luva de Tecido</h3>
+                                </div>
+                                <p class="product-callout-desc">Par de luvas em tecido fosco, cores vibrantes
+                                    combinando com o look.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-colar">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>COLAR
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Colar Havaiano</h3>
+                                </div>
+                                <p class="product-callout-desc">Colar de flores coloridas sortidas, clássico item
+                                    de Bloquinho.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-saia">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>SAIA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Saia de Franjas</h3>
+                                </div>
+                                <p class="product-callout-desc">Saia metalizada de franjas coloridas, rodada,
+                                    acabamento brilhante.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-meia">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>MEIA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Meia Arrastão</h3>
+                                </div>
+                                <p class="product-callout-desc">Meia-calça arrastão preta, cobertura até a coxa,
+                                    acabamento sensual.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- COLUNA 2 — foto do modelo + hotspots -->
-                <div class="col-model">
-                    <div class="model-frame">
-                        <!-- overlay de linhas — desenhadas via JS abaixo, ligando cada hotspot ao card correspondente -->
-                        <svg class="connector-svg" id="connectorSvg"></svg>
-
-                        <img class="model-photo"
-                            src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
-                            alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
-
-                        <span class="hotspot" id="hs-mascara" data-target="card-mascara"></span>
-                        <span class="hotspot" id="hs-luva" data-target="card-luva"></span>
-                        <span class="hotspot" id="hs-colar" data-target="card-colar"></span>
-                        <span class="hotspot" id="hs-saia" data-target="card-saia"></span>
-                        <span class="hotspot" id="hs-meia" data-target="card-meia"></span>
-                    </div>
+                <div class="inspira-footer">
+                    <p class="inspira-tip"><strong>Dica NYR:</strong> combine cores, brilhos e acessórios do
+                        catálogo pra criar looks únicos por vitrine — quanto mais peças combinadas, maior o ticket
+                        médio da venda.</p>
+                    <button class="inspira-btn">Quero Esse Kit</button>
                 </div>
-
-                <!-- COLUNA 3 — cards de produto -->
-                <div class="col-right">
-                    <div class="product-callout" id="card-mascara">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">FOTO<br>MÁSCARA
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Máscara de Carnaval</h3>
-                            </div>
-                            <p class="product-callout-desc">Máscara decorada com glitter e penas coloridas,
-                                acabamento de destaque.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="product-callout" id="card-luva">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>LUVA
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Luva de Tecido</h3>
-                            </div>
-                            <p class="product-callout-desc">Par de luvas em tecido fosco, cores vibrantes
-                                combinando com o look.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="product-callout" id="card-colar">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>COLAR
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Colar Havaiano</h3>
-                            </div>
-                            <p class="product-callout-desc">Colar de flores coloridas sortidas, clássico item
-                                de Bloquinho.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="product-callout" id="card-saia">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>SAIA
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Saia de Franjas</h3>
-                            </div>
-                            <p class="product-callout-desc">Saia metalizada de franjas coloridas, rodada,
-                                acabamento brilhante.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="product-callout" id="card-meia">
-                        <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>MEIA
-                        </div>
-                        <div class="product-callout-body">
-                            <div class="product-callout-title-row">
-                                <span class="product-callout-ref">XXXXX</span>
-                                <h3 class="product-callout-name">Meia Arrastão</h3>
-                            </div>
-                            <p class="product-callout-desc">Meia-calça arrastão preta, cobertura até a coxa,
-                                acabamento sensual.</p>
-                            <button class="product-callout-video-btn">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Ver Vídeo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
+            <!-- /VIEW: ACESSÓRIOS -->
 
-            <div class="inspira-footer">
-                <p class="inspira-tip"><strong>Dica NYR:</strong> combine cores, brilhos e acessórios do
-                    catálogo pra criar looks únicos por vitrine — quanto mais peças combinadas, maior o ticket
-                    médio da venda.</p>
-                <button class="inspira-btn">Quero Montar Esse Kit</button>
+            <!-- VIEW: DECORAÇÃO (placeholder — sem conteúdo real ainda, só a troca de UI) -->
+            <div id="inspira-view-decoracao" class="inspira-view" hidden>
+                <div class="inspira-decor-placeholder">
+                    <span class="inspira-decor-placeholder-icon">🎈</span>
+                    <h3>Kits de decoração chegando em breve</h3>
+                    <p>Essa view já está com a troca de UI funcionando — falta só o conteúdo real dos kits de
+                        decoração entrar aqui.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <script>
-        // Zoom fluido da seção, baseado na ALTURA real do viewport —
-        // feito em JS porque calc()/clamp() dentro de "zoom" não tem
-        // suporte confiável nos navegadores (propriedade legada).
-        // 0.95 em 910px de altura útil até 0.80 em 500px (piso, tablets
-        // landscape de entrada).
-        function updateInspiraZoom() {
-            const H1 = 910, Z1 = 0.95, H2 = 500, Z2 = 0.80;
-            const h = window.innerHeight;
-            const A = (Z2 - Z1) / (H2 - H1);
-            let z = Z1 + A * (h - H1);
-            z = Math.min(Z1, Math.max(Z2, z)); // trava nos extremos, igual clamp()
-            document.querySelector('.inspira').style.zoom = z;
+        // ─── KIT SWITCHER — sincroniza season-tabs, setas e dots ───
+        // nota: só "Bloquinho" tem conteúdo real hoje (foto + hotspots +
+        // cards). Sereia/Tropical são placeholders — ciclar troca o nome
+        // do kit no título e o estado ativo de tabs/dots, mas a foto e os
+        // cards continuam sendo os do Bloquinho até essas peças existirem.
+        const kitNames = ['Bloquinho', 'Sereia', 'Tropical'];
+        let activeKitIndex = 0;
+
+        function setActiveKit(index) {
+            activeKitIndex = (index + kitNames.length) % kitNames.length;
+            const name = kitNames[activeKitIndex];
+
+            document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === activeKitIndex);
+            });
+            document.querySelectorAll('.kit-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === activeKitIndex);
+            });
+            document.querySelector('.kit-switcher-label').innerHTML =
+                `${name} · <span class="kit-switcher-count">${activeKitIndex + 1} de ${kitNames.length}</span>`;
+            document.querySelector('.inspira-title').textContent = name;
+        }
+
+        document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+            tab.addEventListener('click', () => setActiveKit(i));
+        });
+        document.querySelectorAll('.kit-dot').forEach((dot, i) => {
+            dot.addEventListener('click', () => setActiveKit(i));
+        });
+        document.querySelector('.model-nav-prev')
+            .addEventListener('click', () => setActiveKit(activeKitIndex - 1));
+        document.querySelector('.model-nav-next')
+            .addEventListener('click', () => setActiveKit(activeKitIndex + 1));
+
+        // ─── TOGGLE ACESSÓRIOS / DECORAÇÃO ───
+        // Decoração ainda não tem conteúdo real — troca só a UI (fade+slide
+        // via .inspira-view, já no CSS) e mostra o placeholder.
+        document.querySelectorAll('.inspira-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.inspira-mode-btn').forEach(b => {
+                    b.classList.toggle('active', b === btn);
+                    b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+                });
+                updateModePill();
+
+                const isDecor = btn.dataset.mode === 'decoracao';
+                const acessorios = document.getElementById('inspira-view-acessorios');
+                const decoracao = document.getElementById('inspira-view-decoracao');
+                acessorios.hidden = isDecor;
+                decoracao.hidden = !isDecor;
+
+                // eyebrow acompanha o modo ativo: "NYR Inspira · Acessórios/Decoração"
+                document.querySelector('.inspira-mode-word').textContent =
+                    isDecor ? '· Decoração' : '· Acessórios';
+
+                // as season-tabs só fazem sentido dentro de Acessórios
+                document.querySelector('.inspira-tabs').style.display = isDecor ? 'none' : 'flex';
+
+                // reaplica a animação de entrada (a classe já saiu do DOM
+                // reflow, então remover/re-adicionar reinicia o keyframe)
+                const view = isDecor ? decoracao : acessorios;
+                view.classList.remove('inspira-view');
+                void view.offsetWidth; // força reflow
+                view.classList.add('inspira-view');
+            });
+        });
+
+        // Mede o botão ativo de verdade (offsetLeft/offsetWidth) e move a
+        // pílula até lá — mais robusto que calc() com gap de flexbox, e
+        // já lida sozinho com qualquer mudança de tamanho de fonte/padding
+        // entre breakpoints, sem precisar duplicar a matemática em CSS.
+        function updateModePill() {
+            const toggle = document.querySelector('.inspira-mode-toggle');
+            const active = toggle.querySelector('.inspira-mode-btn.active');
+            const pill = toggle.querySelector('.inspira-mode-pill');
+            if (!active || !pill) return;
+            pill.style.width = active.offsetWidth + 'px';
+            pill.style.transform = `translateX(${active.offsetLeft - 4}px)`;
+        }
+
+        // Posiciona as setas de navegação (agora ancoradas nas bordas da
+        // SEÇÃO, não mais coladas no modelo) alinhadas verticalmente ao
+        // centro do .model-frame — necessário porque a altura do
+        // cabeçalho (eyebrow + alavanca + tabs) varia, então um "top: 50%"
+        // fixo relativo à seção inteira não bateria com a foto.
+        function updateNavArrowPosition() {
+            const frame = document.querySelector('.model-frame');
+            const section = document.querySelector('.inspira');
+            if (!frame || !section) return;
+            const frameRect = frame.getBoundingClientRect();
+            const sectionRect = section.getBoundingClientRect();
+            const top = frameRect.top - sectionRect.top + frameRect.height / 2;
+            document.querySelectorAll('.model-nav-arrow').forEach(a => {
+                a.style.top = top + 'px';
+                a.style.transform = 'translateY(-50%)';
+            });
         }
 
         // Desenha as linhas SVG do hotspot até o card correspondente.
@@ -998,11 +1359,9 @@
             });
         }
 
-        // zoom precisa rodar ANTES de drawConnectors — como zoom afeta o
-        // layout de verdade (diferente de transform), os hotspots/cards só
-        // têm a posição final depois que o zoom já foi aplicado
         function updateAll() {
-            updateInspiraZoom();
+            updateModePill();
+            updateNavArrowPosition();
             drawConnectors();
         }
         window.addEventListener('load', updateAll);
