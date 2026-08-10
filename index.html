@@ -333,10 +333,12 @@
         .model-frame {
             position: relative;
             width: fit-content;
-            margin-left: -30px;
-            /* nudge fluido: 0px até 1180px de viewport, aumenta
-               negativamente até -30px em 920px (ponto em que o
-               breakpoint tablet assume e essa regra some).
+            margin-left: clamp(-30px, -8.11vw + 125.68px, 30px);
+            /* oscila de -30px em 1920px até +30px em 1180px. Acima de
+               1920px trava em -30px; entre 1180px e 900px vira -40px fixo
+               (ver media query abaixo) — de 900px pra baixo, o breakpoint
+               tablet assume e força margin-left:0 (regra já existente,
+               não alterada aqui).
                height segue removido, a pedido, pra teste em andamento */
         }
 
@@ -631,6 +633,15 @@
         }
 
         /* ─── responsivo ─── */
+        /* faixa 901px–1179px: margin-left fixo em -40px (fora da
+           oscilação -30↔30 de cima, e antes do breakpoint tablet
+           assumir com margin-left:0 em ≤900px) */
+        @media (max-width: 1179px) and (min-width: 901px) {
+            .model-frame {
+                margin-left: -40px;
+            }
+        }
+
         /* ─── BREAKPOINT A (testando: 900px) — só a col-right quebra pra
            baixo; col-left e col-model continuam lado a lado. As linhas
            conectoras já desligam aqui, porque os cards deixam de estar ao
