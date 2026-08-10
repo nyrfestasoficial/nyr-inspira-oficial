@@ -77,6 +77,12 @@
         .inspira {
             background: var(--season-light);
             padding: 80px 0 90px;
+            zoom: 0.85;
+            /* redução proporcional de 15% — incondicional, sem gatilho de
+               min/max-height (mesmo em Full HD ~910px de altura útil o
+               cabeçalho ainda ficava fora da tela). Não mexe no tamanho
+               do PNG do modelo nem na lógica de %/hotspots, só encolhe a
+               renderização visual da seção inteira como um todo. */
         }
 
         .inspira .container {
