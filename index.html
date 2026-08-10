@@ -37,10 +37,24 @@
             padding: 0;
         }
 
+        html {
+            overflow-x: hidden;
+            /* o scroll horizontal da página é regido ora pelo <html>, ora
+               pelo <body>, dependendo do navegador — aplicar só no body
+               não é garantia; os dois juntos removem a ambiguidade */
+        }
+
         body {
             font-family: 'Barlow', sans-serif;
             background: #f5f5f5;
             color: var(--black);
+            overflow-x: hidden;
+            width: 100%;
+            /* contém elementos position:absolute que vazam pra fora da
+               viewport (ex: as setas de navegação, que podem protuberar
+               até ~88px pra fora do .inspira-grid em telas largas) — sem
+               isso, esse vazamento gera barra de rolagem horizontal na
+               página inteira */
         }
 
         img {
@@ -527,15 +541,11 @@
             border-color: var(--season-cta);
         }
 
-        .model-nav-prev {
-            left: clamp(-15px, 8.67vw - 93px, 24px);
-            /* 24px travado em ≥1350px, desce fluidamente até -15px em
-               900px, travado nesse valor daí pra baixo (tablet). Mobile
-               (≤564px) sobrescreve pra 10px — ver media query abaixo */
-        }
-
+        .model-nav-prev,
         .model-nav-next {
-            right: clamp(-15px, 8.67vw - 93px, 24px);
+            /* left/right calculados via JS (updateNavArrowGap) — usar
+               right:100%+margin gerou confusão de sinal duas vezes
+               seguidas; pixels diretos em JS são inequívocos */
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
@@ -923,6 +933,15 @@
             }
         }
 
+        /* ─── esconder as setas na faixa intermediária (900px → 565px) —
+           layout tablet, sem necessidade de navegação por seta aqui;
+           os dots do kit-switcher-indicator continuam disponíveis ─── */
+        @media (max-width: 900px) and (min-width: 565px) {
+            .model-nav-arrow {
+                display: none;
+            }
+        }
+
         /* ─── BREAKPOINT B (564px — recalculado, não é mais 535px) —
            col-left e col-model já não cabem mais lado a lado; tudo
            empilha numa coluna só. O valor 564px não é arredondamento
@@ -931,14 +950,6 @@
            48 padding = 564px) — abaixo disso, o modelo não cabe mais no
            mínimo definido, então empilha. ─── */
         @media (max-width: 564px) {
-            .model-nav-prev {
-                left: 10px;
-            }
-
-            .model-nav-next {
-                right: 10px;
-            }
-
             .inspira-grid {
                 grid-template-columns: 1fr;
                 grid-template-areas:
@@ -1001,12 +1012,6 @@
     </div>
 
     <section class="inspira">
-        <!-- setas de navegação — ancoradas nas bordas da SEÇÃO (não mais
-             coladas no modelo), ciclam entre os kits. Posição vertical
-             (top) calculada via JS em updateNavArrowPosition() -->
-        <button class="model-nav-arrow model-nav-prev" aria-label="Kit anterior">‹</button>
-        <button class="model-nav-arrow model-nav-next" aria-label="Próximo kit">›</button>
-
         <div class="container">
 
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
@@ -1034,6 +1039,12 @@
             <!-- VIEW: ACESSÓRIOS (visível por padrão) -->
             <div id="inspira-view-acessorios" class="inspira-view">
                 <div class="inspira-grid">
+                    <!-- setas de navegação — ancoradas nas bordas do GRID (não
+                     mais da seção nem do modelo), ~40px de distância.
+                     Posição vertical (top) calculada via JS em
+                     updateNavArrowPosition(), alinhada ao .model-frame -->
+                    <button class="model-nav-arrow model-nav-prev" aria-label="Kit anterior">‹</button>
+                    <button class="model-nav-arrow model-nav-next" aria-label="Próximo kit">›</button>
 
                     <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
                     <div class="col-left">
@@ -1317,15 +1328,65 @@
         // fixo relativo à seção inteira não bateria com a foto.
         function updateNavArrowPosition() {
             const frame = document.querySelector('.model-frame');
-            const section = document.querySelector('.inspira');
-            if (!frame || !section) return;
+            const grid = document.querySelector('.inspira-grid');
+            const prev = document.querySelector('.model-nav-prev');
+            const next = document.querySelector('.model-nav-next');
+            if (!frame || !grid || !prev || !next) return;
+
             const frameRect = frame.getBoundingClientRect();
-            const sectionRect = section.getBoundingClientRect();
-            const top = frameRect.top - sectionRect.top + frameRect.height / 2;
+            const gridRect = grid.getBoundingClientRect();
+            const top = frameRect.top - gridRect.top + frameRect.height / 2;
             document.querySelectorAll('.model-nav-arrow').forEach(a => {
                 a.style.top = top + 'px';
                 a.style.transform = 'translateY(-50%)';
             });
+
+            // gap: distância entre a seta e a borda do grid — positivo =
+            // seta por FORA do grid, negativo = seta sobrepondo o grid
+            // pra dentro. Testado em Python linha por linha antes de
+            // traduzir pra JS, pra não repetir o erro de sinal de antes.
+            const w = document.documentElement.clientWidth;
+            let gap;
+            if (w <= 564) {
+                gap = 10;
+            } else if (w <= 900) {
+                gap = -15;
+            } else {
+                const A = (-15 - 40) / (950 - 1400);
+                gap = 40 + A * (w - 1400);
+                gap = Math.max(-15, Math.min(40, gap));
+            }
+
+            const arrowWidth = prev.offsetWidth;
+            const safetyPadding = 2; // folga mínima até a borda real da tela
+
+            // trava de segurança: o espaço FÍSICO disponível de cada lado
+            // é medido de verdade (não presumido pela fórmula), porque o
+            // .container trava em max-width:1180px antes da viewport
+            // crescer — em larguras intermediárias sobra bem menos espaço
+            // do que a fórmula "imagina" ter
+            const spaceLeft = gridRect.left - arrowWidth - safetyPadding;
+            const spaceRight = (document.documentElement.clientWidth - gridRect.right) - arrowWidth - safetyPadding;
+            // clientWidth (não innerWidth) — innerWidth inclui a barra de
+            // rolagem vertical, o que inflava o espaço "disponível" à
+            // direita e desalinhava essa seta em relação à esquerda
+
+            // um único gap compartilhado pros dois lados (o menor entre
+            // fórmula/esquerda/direita) — garante simetria perfeita, em
+            // vez de cada seta ter seu próprio limite independente (que
+            // deixava uma ligeiramente mais colada que a outra por causa
+            // de diferenças residuais de sub-pixel entre os dois lados)
+            const safeGap = Math.min(gap, spaceLeft, spaceRight);
+            const gridWidth = grid.offsetWidth;
+
+            // as DUAS setas usam "left" (nunca "right") — mesmo com o
+            // mesmo número, o navegador arredonda sub-pixel de forma
+            // ligeiramente diferente pra "left" vs "right", o que gerava
+            // 1px de diferença visual mesmo com o safeGap idêntico
+            prev.style.left = -(safeGap + arrowWidth) + 'px';
+            prev.style.right = 'auto';
+            next.style.left = (gridWidth + safeGap) + 'px';
+            next.style.right = 'auto';
         }
 
         // Desenha as linhas SVG do hotspot até o card correspondente.
