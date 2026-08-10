@@ -333,11 +333,10 @@
         .model-frame {
             position: relative;
             width: fit-content;
-            margin-left: -30px;
-            /* nudge fluido: 0px até 1180px de viewport, aumenta
-               negativamente até -30px em 920px (ponto em que o
-               breakpoint tablet assume e essa regra some).
-               height segue removido, a pedido, pra teste em andamento */
+            /* clamp() de height e margin-left removidos temporariamente
+               pra teste — sem height definido aqui, o .model-photo
+               (height:100%) vai colapsar pro tamanho natural/intrínseco
+               da imagem, já que o pai não tem altura própria definida */
         }
 
         .model-photo {

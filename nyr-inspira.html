@@ -332,12 +332,12 @@
 
         .model-frame {
             position: relative;
+            height: clamp(480px, 64.4vw, 760px);
             width: fit-content;
-            margin-left: -30px;
-            /* nudge fluido: 0px até 1180px de viewport, aumenta
-               negativamente até -30px em 920px (ponto em que o
-               breakpoint tablet assume e essa regra some).
-               height segue removido, a pedido, pra teste em andamento */
+            margin-left: clamp(-30px, 8vw - 104px, 0px);
+            /* nudge fluido: 0px em telas largas (~1300px+), aumenta
+               negativamente até -30px conforme a tela encolhe (~920px,
+               ponto em que a seção colapsa pra mobile e o nudge some) */
         }
 
         .model-photo {
