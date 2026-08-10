@@ -77,12 +77,12 @@
         .inspira {
             background: var(--season-light);
             padding: 80px 0 90px;
-            zoom: 0.85;
-            /* redução proporcional de 15% — incondicional, sem gatilho de
-               min/max-height (mesmo em Full HD ~910px de altura útil o
-               cabeçalho ainda ficava fora da tela). Não mexe no tamanho
-               do PNG do modelo nem na lógica de %/hotspots, só encolhe a
-               renderização visual da seção inteira como um todo. */
+            zoom: 0.95;
+            /* valor de fallback estático — o JS abaixo (updateInspiraZoom)
+               recalcula isso dinamicamente com base na altura real do
+               viewport, porque calc()/clamp() dentro de zoom não tem
+               suporte confiável nos navegadores (zoom é uma propriedade
+               legada, não totalmente padronizada) */
         }
 
         .inspira .container {
@@ -953,6 +953,20 @@
     </section>
 
     <script>
+        // Zoom fluido da seção, baseado na ALTURA real do viewport —
+        // feito em JS porque calc()/clamp() dentro de "zoom" não tem
+        // suporte confiável nos navegadores (propriedade legada).
+        // 0.95 em 910px de altura útil até 0.80 em 500px (piso, tablets
+        // landscape de entrada).
+        function updateInspiraZoom() {
+            const H1 = 910, Z1 = 0.95, H2 = 500, Z2 = 0.80;
+            const h = window.innerHeight;
+            const A = (Z2 - Z1) / (H2 - H1);
+            let z = Z1 + A * (h - H1);
+            z = Math.min(Z1, Math.max(Z2, z)); // trava nos extremos, igual clamp()
+            document.querySelector('.inspira').style.zoom = z;
+        }
+
         // Desenha as linhas SVG do hotspot até o card correspondente.
         // Recalcula em resize/load pra acompanhar o layout responsivo.
         function drawConnectors() {
@@ -983,8 +997,16 @@
                 svg.appendChild(path);
             });
         }
-        window.addEventListener('load', drawConnectors);
-        window.addEventListener('resize', drawConnectors);
+
+        // zoom precisa rodar ANTES de drawConnectors — como zoom afeta o
+        // layout de verdade (diferente de transform), os hotspots/cards só
+        // têm a posição final depois que o zoom já foi aplicado
+        function updateAll() {
+            updateInspiraZoom();
+            drawConnectors();
+        }
+        window.addEventListener('load', updateAll);
+        window.addEventListener('resize', updateAll);
     </script>
 
 </body>
