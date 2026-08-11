@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo v2 — NYR Inspira (3 colunas + hotspots)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Caveat:wght@700&display=swap">
+    <style>
+        :root {
+            --white: #ffffff;
+            --black: #0d0d0d;
+            --gray-2: #e0e0e0;
+            --gray-text: #6b6b6b;
+            --radius-card: 16px;
+            --transition: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            /* sazonalidade corrente da seção = Carnaval (Bloquinho) —
+               paleta oficial herdada do SEASONS.carnaval do index.html,
+               mesmos nomes de variável usados no applySeason() do site
+               principal, pra já nascer compatível se um dia essa seção
+               for costurada dentro dele */
+            --season-primary: #C2185B;
+            --season-cta: #FF5722;
+            --season-light: #FCE4EC;
+            --season-mid: #FF4081;
+            --season-badge: #FF1744;
+            --season-label: #880E4F;
+            --season-border: #C2185B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            overflow-x: hidden;
+            /* o scroll horizontal da página é regido ora pelo <html>, ora
+               pelo <body>, dependendo do navegador — aplicar só no body
+               não é garantia; os dois juntos removem a ambiguidade */
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: #f5f5f5;
+            color: var(--black);
+            overflow-x: hidden;
+            width: 100%;
+            /* contém elementos position:absolute que vazam pra fora da
+               viewport (ex: as setas de navegação, que podem protuberar
+               até ~88px pra fora do .inspira-grid em telas largas) — sem
+               isso, esse vazamento gera barra de rolagem horizontal na
+               página inteira */
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .sandbox-note {
+            max-width: 680px;
+            margin: 28px auto 0;
+            padding: 14px 18px;
+            background: #fff3d6;
+            border: 1px solid #e0b34d;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #6b4c00;
+            text-align: center;
+        }
+
+        .sandbox-note b {
+            color: #4a3400;
+        }
+
+        /* ═══════════════════════════════════════════════
+           SEÇÃO
+        ═══════════════════════════════════════════════ */
+        .inspira {
+            background: var(--season-light);
+            padding: 80px 0 90px;
+            position: relative;
+            /* position:relative — âncora pras setas de navegação (bordas
+               da seção) e pra alavanca Acessórios/Decoração (canto
+               superior direito) */
+        }
+
+        .inspira .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            /* âncora das setas de navegação — não usamos .inspira-grid
+               porque ela vira display:contents no mobile (perde a caixa).
+               .container tem o mesmo retângulo que .inspira-grid em
+               qualquer largura (grid não tem padding próprio), então
+               trocar a referência não muda nada visualmente fora do
+               mobile */
+        }
+
+        /* ─── CABEÇALHO DA SEÇÃO — fixo, nunca muda com a troca de kit ─── */
+        .inspira-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .inspira-header-eyebrow {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--season-primary);
+            display: block;
+            margin-bottom: 12px;
+            /* tamanhos replicados de .section-eyebrow (LP) — 15px base,
+               17px em ≥1500px (ver media query lá embaixo) */
+        }
+
+        .inspira-header-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(32px, 5vw, 52px);
+            line-height: 1.05;
+            color: var(--season-label);
+            margin-bottom: 10px;
+            /* tamanhos replicados de .section-title (LP) — mesmo clamp()
+               exato, com bônus em ≥1500px (clamp(52px,3.33vw,64px)) */
+        }
+
+        .inspira-header-title em {
+            color: var(--season-cta);
+            font-style: normal;
+            /* réplica de .section-title em — a "segunda cor" do título,
+               igual ao "Produtos" laranja no exemplo da LP */
+        }
+
+        /* ─── ALAVANCA ACESSÓRIOS/DECORAÇÃO — canto superior direito da
+           seção, grande, tipo switch de tema claro/escuro. Página inicia
+           em Acessórios. ─── */
+        /* ─── ALAVANCA ACESSÓRIOS/DECORAÇÃO — canto superior direito da
+           seção, acima do eyebrow (não mais na mesma faixa vertical, pra
+           não sobrepor em telas estreitas). Página inicia em Acessórios.
+           Pílula interna desliza via JS (updateModePill), medindo o botão
+           ativo de verdade — mais robusto que calc() com gap de flex. ─── */
+        .inspira-mode-toggle {
+            position: absolute;
+            top: 14px;
+            right: 32px;
+            display: inline-flex;
+            background: #ffffff;
+            border-radius: 100px;
+            padding: 4px;
+            gap: 2px;
+            box-shadow:
+                0 1px 2px rgba(194, 24, 91, 0.06),
+                0 6px 16px rgba(194, 24, 91, 0.10),
+                0 16px 32px rgba(194, 24, 91, 0.06);
+            /* borda com leve gradiente em vez de linha sólida cinza-rosa —
+               truque do duplo background (padding-box + border-box) */
+            border: 1px solid transparent;
+            background-image:
+                linear-gradient(#ffffff, #ffffff),
+                linear-gradient(135deg, rgba(194, 24, 91, 0.35), rgba(255, 87, 34, 0.35));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            z-index: 6;
+        }
+
+        .inspira-mode-pill {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            height: calc(100% - 8px);
+            width: 0;
+            background: var(--season-cta);
+            border-radius: 100px;
+            transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1), width 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+            z-index: 0;
+        }
+
+        .inspira-mode-btn {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(12px, 1vw, 14px);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            padding: 9px 20px;
+            border-radius: 100px;
+            color: var(--season-primary);
+            background: transparent;
+            transition: color var(--transition);
+            white-space: nowrap;
+        }
+
+        .inspira-mode-btn:not(.active):hover {
+            color: var(--season-cta);
+        }
+
+        .inspira-mode-btn.active {
+            color: #ffffff;
+        }
+
+        /* pontinho que só aparece no botão ativo — micro-detalhe que
+           reforça o estado além da cor, com uma leve animação de entrada */
+        .mode-dot {
+            width: 0;
+            height: 5px;
+            border-radius: 50%;
+            background: #ffffff;
+            opacity: 0;
+            transform: scale(0.4);
+            transition: width var(--transition), opacity var(--transition), transform var(--transition), margin var(--transition);
+        }
+
+        .inspira-mode-btn.active .mode-dot {
+            width: 5px;
+            opacity: 1;
+            transform: scale(1);
+            margin-right: 7px;
+        }
+
+        /* ─── VIEWS (Acessórios / Decoração) — troca com fade+slide sutil ─── */
+        .inspira-view {
+            animation: inspiraViewIn 0.35s ease;
+        }
+
+        @keyframes inspiraViewIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inspira-decor-placeholder {
+            text-align: center;
+            padding: 80px 24px;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        .inspira-decor-placeholder-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .inspira-decor-placeholder h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 22px;
+            color: var(--season-label);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .inspira-decor-placeholder p {
+            font-size: 14px;
+            color: rgba(136, 14, 79, 0.65);
+            line-height: 1.5;
+        }
+
+        /* ─── SEASON-TABS — trocam o kit exibido dentro da sazonalidade corrente ─── */
+        .inspira-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 26px;
+            flex-wrap: wrap;
+        }
+
+        .inspira-tab {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: rgba(136, 14, 79, 0.55);
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.25);
+            padding: 10px 24px;
+            border-radius: 100px;
+            transition: color var(--transition), background var(--transition), border-color var(--transition);
+        }
+
+        .inspira-tab:hover {
+            color: var(--season-label);
+            border-color: rgba(194, 24, 91, 0.5);
+        }
+
+        .inspira-tab.active {
+            color: #ffffff;
+            background: var(--season-cta);
+            border-color: var(--season-cta);
+        }
+
+        .inspira-grid {
+            display: grid;
+            grid-template-columns: minmax(200px, 240px) minmax(260px, 1fr) minmax(320px, 400px);
+            grid-template-areas: "left model right";
+            gap: 36px;
+            align-items: center;
+            position: relative;
+        }
+
+        .col-left {
+            grid-area: left;
+        }
+
+        .col-model {
+            grid-area: model;
+        }
+
+        .model-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* agrupa .model-frame + .kit-switcher-indicator num único
+               filho de .col-model, pra empilhar verticalmente sem
+               depender da direção do flex de .col-model (que é
+               horizontal, pra alinhar a coluna toda no grid) */
+        }
+
+        .col-right {
+            grid-area: right;
+        }
+
+        /* ─── COLUNA 1 — Título + Monte Seu Kit ─── */
+        .col-left {
+            text-align: left;
+        }
+
+        .col-left-decor {
+            margin-top: clamp(8px, 1.36vw + 0.34px, 18px);
+        }
+
+        .kit-stat-badge {
+            display: flex;
+            text-align: left;
+            align-items: flex-start;
+            gap: clamp(6px, 0.82vw + 1.40px, 12px);
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.15);
+            border-radius: 14px;
+            padding: clamp(8px, 1.09vw + 1.87px, 16px) clamp(9px, 1.22vw + 2.10px, 18px);
+            width: 100%;
+        }
+
+        .kit-stat-icon {
+            flex-shrink: 0;
+            width: clamp(21px, 1.49vw + 12.57px, 32px);
+            height: clamp(21px, 1.49vw + 12.57px, 32px);
+            border-radius: 50%;
+            background: var(--season-cta);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(11px, 0.68vw + 7.17px, 16px);
+            font-weight: 700;
+        }
+
+        .kit-stat-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(11px, 0.48vw + 8.32px, 14.5px);
+            color: var(--season-label);
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
+
+        .kit-stat-desc {
+            font-size: clamp(11.5px, 0.34vw + 9.58px, 14px);
+            line-height: 1.45;
+            color: rgba(136, 14, 79, 0.65);
+        }
+
+        .inspira-eyebrow {
+            font-family: 'Caveat', cursive;
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(5px, 0.68vw + 1.17px, 10px);
+            font-size: clamp(9.5px, 0.75vw + 5.29px, 15px);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--season-primary);
+            margin-bottom: clamp(2px, 0.27vw + 0.47px, 4px);
+        }
+
+        .inspira-eyebrow::before {
+            content: '';
+            width: clamp(11px, 2.04vw - 0.49px, 26px);
+            height: 3px;
+            background: var(--season-primary);
+        }
+
+        .inspira-title {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: clamp(28px, 5.43vw - 2.65px, 68px);
+            line-height: 1.02;
+            color: var(--season-label);
+        }
+
+        .inspira-sub {
+            font-size: clamp(15px, 0.41vw + 12.70px, 18px);
+            line-height: 1.5;
+            color: rgba(136, 14, 79, 0.7);
+            margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
+        }
+
+        .kit-summary-card {
+            background: rgba(194, 24, 91, 0.06);
+            border: 1px solid rgba(194, 24, 91, 0.25);
+            border-radius: 14px;
+            padding: clamp(9px, 1.22vw + 2.10px, 18px);
+        }
+
+        .kit-summary-label {
+            display: inline-block;
+            background: var(--season-cta);
+            color: #ffffff;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(8.5px, 0.34vw + 6.58px, 11px);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: clamp(2px, 0.27vw + 0.47px, 4px) clamp(6px, 0.54vw + 2.93px, 10px);
+            border-radius: 100px;
+            margin-bottom: clamp(6px, 1.09vw - 0.13px, 14px);
+        }
+
+        .kit-summary-icons {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            row-gap: 8px;
+            gap: clamp(3px, 0.41vw + 0.70px, 6px);
+            margin-bottom: clamp(6px, 1.09vw - 0.13px, 14px);
+        }
+
+        .kit-summary-icons img {
+            width: clamp(27px, 2.58vw + 12.44px, 46px);
+            height: clamp(27px, 2.58vw + 12.44px, 46px);
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(194, 24, 91, 0.2);
+        }
+
+        .kit-summary-icons span {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(10px, 0.68vw + 6.17px, 15px);
+            color: rgba(255, 64, 129, 0.8);
+        }
+
+        /* swatch placeholder — usado enquanto não há foto real da peça */
+        .placeholder-swatch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(194, 24, 91, 0.05);
+            border: 1px dashed rgba(194, 24, 91, 0.3);
+            color: rgba(136, 14, 79, 0.5);
+            font-family: 'Barlow Condensed', sans-serif;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .kit-summary-card p {
+            font-size: clamp(13px, 0.41vw + 10.70px, 16px);
+            line-height: 1.5;
+            color: rgba(136, 14, 79, 0.7);
+        }
+
+        /* ─── COLUNA 2 — Foto + hotspots ───
+           A imagem fica MAIOR que as colunas vizinhas de propósito: como é o
+           único conteúdo alto dessa coluna, ela dita a altura da linha do
+           grid inteira — o texto da col-left e os cards da col-right, que
+           são mais curtos, ficam centralizados (align-items:center no
+           .inspira-grid) e "sobram" espaço vazio acima/abaixo, dando a
+           impressão de que a foto invade esse espaço. Continua contida
+           dentro do padding da seção .inspira, não rompe a seção. */
+        .col-model {
+            position: relative;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            min-width: 0;
+            overflow: visible;
+        }
+
+        .model-frame {
+            position: relative;
+            width: fit-content;
+            margin-left: clamp(-30px, -18.75vw + 330px, 30px);
+            /* oscila de -30px em 1920px até +30px em 1600px (transição
+               mais rápida que antes). Acima de 1920px trava em -30px;
+               abaixo de 1600px trava em +30px, até a faixa fixa de
+               -40px assumir em 1179px (ver media query abaixo) — de
+               900px pra baixo, o breakpoint tablet assume e força
+               margin-left:0 (regra já existente, não alterada aqui).
+               height segue removida, a pedido */
+        }
+
+        .model-photo {
+            display: block;
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* ─── setas de navegação — ciclam entre os kits. Ancoradas nas
+           bordas da SEÇÃO (.inspira), não mais coladas no modelo — porque
+           trocar de kit muda tudo (foto, texto, produtos), não só a foto,
+           então a navegação merece ser um controle de nível de seção.
+           "top" é definido via JS (updateNavArrowPosition), pra alinhar
+           verticalmente com o centro do .model-frame mesmo a seção
+           inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
+        .model-nav-arrow {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.2);
+            color: var(--season-primary);
+            font-size: 26px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(194, 24, 91, 0.1);
+            transition: background var(--transition), color var(--transition), border-color var(--transition);
+            z-index: 5;
+        }
+
+        .model-nav-arrow:hover {
+            background: var(--season-cta);
+            color: #ffffff;
+            border-color: var(--season-cta);
+        }
+
+        .model-nav-prev,
+        .model-nav-next {
+            /* left/right calculados via JS (updateNavArrowGap) — usar
+               right:100%+margin gerou confusão de sinal duas vezes
+               seguidas; pixels diretos em JS são inequívocos */
+        }
+
+        /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
+        .kit-switcher-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .kit-switcher-label {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(18px, 1.8vw, 24px);
+            font-weight: 400;
+            color: var(--season-label);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .kit-switcher-count {
+            opacity: 0.6;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+        }
+
+        .kit-switcher-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .kit-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: rgba(194, 24, 91, 0.25);
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+        }
+
+        .kit-dot.active {
+            background: var(--season-cta);
+            transform: scale(1.3);
+        }
+
+        /* mantido apenas como referência de fallback, não é mais usado no momento */
+        .model-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            gap: 10px;
+        }
+
+        .model-placeholder svg {
+            width: 46%;
+            opacity: 0.28;
+        }
+
+        .model-placeholder-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+            text-align: center;
+            max-width: 180px;
+            line-height: 1.4;
+        }
+
+        /* hotspot dots — posições em % ilustrativas, calibrar com a foto real */
+        .hotspot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--season-badge);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.25);
+            transform: translate(-50%, -50%);
+            z-index: 3;
+        }
+
+        .hotspot::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 23, 68, 0.5);
+            animation: hotspot-pulse 2.2s ease-out infinite;
+        }
+
+        @keyframes hotspot-pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.9);
+                opacity: 0;
+            }
+        }
+
+        /* posições calibradas medindo diretamente o canal alpha/cor da
+           imagem landingPage_nyr-inspira.png (800×1536) — mesma
+           metodologia usada no Vampiro, mas agora com 5 peças em vez de 3 */
+        #hs-mascara {
+            top: 13%;
+            left: 52%;
+            /* corrigido: a versão anterior (top:8% left:55%) caía nas
+               penas, não na máscara — recalibrado isolando só o dourado
+               da máscara e excluindo o magenta/amarelo das penas */
+        }
+
+        #hs-luva {
+            top: 13%;
+            left: 71%;
+            /* luva erguida (mão direita) — a modelo usa luva nos dois
+               braços, mas o produto é vendido como par único; escolhi a
+               mão erguida por ficar mais destacada visualmente, igual à
+               garra do Vampiro. A outra luva mediu top:53% left:15% se
+               preferir trocar */
+        }
+
+        #hs-colar {
+            top: 30%;
+            left: 51%;
+        }
+
+        #hs-saia {
+            top: 51%;
+            left: 45%;
+        }
+
+        #hs-meia {
+            top: 73%;
+            left: 51%;
+        }
+
+        /* ─── linhas conectoras (SVG overlay) ─── */
+        .connector-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        .connector-svg path {
+            fill: none;
+            stroke: rgba(255, 23, 68, 0.55);
+            stroke-width: 1.5;
+            stroke-dasharray: 4 4;
+        }
+
+        /* ─── COLUNA 3 — cards de produto ─── */
+        .col-right {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6.5px, 0.85vw, 9.1px);
+        }
+
+        .product-callout {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid rgba(194, 24, 91, 0.15);
+            border-radius: 12px;
+            padding: clamp(6.5px, 0.78vw, 9.1px);
+            display: flex;
+            gap: clamp(6.5px, 1.04vw, 10.4px);
+            align-items: flex-start;
+            transition: border-color var(--transition);
+        }
+
+        .product-callout:hover {
+            border-color: var(--season-cta);
+        }
+
+        .product-callout-photo {
+            width: clamp(72px, 9vw, 108px);
+            aspect-ratio: 1 / 1;
+            /* aspect-ratio garante que a altura acompanhe a largura fluida
+               na mesma proporção — nunca esprema/estique a imagem */
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .product-callout-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-callout-body {
+            flex: 1;
+            min-width: 0;
+            padding-top: 2px;
+        }
+
+        .product-callout-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .product-callout-ref {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(10.8px, 0.23vw + 9.50px, 12.5px);
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: rgba(136, 14, 79, 0.45);
+            flex-shrink: 0;
+        }
+
+        .product-callout-ref::before {
+            content: 'CÓD. ';
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        .product-callout-name {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(15px, 0.41vw + 12.70px, 18px);
+            letter-spacing: 0.2px;
+            color: var(--season-label);
+            line-height: 1.22;
+        }
+
+        .product-callout-desc {
+            font-family: 'Barlow', sans-serif;
+            font-size: clamp(11.5px, 0.20vw + 10.35px, 13px);
+            line-height: 1.45;
+            color: rgba(136, 14, 79, 0.65);
+            margin-bottom: 7px;
+        }
+
+        .product-callout-video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: clamp(3.25px, 0.39vw, 3.9px) clamp(5.85px, 0.65vw, 7.8px);
+            border: 1.5px solid rgba(194, 24, 91, 0.3);
+            border-radius: 100px;
+            color: var(--season-primary);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(11.5px, 0.20vw + 10.35px, 13px);
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            transition: border-color var(--transition), color var(--transition);
+        }
+
+        .product-callout-video-btn:hover {
+            border-color: var(--season-cta);
+            color: var(--season-cta);
+        }
+
+        .product-callout-video-btn svg {
+            width: 11px;
+            height: 11px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* pontinho de origem da linha, do lado do card (coluna 3) */
+        .product-callout::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--season-badge);
+            top: 50%;
+            left: -5px;
+            transform: translateY(-50%);
+        }
+
+        /* ─── rodapé da seção: dica + cta ─── */
+        .inspira-footer {
+            margin-top: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(194, 24, 91, 0.15);
+            padding-top: 28px;
+        }
+
+        .inspira-tip {
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: rgba(136, 14, 79, 0.7);
+            max-width: 520px;
+        }
+
+        .inspira-tip strong {
+            color: var(--season-label);
+        }
+
+        .inspira-btn {
+            flex-shrink: 0;
+            background: var(--season-cta);
+            color: #ffffff;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 14px 28px;
+            border-radius: 100px;
+            transition: transform var(--transition);
+        }
+
+        .inspira-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ─── BÔNUS EM TELAS LARGAS (≥1500px) — replica o padrão da LP,
+           que também dá um acréscimo de tamanho de fonte nessa faixa.
+           Nosso clamp() trava em 1300px e não cresce mais sozinho; essa
+           camada retoma o crescimento acima disso, só nos papéis que já
+           estão alinhados à LP na base (os que ainda não foram alinhados,
+           ou que a própria LP não bonifica em 1500px, ficam de fora por
+           enquanto). ─── */
+        @media (min-width: 1500px) {
+            .inspira-eyebrow {
+                font-size: 17px;
+                /* LP: .section-eyebrow em ≥1500px */
+            }
+
+            .product-callout-name {
+                font-size: 20px;
+                /* LP: .card-name em ≥1500px */
+            }
+
+            .product-callout-desc {
+                font-size: 15px;
+                /* LP: .card-desc em ≥1500px */
+            }
+
+            .inspira-header-eyebrow {
+                font-size: 17px;
+                /* LP: .section-eyebrow em ≥1500px */
+            }
+
+            .inspira-header-title {
+                font-size: clamp(52px, 3.33vw, 64px);
+                /* LP: .section-title em ≥1500px */
+            }
+
+            .inspira-sub {
+                font-size: 20px;
+            }
+
+            .kit-summary-card p {
+                font-size: 18px;
+            }
+        }
+
+        /* ─── responsivo ─── */
+        /* faixa 901px–1179px: margin-left fixo em -40px (fora da
+           oscilação -30↔30 de cima, e antes do breakpoint tablet
+           assumir com margin-left:0 em ≤900px) */
+        @media (max-width: 1179px) and (min-width: 901px) {
+            .model-frame {
+                margin-left: -40px;
+            }
+        }
+
+        /* ─── BREAKPOINT A (testando: 900px) — só a col-right quebra pra
+           baixo; col-left e col-model continuam lado a lado. As linhas
+           conectoras já desligam aqui, porque os cards deixam de estar ao
+           lado da foto (ligar um hotspot a um card lá embaixo não faz
+           sentido visualmente). col-right ocupa a largura toda embaixo. ─── */
+        @media (max-width: 900px) {
+            .inspira-grid {
+                grid-template-columns: minmax(200px, 240px) 1fr;
+                grid-template-areas:
+                    "left model"
+                    "right right";
+                row-gap: 32px;
+            }
+
+            .col-right {
+                width: 100%;
+            }
+
+            /* modelo passa a ser dimensionado pela LARGURA disponível da
+               coluna (não mais pela altura via vw) — cresce pra preencher
+               o espaço ao lado da col-left em vez de sobrar vão vazio.
+               aspect-ratio trava a proporção (800:1536), então a altura
+               sempre acompanha corretamente, nunca esprememdo/esticando.
+               Calibrado: 280px em 564px de viewport (piso, ver breakpoint
+               B) até 480px em 900px de viewport (teto) */
+            .model-frame {
+                width: clamp(280px, 59.5vw - 56px, 480px);
+                height: auto;
+                aspect-ratio: 800 / 1536;
+                margin-left: 0;
+            }
+
+            .col-model {
+                justify-content: center;
+                /* centraliza o modelo dentro da célula — a coluna (1fr)
+                   costuma ser mais larga que o frame, então sobra espaço
+                   nas laterais; sem isso ele ficaria colado à esquerda
+                   (herda flex-start do desktop) */
+            }
+
+            .connector-svg {
+                display: none;
+            }
+
+            .product-callout::before {
+                display: none;
+            }
+        }
+
+        /* ─── esconder as setas na faixa intermediária (900px → 565px) —
+           layout tablet, sem necessidade de navegação por seta aqui;
+           os dots do kit-switcher-indicator continuam disponíveis ─── */
+        @media (max-width: 900px) and (min-width: 565px) {
+            .model-nav-arrow {
+                display: none;
+            }
+        }
+
+        /* ─── BREAKPOINT B (564px — recalculado, não é mais 535px) —
+           col-left e col-model já não cabem mais lado a lado; tudo
+           empilha numa coluna só. O valor 564px não é arredondamento
+           livre: é o ponto exato em que o orçamento de espaço fecha com
+           o novo piso de 280px do modelo (280 + 200 col-left + 36 gap +
+           48 padding = 564px) — abaixo disso, o modelo não cabe mais no
+           mínimo definido, então empilha. ─── */
+        @media (max-width: 564px) {
+
+            /* ─── REORDENAÇÃO MOBILE — "achata" a hierarquia (header → grid
+               → col-left) numa única sequência via display:contents, pra
+               poder intercalar itens que hoje vivem em níveis de
+               aninhamento diferentes. Ordem final: rótulo pequeno → título
+               grande → subtítulo → tabs → peças do kit → foto → cards. ─── */
+            .inspira .container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .inspira-header,
+            .inspira-view,
+            .inspira-grid,
+            .col-left {
+                display: contents;
+                /* "some" da árvore visual sem sumir do DOM — os filhos
+                   passam a competir direto pela ordem do .container */
+            }
+
+            .inspira-header-eyebrow {
+                order: 1;
+            }
+
+            .inspira-header-title {
+                order: 2;
+            }
+
+            .inspira-sub {
+                order: 3;
+                text-align: center;
+            }
+
+            .inspira-tabs {
+                order: 4;
+            }
+
+            .kit-summary-card {
+                order: 5;
+            }
+
+            .col-model {
+                order: 6;
+            }
+
+            .col-right {
+                order: 7;
+            }
+
+            /* .inspira-eyebrow ("Sugestão de Kit") + .inspira-title (nome
+               do kit) saem do fluxo — viram legenda sobreposta no canto
+               superior esquerdo da foto, aproveitando o vão vazio que já
+               existe ali (margem transparente do PNG antes das penas) */
+            .inspira-eyebrow,
+            .inspira-title {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                max-width: 58%;
+                text-align: left;
+                z-index: 3;
+            }
+
+            .inspira-title {
+                top: 34px;
+                line-height: 0.95;
+            }
+
+            /* selo "Alto giro no Carnaval" sai do mobile — corta pra
+               deixar o fluxo mais enxuto, como decidido na discussão */
+            .col-left-decor {
+                display: none;
+            }
+
+            .col-right {
+                text-align: center;
+                align-items: stretch;
+            }
+
+            .kit-summary-icons {
+                justify-content: center;
+                /* text-align:center do pai não afeta um flex row —
+                   os ícones ficavam colados à esquerda sem isso */
+            }
+
+            .product-callout-body {
+                text-align: left;
+                /* sobrescreve o text-align:center herdado do .col-right —
+                   o card em si fica centralizado na coluna, mas o texto
+                   dentro dele continua alinhado à esquerda */
+            }
+
+            .col-model {
+                justify-content: center;
+            }
+
+            .model-frame {
+                height: auto;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
+            }
+
+            .model-photo {
+                height: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sandbox-note">
+        🧪 Protótipo v6.0 — <b>Creepster removida, fontes de Carnaval aplicadas</b>: os 3 eyebrows ("NYR
+        Inspira" no cabeçalho fixo e "Monte Seu Look" na col-left) agora usam <b>Anton</b>; o título do kit
+        ("Bloquinho") usa <b>Caveat</b> (script, peso 700). Removi o <code>text-transform: uppercase</code> do
+        título — fontes script perdem a caligrafia em caixa alta, como vimos no comparativo. Import do Google
+        Fonts atualizado (Creepster trocada por Caveat).
+    </div>
+
+    <section class="inspira">
+        <div class="container">
+
+            <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
+            <div class="inspira-header">
+                <span class="inspira-header-eyebrow"><span class="inspira-mode-word">Acessórios</span></span>
+                <h1 class="inspira-header-title">NYR <em>Inspira</em></h1>
+
+                <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
+                <div class="inspira-mode-toggle" role="tablist">
+                    <span class="inspira-mode-pill" aria-hidden="true"></span>
+                    <button class="inspira-mode-btn active" data-mode="acessorios" role="tab" aria-selected="true"><span
+                            class="mode-dot"></span>Acessórios</button>
+                    <button class="inspira-mode-btn" data-mode="decoracao" role="tab" aria-selected="false"><span
+                            class="mode-dot"></span>Decoração</button>
+                </div>
+
+                <!-- SEASON-TABS (placeholder) — trocam o kit exibido dentro da sazonalidade corrente -->
+                <div class="inspira-tabs">
+                    <button class="inspira-tab active">Bloquinho</button>
+                    <button class="inspira-tab">Sereia</button>
+                    <button class="inspira-tab">Tropical</button>
+                </div>
+            </div>
+
+            <!-- VIEW: ACESSÓRIOS (visível por padrão) -->
+            <div id="inspira-view-acessorios" class="inspira-view">
+                <div class="inspira-grid">
+                    <!-- setas de navegação — ancoradas nas bordas do GRID (não
+                     mais da seção nem do modelo), ~40px de distância.
+                     Posição vertical (top) calculada via JS em
+                     updateNavArrowPosition(), alinhada ao .model-frame -->
+                    <button class="model-nav-arrow model-nav-prev" aria-label="Kit anterior">‹</button>
+                    <button class="model-nav-arrow model-nav-next" aria-label="Próximo kit">›</button>
+
+                    <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
+                    <div class="col-left">
+                        <span class="inspira-eyebrow">Sugestão de Kit</span>
+                        <h2 class="inspira-title">Bloquinho</h2>
+                        <p class="inspira-sub">Peças do catálogo já combinadas numa sugestão pronta pra vitrine —
+                            use como está, ou adapte do seu jeito.</p>
+
+                        <div class="kit-summary-card">
+                            <span class="kit-summary-label">Peças Deste Kit</span>
+                            <div class="kit-summary-icons">
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">SAIA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MÁSCARA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MEIA</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">COLAR</span>
+                                <span>+</span>
+                                <span class="placeholder-swatch"
+                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
+                            </div>
+                            <p>Tudo que seu cliente precisa pra montar um look completo de Carnaval.</p>
+                        </div>
+
+                        <!-- selo de performance do kit — placeholder, sem dado real ainda -->
+                        <div class="col-left-decor">
+                            <div class="kit-stat-badge">
+                                <span class="kit-stat-icon">✓</span>
+                                <div>
+                                    <div class="kit-stat-title">Alto giro no Carnaval</div>
+                                    <p class="kit-stat-desc">Kit com alta demanda na temporada — indicado pra
+                                        reposição rápida.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 2 — foto do modelo + hotspots -->
+                    <div class="col-model">
+                        <div class="model-stack">
+                            <div class="model-frame">
+                                <!-- overlay de linhas — desenhadas via JS abaixo, ligando cada hotspot ao card correspondente -->
+                                <svg class="connector-svg" id="connectorSvg"></svg>
+
+                                <img class="model-photo"
+                                    src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
+                                    alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
+
+                                <span class="hotspot" id="hs-mascara" data-target="card-mascara"></span>
+                                <span class="hotspot" id="hs-luva" data-target="card-luva"></span>
+                                <span class="hotspot" id="hs-colar" data-target="card-colar"></span>
+                                <span class="hotspot" id="hs-saia" data-target="card-saia"></span>
+                                <span class="hotspot" id="hs-meia" data-target="card-meia"></span>
+                            </div>
+
+                            <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
+                            <div class="kit-switcher-indicator">
+                                <span class="kit-switcher-label">Bloquinho · <span class="kit-switcher-count">1 de
+                                        3</span></span>
+                                <div class="kit-switcher-dots">
+                                    <span class="kit-dot active" data-index="0"></span>
+                                    <span class="kit-dot" data-index="1"></span>
+                                    <span class="kit-dot" data-index="2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 3 — cards de produto -->
+                    <div class="col-right">
+                        <div class="product-callout" id="card-mascara">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">
+                                FOTO<br>MÁSCARA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Máscara de Carnaval</h3>
+                                </div>
+                                <p class="product-callout-desc">Máscara decorada com glitter e penas coloridas,
+                                    acabamento de destaque.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-luva">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>LUVA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Luva de Tecido</h3>
+                                </div>
+                                <p class="product-callout-desc">Par de luvas em tecido fosco, cores vibrantes
+                                    combinando com o look.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-colar">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>COLAR
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Colar Havaiano</h3>
+                                </div>
+                                <p class="product-callout-desc">Colar de flores coloridas sortidas, clássico item
+                                    de Bloquinho.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-saia">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>SAIA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Saia de Franjas</h3>
+                                </div>
+                                <p class="product-callout-desc">Saia metalizada de franjas coloridas, rodada,
+                                    acabamento brilhante.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="product-callout" id="card-meia">
+                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>MEIA
+                            </div>
+                            <div class="product-callout-body">
+                                <div class="product-callout-title-row">
+                                    <span class="product-callout-ref">XXXXX</span>
+                                    <h3 class="product-callout-name">Meia Arrastão</h3>
+                                </div>
+                                <p class="product-callout-desc">Meia-calça arrastão preta, cobertura até a coxa,
+                                    acabamento sensual.</p>
+                                <button class="product-callout-video-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    Ver Vídeo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="inspira-footer">
+                    <p class="inspira-tip"><strong>Dica NYR:</strong> combine cores, brilhos e acessórios do
+                        catálogo pra criar looks únicos por vitrine — quanto mais peças combinadas, maior o ticket
+                        médio da venda.</p>
+                    <button class="inspira-btn">Quero Esse Kit</button>
+                </div>
+            </div>
+            <!-- /VIEW: ACESSÓRIOS -->
+
+            <!-- VIEW: DECORAÇÃO (placeholder — sem conteúdo real ainda, só a troca de UI) -->
+            <div id="inspira-view-decoracao" class="inspira-view" hidden>
+                <div class="inspira-decor-placeholder">
+                    <span class="inspira-decor-placeholder-icon">🎈</span>
+                    <h3>Kits de decoração chegando em breve</h3>
+                    <p>Essa view já está com a troca de UI funcionando — falta só o conteúdo real dos kits de
+                        decoração entrar aqui.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ─── KIT SWITCHER — sincroniza season-tabs, setas e dots ───
+        // nota: só "Bloquinho" tem conteúdo real hoje (foto + hotspots +
+        // cards). Sereia/Tropical são placeholders — ciclar troca o nome
+        // do kit no título e o estado ativo de tabs/dots, mas a foto e os
+        // cards continuam sendo os do Bloquinho até essas peças existirem.
+        const kitNames = ['Bloquinho', 'Sereia', 'Tropical'];
+        let activeKitIndex = 0;
+
+        function setActiveKit(index) {
+            activeKitIndex = (index + kitNames.length) % kitNames.length;
+            const name = kitNames[activeKitIndex];
+
+            document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === activeKitIndex);
+            });
+            document.querySelectorAll('.kit-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === activeKitIndex);
+            });
+            document.querySelector('.kit-switcher-label').innerHTML =
+                `${name} · <span class="kit-switcher-count">${activeKitIndex + 1} de ${kitNames.length}</span>`;
+            document.querySelector('.inspira-title').textContent = name;
+        }
+
+        document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+            tab.addEventListener('click', () => setActiveKit(i));
+        });
+        document.querySelectorAll('.kit-dot').forEach((dot, i) => {
+            dot.addEventListener('click', () => setActiveKit(i));
+        });
+        document.querySelector('.model-nav-prev')
+            .addEventListener('click', () => setActiveKit(activeKitIndex - 1));
+        document.querySelector('.model-nav-next')
+            .addEventListener('click', () => setActiveKit(activeKitIndex + 1));
+
+        // ─── TOGGLE ACESSÓRIOS / DECORAÇÃO ───
+        // Decoração ainda não tem conteúdo real — troca só a UI (fade+slide
+        // via .inspira-view, já no CSS) e mostra o placeholder.
+        document.querySelectorAll('.inspira-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.inspira-mode-btn').forEach(b => {
+                    b.classList.toggle('active', b === btn);
+                    b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+                });
+                updateModePill();
+
+                const isDecor = btn.dataset.mode === 'decoracao';
+                const acessorios = document.getElementById('inspira-view-acessorios');
+                const decoracao = document.getElementById('inspira-view-decoracao');
+                acessorios.hidden = isDecor;
+                decoracao.hidden = !isDecor;
+
+                // rótulo pequeno acompanha o modo ativo — "Acessórios" ou "Decoração"
+                document.querySelector('.inspira-mode-word').textContent =
+                    isDecor ? 'Decoração' : 'Acessórios';
+
+                // as season-tabs só fazem sentido dentro de Acessórios
+                document.querySelector('.inspira-tabs').style.display = isDecor ? 'none' : 'flex';
+
+                // reaplica a animação de entrada (a classe já saiu do DOM
+                // reflow, então remover/re-adicionar reinicia o keyframe)
+                const view = isDecor ? decoracao : acessorios;
+                view.classList.remove('inspira-view');
+                void view.offsetWidth; // força reflow
+                view.classList.add('inspira-view');
+            });
+        });
+
+        // Mede o botão ativo de verdade (offsetLeft/offsetWidth) e move a
+        // pílula até lá — mais robusto que calc() com gap de flexbox, e
+        // já lida sozinho com qualquer mudança de tamanho de fonte/padding
+        // entre breakpoints, sem precisar duplicar a matemática em CSS.
+        function updateModePill() {
+            const toggle = document.querySelector('.inspira-mode-toggle');
+            const active = toggle.querySelector('.inspira-mode-btn.active');
+            const pill = toggle.querySelector('.inspira-mode-pill');
+            if (!active || !pill) return;
+            pill.style.width = active.offsetWidth + 'px';
+            pill.style.transform = `translateX(${active.offsetLeft - 4}px)`;
+        }
+
+        // Posiciona as setas de navegação (agora ancoradas nas bordas da
+        // SEÇÃO, não mais coladas no modelo) alinhadas verticalmente ao
+        // centro do .model-frame — necessário porque a altura do
+        // cabeçalho (eyebrow + alavanca + tabs) varia, então um "top: 50%"
+        // fixo relativo à seção inteira não bateria com a foto.
+        function updateNavArrowPosition() {
+            const frame = document.querySelector('.model-frame');
+            const grid = document.querySelector('.inspira .container');
+            // .container em vez de .inspira-grid — a grid vira
+            // display:contents no mobile (≤564px) e perde a caixa; o
+            // container tem o mesmo retângulo em qualquer largura
+            const prev = document.querySelector('.model-nav-prev');
+            const next = document.querySelector('.model-nav-next');
+            if (!frame || !grid || !prev || !next) return;
+
+            const frameRect = frame.getBoundingClientRect();
+            const gridRect = grid.getBoundingClientRect();
+            const top = frameRect.top - gridRect.top + frameRect.height / 2;
+            document.querySelectorAll('.model-nav-arrow').forEach(a => {
+                a.style.top = top + 'px';
+                a.style.transform = 'translateY(-50%)';
+            });
+
+            // gap: distância entre a seta e a borda do grid — positivo =
+            // seta por FORA do grid, negativo = seta sobrepondo o grid
+            // pra dentro. Testado em Python linha por linha antes de
+            // traduzir pra JS, pra não repetir o erro de sinal de antes.
+            const w = document.documentElement.clientWidth;
+            let gap;
+            if (w <= 564) {
+                gap = 10;
+            } else if (w <= 900) {
+                gap = -15;
+            } else {
+                const A = (-15 - 40) / (950 - 1400);
+                gap = 40 + A * (w - 1400);
+                gap = Math.max(-15, Math.min(40, gap));
+            }
+
+            const arrowWidth = prev.offsetWidth;
+            const safetyPadding = 2; // folga mínima até a borda real da tela
+
+            // trava de segurança: o espaço FÍSICO disponível de cada lado
+            // é medido de verdade (não presumido pela fórmula), porque o
+            // .container trava em max-width:1180px antes da viewport
+            // crescer — em larguras intermediárias sobra bem menos espaço
+            // do que a fórmula "imagina" ter
+            const spaceLeft = gridRect.left - arrowWidth - safetyPadding;
+            const spaceRight = (document.documentElement.clientWidth - gridRect.right) - arrowWidth - safetyPadding;
+            // clientWidth (não innerWidth) — innerWidth inclui a barra de
+            // rolagem vertical, o que inflava o espaço "disponível" à
+            // direita e desalinhava essa seta em relação à esquerda
+
+            // um único gap compartilhado pros dois lados (o menor entre
+            // fórmula/esquerda/direita) — garante simetria perfeita, em
+            // vez de cada seta ter seu próprio limite independente (que
+            // deixava uma ligeiramente mais colada que a outra por causa
+            // de diferenças residuais de sub-pixel entre os dois lados)
+            const safeGap = Math.min(gap, spaceLeft, spaceRight);
+            const gridWidth = grid.offsetWidth;
+
+            // as DUAS setas usam "left" (nunca "right") — mesmo com o
+            // mesmo número, o navegador arredonda sub-pixel de forma
+            // ligeiramente diferente pra "left" vs "right", o que gerava
+            // 1px de diferença visual mesmo com o safeGap idêntico
+            prev.style.left = -(safeGap + arrowWidth) + 'px';
+            prev.style.right = 'auto';
+            next.style.left = (gridWidth + safeGap) + 'px';
+            next.style.right = 'auto';
+        }
+
+        // Desenha as linhas SVG do hotspot até o card correspondente.
+        // Recalcula em resize/load pra acompanhar o layout responsivo.
+        function drawConnectors() {
+            const svg = document.getElementById('connectorSvg');
+            const frame = document.querySelector('.model-frame');
+            if (window.innerWidth <= 900) { svg.innerHTML = ''; return; } // desliga a partir do breakpoint A (col-right quebra pra baixo)
+
+            const frameRect = frame.getBoundingClientRect();
+            svg.setAttribute('viewBox', `0 0 ${frameRect.width} ${frameRect.height}`);
+            svg.innerHTML = '';
+
+            document.querySelectorAll('.hotspot').forEach(dot => {
+                const target = document.getElementById(dot.dataset.target);
+                if (!target) return;
+                const dotRect = dot.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+
+                const x1 = dotRect.left + dotRect.width / 2 - frameRect.left;
+                const y1 = dotRect.top + dotRect.height / 2 - frameRect.top;
+                // ponto de chegada: borda esquerda do card (onde fica o ::before)
+                const x2 = targetRect.left - frameRect.left - 5;
+                const y2 = targetRect.top + targetRect.height / 2 - frameRect.top;
+
+                // curva suave em vez de linha reta
+                const midX = (x1 + x2) / 2;
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+                svg.appendChild(path);
+            });
+        }
+
+        function updateAll() {
+            updateModePill();
+            updateNavArrowPosition();
+            drawConnectors();
+        }
+        window.addEventListener('load', updateAll);
+        window.addEventListener('resize', updateAll);
+    </script>
+
+</body>
+
+</html>
