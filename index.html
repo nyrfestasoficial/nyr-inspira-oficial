@@ -1070,6 +1070,10 @@
                 order: 7;
             }
 
+            .inspira-footer {
+                order: 8;
+            }
+
             /* .inspira-eyebrow ("Sugestão de Kit") + .inspira-title (nome
                do kit) saem do fluxo — viram legenda sobreposta no canto
                superior esquerdo da foto, aproveitando o vão vazio que já
@@ -1554,9 +1558,42 @@
             });
         }
 
+        // Posiciona a legenda sobreposta (nome do kit, .inspira-eyebrow +
+        // .inspira-title) em cima da foto — SÓ no mobile (≤564px), via
+        // CSS. O problema: esses elementos não são descendentes de
+        // .model-frame (são primos — filhos de .col-left, que é irmã de
+        // .col-model), então position:absolute puro nunca conseguiria
+        // ancorar neles de verdade — a busca por ancestral posicionado
+        // atravessa toda a cadeia de display:contents e para no
+        // .container, bem mais acima. Aqui a gente mede a posição real
+        // da foto e traduz manualmente pra coordenadas relativas ao
+        // .container (a âncora real), simulando o efeito de "grudar na
+        // foto" sem precisar mudar a estrutura do DOM.
+        function updateMobileOverlay() {
+            const frame = document.querySelector('.model-frame');
+            const container = document.querySelector('.inspira .container');
+            const eyebrow = document.querySelector('.col-left .inspira-eyebrow');
+            const title = document.querySelector('.col-left .inspira-title');
+            if (!frame || !container || !eyebrow || !title) return;
+
+            const frameRect = frame.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const left = frameRect.left - containerRect.left + 12;
+            const topBase = frameRect.top - containerRect.top;
+
+            eyebrow.style.left = left + 'px';
+            eyebrow.style.top = (topBase + 12) + 'px';
+            title.style.left = left + 'px';
+            title.style.top = (topBase + 34) + 'px';
+            // inofensivo fora do mobile — o CSS só aplica position:absolute
+            // dentro do @media (max-width:564px), então esses estilos
+            // inline ficam sem efeito visual nas outras larguras
+        }
+
         function updateAll() {
             updateModePill();
             updateNavArrowPosition();
+            updateMobileOverlay();
             drawConnectors();
         }
         window.addEventListener('load', updateAll);
