@@ -649,20 +649,23 @@
         /* hotspot dots — posições em % ilustrativas, calibrar com a foto real */
         .hotspot {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             background: var(--season-badge);
-            border: 3px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.25);
             transform: translate(-50%, -50%);
             z-index: 3;
+            cursor: pointer;
+            /* clicável — pula até o card de produto correspondente, ver
+               scrollToCard() no JS */
         }
 
         .hotspot::after {
             content: '';
             position: absolute;
-            inset: -8px;
+            inset: -6px;
             border-radius: 50%;
             border: 1.5px solid rgba(255, 23, 68, 0.5);
             animation: hotspot-pulse 2.2s ease-out infinite;
@@ -755,6 +758,16 @@
 
         .product-callout:hover {
             border-color: var(--season-cta);
+        }
+
+        .product-callout.hs-active {
+            border-color: var(--season-cta);
+            border-width: 2px;
+            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.18);
+            transition: border-color var(--transition), border-width var(--transition), box-shadow var(--transition);
+            /* acende ao clicar no hotspot correspondente na foto — ver
+               jump() no JS, que adiciona essa classe e some sozinha
+               depois de alguns segundos */
         }
 
         .product-callout-photo {
@@ -1174,6 +1187,17 @@
             .model-photo {
                 height: auto;
                 width: 100%;
+            }
+
+            .inspira-tab {
+                font-size: 11px;
+                padding: 7px 16px;
+            }
+
+            .model-nav-arrow {
+                width: 34px;
+                height: 34px;
+                font-size: 18px;
             }
         }
     </style>
@@ -1600,6 +1624,36 @@
                 svg.appendChild(path);
             });
         }
+
+        // Hotspot clicável — clicando no ponto, a página rola suavemente
+        // até o card de produto correspondente (mesmo id do data-target
+        // já usado pelo drawConnectors pra desenhar a linha).
+        document.querySelectorAll('.hotspot').forEach(dot => {
+            dot.setAttribute('role', 'button');
+            dot.setAttribute('tabindex', '0');
+            const targetEl = document.getElementById(dot.dataset.target);
+            if (targetEl) {
+                dot.setAttribute('aria-label', 'Ver produto correspondente');
+            }
+            let highlightTimer = null;
+            const jump = () => {
+                const target = document.getElementById(dot.dataset.target);
+                if (!target) return;
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // acende a borda do card, apaga qualquer outro card
+                // aceso antes, e some sozinha depois de um tempo
+                document.querySelectorAll('.product-callout.hs-active')
+                    .forEach(el => el.classList.remove('hs-active'));
+                target.classList.add('hs-active');
+                clearTimeout(highlightTimer);
+                highlightTimer = setTimeout(() => target.classList.remove('hs-active'), 2200);
+            };
+            dot.addEventListener('click', jump);
+            dot.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+            });
+        });
 
         // Posiciona a legenda sobreposta (nome do kit, .inspira-eyebrow +
         // .inspira-title) em cima da foto — SÓ no mobile (≤564px), via
