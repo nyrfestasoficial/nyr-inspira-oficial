@@ -101,6 +101,13 @@
             max-width: 1180px;
             margin: 0 auto;
             padding: 0 24px;
+            position: relative;
+            /* âncora das setas de navegação — não usamos .inspira-grid
+               porque ela vira display:contents no mobile (perde a caixa).
+               .container tem o mesmo retângulo que .inspira-grid em
+               qualquer largura (grid não tem padding próprio), então
+               trocar a referência não muda nada visualmente fora do
+               mobile */
         }
 
         /* ─── CABEÇALHO DA SEÇÃO — fixo, nunca muda com a troca de kit ─── */
@@ -381,7 +388,7 @@
         }
 
         .kit-stat-desc {
-            font-size: clamp(9px, 0.41vw + 6.70px, 12px);
+            font-size: clamp(11.5px, 0.34vw + 9.58px, 14px);
             line-height: 1.45;
             color: rgba(136, 14, 79, 0.65);
         }
@@ -1003,28 +1010,99 @@
            48 padding = 564px) — abaixo disso, o modelo não cabe mais no
            mínimo definido, então empilha. ─── */
         @media (max-width: 564px) {
-            .inspira-grid {
-                grid-template-columns: 1fr;
-                grid-template-areas:
-                    "left"
-                    "model"
-                    "right";
-                gap: 32px;
+
+            /* ─── REORDENAÇÃO MOBILE — "achata" a hierarquia (header → grid
+               → col-left) numa única sequência via display:contents, pra
+               poder intercalar itens que hoje vivem em níveis de
+               aninhamento diferentes. Ordem final: rótulo pequeno → título
+               grande → subtítulo → tabs → peças do kit → foto → cards. ─── */
+            .inspira .container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                /* itens achatados via display:contents não colapsam
+                   margem entre si (diferente do fluxo de bloco normal) —
+                   esse gap garante uma respiração mínima consistente,
+                   independente da margem própria de cada item */
             }
 
-            .col-left,
+            .inspira-header,
+            #inspira-view-acessorios,
+            .inspira-grid,
+            .col-left {
+                display: contents;
+                /* "some" da árvore visual sem sumir do DOM — os filhos
+                   passam a competir direto pela ordem do .container.
+                   IMPORTANTE: usar o id #inspira-view-acessorios (não a
+                   classe .inspira-view) — a classe é compartilhada com a
+                   view "Decoração", que fica escondida via atributo
+                   [hidden]; regra de autor com mesma especificidade SEMPRE
+                   vence [hidden] (que é regra do navegador), então usar a
+                   classe revelava o conteúdo escondido junto */
+            }
+
+            .inspira-header-eyebrow {
+                order: 1;
+            }
+
+            .inspira-header-title {
+                order: 2;
+            }
+
+            .inspira-sub {
+                order: 3;
+                text-align: center;
+            }
+
+            .inspira-tabs {
+                order: 4;
+            }
+
+            .kit-summary-card {
+                order: 5;
+            }
+
+            .col-model {
+                order: 6;
+            }
+
+            .col-right {
+                order: 7;
+            }
+
+            /* .inspira-eyebrow ("Sugestão de Kit") + .inspira-title (nome
+               do kit) saem do fluxo — viram legenda sobreposta no canto
+               superior esquerdo da foto, aproveitando o vão vazio que já
+               existe ali (margem transparente do PNG antes das penas) */
+            .inspira-eyebrow,
+            .inspira-title {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                max-width: 58%;
+                text-align: left;
+                z-index: 3;
+            }
+
+            .inspira-title {
+                top: 34px;
+                line-height: 0.95;
+            }
+
+            /* selo "Alto giro no Carnaval" sai do mobile — corta pra
+               deixar o fluxo mais enxuto, como decidido na discussão */
+            .col-left-decor {
+                display: none;
+            }
+
             .col-right {
                 text-align: center;
-                align-items: center;
-            }
-
-            .col-right {
                 align-items: stretch;
             }
 
             .kit-summary-icons {
                 justify-content: center;
-                /* text-align:center do .col-left não afeta um flex row —
+                /* text-align:center do pai não afeta um flex row —
                    os ícones ficavam colados à esquerda sem isso */
             }
 
@@ -1070,7 +1148,7 @@
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
             <div class="inspira-header">
                 <span class="inspira-header-eyebrow"><span class="inspira-mode-word">Acessórios</span></span>
-                <h1 class="inspira-header-title">Nyr <em>Inspira</em></h1>
+                <h1 class="inspira-header-title">NYR <em>Inspira</em></h1>
 
                 <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
                 <div class="inspira-mode-toggle" role="tablist">
@@ -1381,7 +1459,10 @@
         // fixo relativo à seção inteira não bateria com a foto.
         function updateNavArrowPosition() {
             const frame = document.querySelector('.model-frame');
-            const grid = document.querySelector('.inspira-grid');
+            const grid = document.querySelector('.inspira .container');
+            // .container em vez de .inspira-grid — a grid vira
+            // display:contents no mobile (≤564px) e perde a caixa; o
+            // container tem o mesmo retângulo em qualquer largura
             const prev = document.querySelector('.model-nav-prev');
             const next = document.querySelector('.model-nav-next');
             if (!frame || !grid || !prev || !next) return;
