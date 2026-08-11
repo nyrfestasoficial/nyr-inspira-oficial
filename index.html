@@ -319,7 +319,15 @@
             grid-template-areas: "left model right";
             gap: 36px;
             align-items: center;
-            position: relative;
+            /* position:relative removido — .inspira-grid não é mais o
+               ancestral posicionado das setas (agora é .container, ver
+               updateNavArrowPosition). Mantê-la position:relative aqui
+               criava uma inconsistência: em ≤564px o JS calcula a
+               posição relativa ao .container (grid vira display:contents
+               e perde a caixa), mas em >564px o grid continuava sendo
+               uma caixa real e MAIS PRÓXIMA que o container — o
+               navegador ancorava ali, não no container que o JS estava
+               presumindo, desalinhando as setas verticalmente */
         }
 
         .col-left {
@@ -991,6 +999,23 @@
             .product-callout::before {
                 display: none;
             }
+
+            /* CAUSA RAIZ do toggle sobrepondo o cabeçalho: .container
+               ganhou position:relative numa rodada anterior (pra âncora
+               das setas), e virou o ancestral posicionado mais próximo do
+               toggle — antes era .inspira (topo da seção, 80px ACIMA de
+               onde o cabeçalho começa, dava folga de sobra). Agora o
+               topo do .container já coincide quase com o início do
+               cabeçalho, então top:14px (relativo ao container) sobra
+               quase nada de folga. -66px = 14px (folga original,
+               relativa à seção) − 80px (padding-top da seção, "gasto"
+               antes do container começar) — restaura a MESMA folga
+               visual de antes, só que recalculada pro novo ancestral.
+               Só nessa faixa: em desktop, o toggle relativo ao container
+               é o efeito que você gostou, não mexi lá. */
+            .inspira-mode-toggle {
+                top: -66px;
+            }
         }
 
         /* ─── esconder as setas na faixa intermediária (900px → 565px) —
@@ -1019,11 +1044,13 @@
             .inspira .container {
                 display: flex;
                 flex-direction: column;
-                gap: 20px;
+                gap: 10px;
                 /* itens achatados via display:contents não colapsam
                    margem entre si (diferente do fluxo de bloco normal) —
-                   esse gap garante uma respiração mínima consistente,
-                   independente da margem própria de cada item */
+                   por isso zero as margens individuais de cada item logo
+                   abaixo, deixando esse gap como ÚNICA fonte de
+                   espaçamento (evita que margem própria + gap se somem e
+                   fiquem exagerados) */
             }
 
             .inspira-header,
@@ -1043,19 +1070,23 @@
 
             .inspira-header-eyebrow {
                 order: 1;
+                margin-bottom: 0;
             }
 
             .inspira-header-title {
                 order: 2;
+                margin-bottom: 0;
             }
 
             .inspira-sub {
                 order: 3;
                 text-align: center;
+                margin: 0;
             }
 
             .inspira-tabs {
                 order: 4;
+                margin-top: 0;
             }
 
             .kit-summary-card {
@@ -1578,7 +1609,7 @@
 
             const frameRect = frame.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
-            const left = frameRect.left - containerRect.left + 12;
+            const left = frameRect.left - containerRect.left - 20;
             const topBase = frameRect.top - containerRect.top;
 
             eyebrow.style.left = left + 'px';
