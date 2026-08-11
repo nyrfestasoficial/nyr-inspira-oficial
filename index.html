@@ -406,7 +406,7 @@
             display: inline-flex;
             align-items: center;
             gap: clamp(5px, 0.68vw + 1.17px, 10px);
-            font-size: clamp(9.5px, 0.75vw + 5.29px, 15px);
+            font-size: clamp(13px, 0.54vw + 9.93px, 17px);
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--season-primary);
@@ -423,7 +423,7 @@
         .inspira-title {
             font-family: 'Caveat', cursive;
             font-weight: 700;
-            font-size: clamp(28px, 5.43vw - 2.65px, 68px);
+            font-size: clamp(40px, 4.35vw + 15.48px, 72px);
             line-height: 1.02;
             color: var(--season-label);
         }
@@ -1119,9 +1119,21 @@
                 z-index: 3;
             }
 
+            .inspira-eyebrow {
+                font-size: 10px !important;
+                /* teto próprio pro contexto de legenda sobreposta — o
+                   clamp() geral (13-17px) foi pensado pra coluna de
+                   texto normal (tablet/desktop) e vazava pra cá também,
+                   ficando grande demais em cima da foto */
+            }
+
             .inspira-title {
                 top: 34px;
                 line-height: 0.95;
+                font-size: 24px !important;
+                /* mesmo motivo do eyebrow acima — o clamp() geral
+                   (40-72px) é grande demais pra caber em 58% da largura
+                   do frame sem sobrepor a máscara/rosto da modelo */
             }
 
             /* selo "Alto giro no Carnaval" sai do mobile — corta pra
