@@ -110,22 +110,33 @@
         }
 
         .inspira-header-eyebrow {
-            font-family: 'Anton', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 22px;
-            letter-spacing: 2px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 4px;
             text-transform: uppercase;
             color: var(--season-primary);
-            margin-bottom: 10px;
+            display: block;
+            margin-bottom: 12px;
+            /* tamanhos replicados de .section-eyebrow (LP) — 15px base,
+               17px em ≥1500px (ver media query lá embaixo) */
         }
 
         .inspira-header-title {
-            display: none;
-            /* elemento removido do HTML (tagline cortada por pedido —
-               "poluía" o cabeçalho antes das tabs); regra mantida vazia
-               só por precaução, pode ser deletada com segurança */
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(32px, 5vw, 52px);
+            line-height: 1.05;
+            color: var(--season-label);
+            margin-bottom: 10px;
+            /* tamanhos replicados de .section-title (LP) — mesmo clamp()
+               exato, com bônus em ≥1500px (clamp(52px,3.33vw,64px)) */
+        }
+
+        .inspira-header-title em {
+            color: var(--season-cta);
+            font-style: normal;
+            /* réplica de .section-title em — a "segunda cor" do título,
+               igual ao "Produtos" laranja no exemplo da LP */
         }
 
         /* ─── ALAVANCA ACESSÓRIOS/DECORAÇÃO — canto superior direito da
@@ -403,7 +414,7 @@
         }
 
         .inspira-sub {
-            font-size: clamp(11px, 0.48vw + 8.32px, 14.5px);
+            font-size: clamp(15px, 0.41vw + 12.70px, 18px);
             line-height: 1.5;
             color: rgba(136, 14, 79, 0.7);
             margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
@@ -467,7 +478,7 @@
         }
 
         .kit-summary-card p {
-            font-size: clamp(9.5px, 0.41vw + 7.20px, 12.5px);
+            font-size: clamp(13px, 0.41vw + 10.70px, 16px);
             line-height: 1.5;
             color: rgba(136, 14, 79, 0.7);
         }
@@ -896,6 +907,24 @@
                 font-size: 15px;
                 /* LP: .card-desc em ≥1500px */
             }
+
+            .inspira-header-eyebrow {
+                font-size: 17px;
+                /* LP: .section-eyebrow em ≥1500px */
+            }
+
+            .inspira-header-title {
+                font-size: clamp(52px, 3.33vw, 64px);
+                /* LP: .section-title em ≥1500px */
+            }
+
+            .inspira-sub {
+                font-size: 20px;
+            }
+
+            .kit-summary-card p {
+                font-size: 18px;
+            }
         }
 
         /* ─── responsivo ─── */
@@ -1040,8 +1069,8 @@
 
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
             <div class="inspira-header">
-                <span class="inspira-header-eyebrow">NYR Inspira <span class="inspira-mode-word">·
-                        Acessórios</span></span>
+                <span class="inspira-header-eyebrow"><span class="inspira-mode-word">Acessórios</span></span>
+                <h1 class="inspira-header-title">Nyr <em>Inspira</em></h1>
 
                 <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
                 <div class="inspira-mode-toggle" role="tablist">
@@ -1316,9 +1345,9 @@
                 acessorios.hidden = isDecor;
                 decoracao.hidden = !isDecor;
 
-                // eyebrow acompanha o modo ativo: "NYR Inspira · Acessórios/Decoração"
+                // rótulo pequeno acompanha o modo ativo — "Acessórios" ou "Decoração"
                 document.querySelector('.inspira-mode-word').textContent =
-                    isDecor ? '· Decoração' : '· Acessórios';
+                    isDecor ? 'Decoração' : 'Acessórios';
 
                 // as season-tabs só fazem sentido dentro de Acessórios
                 document.querySelector('.inspira-tabs').style.display = isDecor ? 'none' : 'flex';
