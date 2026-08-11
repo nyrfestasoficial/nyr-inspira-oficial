@@ -380,7 +380,7 @@
             display: inline-flex;
             align-items: center;
             gap: clamp(5px, 0.68vw + 1.17px, 10px);
-            font-size: clamp(14px, 1.09vw + 7.87px, 22px);
+            font-size: clamp(9.5px, 0.75vw + 5.29px, 15px);
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--season-primary);
@@ -763,7 +763,7 @@
 
         .product-callout-ref {
             font-family: 'Barlow Condensed', sans-serif;
-            font-size: clamp(9.5px, 0.9vw, 11px);
+            font-size: clamp(10.8px, 0.23vw + 9.50px, 12.5px);
             font-weight: 600;
             letter-spacing: 1.2px;
             color: rgba(136, 14, 79, 0.45);
@@ -778,7 +778,7 @@
 
         .product-callout-name {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(13px, 1.35vw, 15.5px);
+            font-size: clamp(15px, 0.41vw + 12.70px, 18px);
             letter-spacing: 0.2px;
             color: var(--season-label);
             line-height: 1.22;
@@ -786,7 +786,7 @@
 
         .product-callout-desc {
             font-family: 'Barlow', sans-serif;
-            font-size: clamp(11px, 1.05vw, 12.5px);
+            font-size: clamp(11.5px, 0.20vw + 10.35px, 13px);
             line-height: 1.45;
             color: rgba(136, 14, 79, 0.65);
             margin-bottom: 7px;
@@ -801,7 +801,7 @@
             border-radius: 100px;
             color: var(--season-primary);
             font-family: 'Barlow Condensed', sans-serif;
-            font-size: clamp(10px, 1vw, 11.5px);
+            font-size: clamp(11.5px, 0.20vw + 10.35px, 13px);
             font-weight: 700;
             letter-spacing: 0.6px;
             text-transform: uppercase;
@@ -872,6 +872,30 @@
 
         .inspira-btn:hover {
             transform: translateY(-2px);
+        }
+
+        /* ─── BÔNUS EM TELAS LARGAS (≥1500px) — replica o padrão da LP,
+           que também dá um acréscimo de tamanho de fonte nessa faixa.
+           Nosso clamp() trava em 1300px e não cresce mais sozinho; essa
+           camada retoma o crescimento acima disso, só nos papéis que já
+           estão alinhados à LP na base (os que ainda não foram alinhados,
+           ou que a própria LP não bonifica em 1500px, ficam de fora por
+           enquanto). ─── */
+        @media (min-width: 1500px) {
+            .inspira-eyebrow {
+                font-size: 17px;
+                /* LP: .section-eyebrow em ≥1500px */
+            }
+
+            .product-callout-name {
+                font-size: 20px;
+                /* LP: .card-name em ≥1500px */
+            }
+
+            .product-callout-desc {
+                font-size: 15px;
+                /* LP: .card-desc em ≥1500px */
+            }
         }
 
         /* ─── responsivo ─── */
@@ -1071,7 +1095,7 @@
                                 <span class="placeholder-swatch"
                                     style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
                             </div>
-                            <p>Tudo que sua loja precisa pra montar um look completo de Carnaval.</p>
+                            <p>Tudo que seu cliente precisa pra montar um look completo de Carnaval.</p>
                         </div>
 
                         <!-- selo de performance do kit — placeholder, sem dado real ainda -->
