@@ -1230,25 +1230,39 @@
         }
 
         /* ═══════════════════════════════════════════════════════════
-           TEMA ESCURO — .theme-dark — Mix (6 + 21)
-           bg/cardBg/mid/label da 21, primary/border da 6.
+           TEMA ESCURO — .theme-dark — Paleta 6 "Dark Neon"
+           Reaproveitável: pras próximas paletas (21, 26, 39), só troca
+           os valores de cor aqui dentro, a estrutura já está pronta.
 
-           O cta/badge tem DUAS variantes testáveis — adicione a classe
-           extra no HTML pra escolher:
-             <section class="inspira theme-dark cta-magenta">  (padrão)
-             <section class="inspira theme-dark cta-red">
-           Só essa classe muda; o resto (verde, dourado, preto) é igual
-           nos dois testes. ═══════════════════════════════════════ */
+           Por que precisa de TANTO override: os 7 tokens de sazonalidade
+           (--season-*) já cobrem a maior parte do arquivo — mas ~29
+           lugares usam cor hardcoded em rgba() (não var()), geralmente
+           pra controlar opacidade de texto/borda com precisão. Trocar só
+           os tokens não alcança essas linhas, então cada uma precisa de
+           uma entrada aqui. ═══════════════════════════════════════ */
         .inspira.theme-dark {
             --season-primary: #39FF14;
-            --season-mid: #FFD600;
-            --season-label: #FFFFFF;
+            --season-cta: #FF10F0;
+            --season-mid: #00FFF0;
+            --season-badge: #FF10F0;
+            --season-label: #F0F0F0;
             --season-border: rgba(57, 255, 20, 0.25);
-            background: #000000;
+            background: #0D0D0F;
         }
 
-        /* texto CLARO sobre fundo escuro (corpo de texto geral) —
-           independe da variante de cta escolhida */
+        /* texto ESCURO sobre fundo vívido (botões/pílulas ativas) —
+           branco/claro teria contraste ruim em cima de neon saturado */
+        .inspira.theme-dark .inspira-mode-btn.active,
+        .inspira.theme-dark .mode-dot,
+        .inspira.theme-dark .kit-stat-icon,
+        .inspira.theme-dark .kit-summary-label,
+        .inspira.theme-dark .model-nav-arrow:hover,
+        .inspira.theme-dark .inspira-tab.active,
+        .inspira.theme-dark .inspira-btn {
+            color: #0D0D0F;
+        }
+
+        /* texto CLARO sobre fundo escuro (corpo de texto geral) */
         .inspira.theme-dark .inspira-decor-placeholder p,
         .inspira.theme-dark .kit-stat-desc,
         .inspira.theme-dark .inspira-sub,
@@ -1256,15 +1270,15 @@
         .inspira.theme-dark .kit-summary-card p,
         .inspira.theme-dark .product-callout-desc,
         .inspira.theme-dark .inspira-tip {
-            color: rgba(255, 255, 255, 0.72);
+            color: rgba(240, 240, 240, 0.72);
         }
 
         .inspira.theme-dark .inspira-tab {
-            color: rgba(255, 255, 255, 0.55);
+            color: rgba(240, 240, 240, 0.55);
         }
 
         .inspira.theme-dark .product-callout-ref {
-            color: rgba(255, 255, 255, 0.45);
+            color: rgba(240, 240, 240, 0.45);
         }
 
         /* cartões — fundo branco vira cartão escuro */
@@ -1276,8 +1290,17 @@
             background: #1a1a1e;
         }
 
-        /* bordas/sombras em verde (--season-primary) — independem da
-           variante de cta */
+        .inspira.theme-dark .inspira-mode-toggle {
+            background-image:
+                linear-gradient(#1a1a1e, #1a1a1e),
+                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 16, 240, 0.35));
+            box-shadow:
+                0 1px 2px rgba(57, 255, 20, 0.08),
+                0 6px 16px rgba(57, 255, 20, 0.12),
+                0 16px 32px rgba(57, 255, 20, 0.08);
+        }
+
+        /* bordas/sombras — rosa vira verde-neon */
         .inspira.theme-dark .inspira-tab,
         .inspira.theme-dark .kit-stat-badge,
         .inspira.theme-dark .kit-summary-icons img,
@@ -1285,7 +1308,7 @@
         .inspira.theme-dark .model-nav-arrow,
         .inspira.theme-dark .product-callout,
         .inspira.theme-dark .inspira-footer {
-            border-color: rgba(57, 255, 20, 0.25);
+            border-color: rgba(57, 255, 20, 0.22);
         }
 
         .inspira.theme-dark .inspira-tab:hover {
@@ -1306,78 +1329,21 @@
             background: rgba(57, 255, 20, 0.3);
         }
 
-        /* dourado (--season-mid) */
         .inspira.theme-dark .kit-summary-icons span {
-            color: rgba(255, 214, 0, 0.9);
+            color: rgba(0, 255, 240, 0.85);
         }
 
-        /* ─── VARIANTE cta-magenta (#FF10F0, da paleta 6) ───
-           magenta claro/vívido — precisa de texto ESCURO forçado */
-        .inspira.theme-dark.cta-magenta {
-            --season-cta: #FF10F0;
-            --season-badge: #FF10F0;
-        }
-
-        .inspira.theme-dark.cta-magenta .inspira-mode-btn.active,
-        .inspira.theme-dark.cta-magenta .mode-dot,
-        .inspira.theme-dark.cta-magenta .kit-stat-icon,
-        .inspira.theme-dark.cta-magenta .kit-summary-label,
-        .inspira.theme-dark.cta-magenta .model-nav-arrow:hover,
-        .inspira.theme-dark.cta-magenta .inspira-tab.active,
-        .inspira.theme-dark.cta-magenta .inspira-btn {
-            color: #1a1a1e;
-        }
-
-        .inspira.theme-dark.cta-magenta .inspira-mode-toggle {
-            background-image:
-                linear-gradient(#1a1a1e, #1a1a1e),
-                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 16, 240, 0.35));
-            box-shadow:
-                0 1px 2px rgba(57, 255, 20, 0.08),
-                0 6px 16px rgba(57, 255, 20, 0.12),
-                0 16px 32px rgba(57, 255, 20, 0.08);
-        }
-
-        .inspira.theme-dark.cta-magenta .hotspot {
+        /* hotspot/conector — badge agora é magenta neon */
+        .inspira.theme-dark .hotspot {
             box-shadow: 0 0 0 3px rgba(255, 16, 240, 0.3);
         }
 
-        .inspira.theme-dark.cta-magenta .hotspot::after {
+        .inspira.theme-dark .hotspot::after {
             border-color: rgba(255, 16, 240, 0.55);
         }
 
-        .inspira.theme-dark.cta-magenta .connector-svg path {
+        .inspira.theme-dark .connector-svg path {
             stroke: rgba(255, 16, 240, 0.6);
-        }
-
-        /* ─── VARIANTE cta-red (#FF1744, da paleta 21) ───
-           vermelho saturado — texto branco (já vem da regra base,
-           nenhum override extra necessário aqui) */
-        .inspira.theme-dark.cta-red {
-            --season-cta: #FF1744;
-            --season-badge: #FF1744;
-        }
-
-        .inspira.theme-dark.cta-red .inspira-mode-toggle {
-            background-image:
-                linear-gradient(#1a1a1e, #1a1a1e),
-                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 23, 68, 0.35));
-            box-shadow:
-                0 1px 2px rgba(57, 255, 20, 0.08),
-                0 6px 16px rgba(57, 255, 20, 0.12),
-                0 16px 32px rgba(57, 255, 20, 0.08);
-        }
-
-        .inspira.theme-dark.cta-red .hotspot {
-            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.3);
-        }
-
-        .inspira.theme-dark.cta-red .hotspot::after {
-            border-color: rgba(255, 23, 68, 0.55);
-        }
-
-        .inspira.theme-dark.cta-red .connector-svg path {
-            stroke: rgba(255, 23, 68, 0.6);
         }
     </style>
 
@@ -1393,7 +1359,7 @@
         Fonts atualizado (Creepster trocada por Caveat).
     </div>
 
-    <section class="inspira theme-dark cta-magenta">
+    <section class="inspira theme-dark">
         <canvas class="inspira-confetti" id="inspiraConfetti" aria-hidden="true"></canvas>
 
         <div class="container">
@@ -1897,19 +1863,17 @@
             // bloco .theme-dark no CSS (não dá pra ler var() direto no
             // canvas, por isso duplicado como literal)
             const isDark = section.classList.contains('theme-dark');
-            const ctaColor = section.classList.contains('cta-red')
-                ? 'rgba(255, 23, 68, 1)'
-                : 'rgba(255, 16, 240, 1)'; // padrão: magenta
-            const ctaColorSoft = section.classList.contains('cta-red')
-                ? 'rgba(255, 23, 68, 0.5)'
-                : 'rgba(255, 16, 240, 0.5)';
             const PALETTE = isDark ? [
-                'rgba(57, 255, 20, 1)',      // --season-primary (verde)
-                ctaColor,                     // --season-cta / badge (magenta ou vermelho)
-                'rgba(255, 214, 0, 0.95)',   // --season-mid (dourado)
+                'rgba(57, 255, 20, 1)',      // --season-primary (verde neon)
+                'rgba(255, 16, 240, 1)',     // --season-cta (magenta neon)
+                'rgba(0, 255, 240, 0.95)',   // --season-mid (ciano)
+                'rgba(255, 16, 240, 0.9)',   // --season-badge
+                'rgba(180, 255, 60, 0.9)',   // verde-limão extra
+                'rgba(255, 255, 0, 0.9)',    // amarelo neon extra
+                'rgba(255, 60, 200, 0.85)',  // rosa-choque extra
                 'rgba(57, 255, 20, 0.55)',   // camada translúcida, dá profundidade
-                ctaColorSoft,
-                'rgba(255, 214, 0, 0.45)',
+                'rgba(0, 255, 240, 0.5)',
+                'rgba(255, 16, 240, 0.45)',
             ] : [
                 'rgba(194, 24, 91, 1)',      // --season-primary
                 'rgba(255, 87, 34, 1)',      // --season-cta
