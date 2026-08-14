@@ -89,12 +89,32 @@
            SEÇÃO
         ═══════════════════════════════════════════════ */
         .inspira {
-            background: var(--season-light);
+            background: #f7f6f6;
             padding: 80px 0 90px;
             position: relative;
-            /* position:relative — âncora pras setas de navegação (bordas
+            overflow: hidden;
+            /* overflow:hidden — contém o confete de fundo, que "cai" além
+               dos limites verticais da seção (nasce um pouco acima do
+               topo, morre um pouco abaixo da base, ver .inspira-confetti)
+               position:relative — âncora pras setas de navegação (bordas
                da seção) e pra alavanca Acessórios/Decoração (canto
                superior direito) */
+        }
+
+        /* ─── CONFETE DE FUNDO — mesmo mecanismo da hero da LP: <canvas>
+           desenhado via JS a cada frame (requestAnimationFrame,
+           delta-time), física própria por peça (velocidade, rotação,
+           fade-in no respawn), em vez do SVG+CSS-keyframe de antes.
+           Só a paleta de cor muda pra se enquadrar no Carnaval — o resto
+           do mecanismo (classe Piece, loop, resize) é o mesmo. ─── */
+        .inspira-confetti {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            display: block;
         }
 
         .inspira .container {
@@ -371,6 +391,7 @@
             border-radius: 14px;
             padding: clamp(8px, 1.09vw + 1.87px, 16px) clamp(9px, 1.22vw + 2.10px, 18px);
             width: 100%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 12px 28px rgba(0, 0, 0, 0.08);
         }
 
         .kit-stat-icon {
@@ -440,6 +461,7 @@
             border: 1px solid rgba(194, 24, 91, 0.25);
             border-radius: 14px;
             padding: clamp(9px, 1.22vw + 2.10px, 18px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.06);
         }
 
         .kit-summary-label {
@@ -753,11 +775,17 @@
             display: flex;
             gap: clamp(6.5px, 1.04vw, 10.4px);
             align-items: flex-start;
-            transition: border-color var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 12px 28px rgba(0, 0, 0, 0.08);
+            transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+            /* sombra em duas camadas (perto/longe) — precisa se destacar
+               mais agora que o fundo não é mais uma cor sólida contrastante
+               (era rosa liso, virou cinza quase branco + confete) */
         }
 
         .product-callout:hover {
             border-color: var(--season-cta);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07), 0 16px 34px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
         .product-callout.hs-active {
@@ -1214,6 +1242,8 @@
     </div>
 
     <section class="inspira">
+        <canvas class="inspira-confetti" id="inspiraConfetti" aria-hidden="true"></canvas>
+
         <div class="container">
 
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
@@ -1686,6 +1716,134 @@
             // dentro do @media (max-width:564px), então esses estilos
             // inline ficam sem efeito visual nas outras larguras
         }
+
+        // ─── CONFETE DE FUNDO — gera as peças uma única vez (não precisa
+        // recalcular no resize: tudo é % ou vw, se adapta sozinho via CSS).
+        // Pesos combinados: tira reta altíssimo, bolinha e fita ondulada
+        // alto (ondulada concentrada nas bordas laterais), estrela e
+        // losango médio.
+        // ─── CONFETE — mesmo mecanismo da hero (canvas + requestAnimationFrame
+        // + delta-time + classe Piece com física própria por partícula),
+        // só trocando a paleta de cor pro Carnaval. Diferença estrutural
+        // necessária: a hero mede a JANELA inteira (window.innerWidth/
+        // innerHeight) porque É a hero; aqui a gente mede a SEÇÃO via
+        // ResizeObserver, porque o confete cobre só a .inspira, que muda
+        // de altura sozinha (troca de kit, aba Acessórios↔Decoração,
+        // breakpoint) sem necessariamente disparar um resize da janela.
+        (function () {
+            const canvas = document.getElementById('inspiraConfetti');
+            const section = document.querySelector('.inspira');
+            if (!canvas || !section) return;
+            const ctx = canvas.getContext('2d');
+
+            // paleta Carnaval — mistura os tons da seção com cores vívidas
+            // extras (roxo, dourado, ciano, verde, azul, laranja-queimado),
+            // com opacidades variadas pra dar sensação de profundidade
+            // (mesma lógica da hero: cores fortes + tons translúcidos)
+            const PALETTE = [
+                'rgba(194, 24, 91, 1)',      // --season-primary
+                'rgba(255, 87, 34, 1)',      // --season-cta
+                'rgba(255, 64, 129, 0.95)',  // --season-mid
+                'rgba(255, 23, 68, 0.95)',   // --season-badge
+                'rgba(123, 31, 162, 0.95)',  // roxo
+                'rgba(255, 193, 7, 1)',      // dourado
+                'rgba(0, 188, 212, 0.9)',    // ciano
+                'rgba(67, 160, 71, 0.9)',    // verde
+                'rgba(63, 81, 181, 0.85)',   // azul
+                'rgba(255, 111, 0, 0.95)',   // laranja-queimado
+                'rgba(194, 24, 91, 0.65)',   // camada translúcida, dá profundidade
+                'rgba(123, 31, 162, 0.6)',
+            ];
+
+            const SHAPES = ['circle', 'rect', 'line'];
+            let PIECE_COUNT = window.innerWidth < 768 ? 90 : 170;
+
+            class Piece {
+                constructor(scatter = false) { this.reset(scatter); }
+
+                reset(scatter = false) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = scatter ? Math.random() * canvas.height : -20;
+                    this.size = Math.random() * 4 + 1.5;
+                    this.speedY = Math.random() * 1.3 + 1.2;
+                    this.speedX = (Math.random() - 0.5) * 0.8;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.spin = (Math.random() - 0.5) * 0.02;
+                    this.color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+                    this.shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+                    this.aspect = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.25 + 0.75;
+                    this.fadeIn = scatter ? 1 : 0;
+                }
+
+                update(dt) {
+                    this.y += this.speedY * dt;
+                    this.x += this.speedX * dt;
+                    this.angle += this.spin * dt;
+                    if (this.fadeIn < 1) this.fadeIn = Math.min(1, this.fadeIn + 0.012 * dt);
+                    if (this.y > canvas.height + 20) this.reset(false);
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity * this.fadeIn;
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.fillStyle = this.color;
+                    ctx.strokeStyle = this.color;
+
+                    if (this.shape === 'circle') {
+                        ctx.beginPath();
+                        ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (this.shape === 'rect') {
+                        ctx.fillRect(-(this.size * this.aspect) / 2, -this.size / 2,
+                            this.size * this.aspect, this.size);
+                    } else {
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, -this.size * 1.8);
+                        ctx.lineTo(0, this.size * 1.8);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+            }
+
+            let pieces = [];
+            let lastTime = 0;
+
+            function resizeCanvas() {
+                const rect = section.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+
+            function initConfetti() {
+                resizeCanvas();
+                pieces = Array.from({ length: PIECE_COUNT }, () => new Piece(true));
+            }
+
+            // ResizeObserver em vez de só 'resize' da janela — pega
+            // qualquer mudança de altura da SEÇÃO, mesmo sem redimensionar
+            // a janela (troca de kit, toggle Acessórios/Decoração etc.)
+            const ro = new ResizeObserver(() => {
+                resizeCanvas();
+                pieces.forEach(p => { p.x = Math.random() * canvas.width; });
+            });
+            ro.observe(section);
+
+            function loop(ts) {
+                const dt = lastTime ? Math.min((ts - lastTime) / 16.667, 3) : 1;
+                lastTime = ts;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => { p.update(dt); p.draw(); });
+                requestAnimationFrame(loop);
+            }
+
+            initConfetti();
+            requestAnimationFrame(loop);
+        })();
 
         function updateAll() {
             updateModePill();

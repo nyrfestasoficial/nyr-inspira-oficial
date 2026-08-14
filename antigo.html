@@ -101,6 +101,13 @@
             max-width: 1180px;
             margin: 0 auto;
             padding: 0 24px;
+            position: relative;
+            /* âncora das setas de navegação — não usamos .inspira-grid
+               porque ela vira display:contents no mobile (perde a caixa).
+               .container tem o mesmo retângulo que .inspira-grid em
+               qualquer largura (grid não tem padding próprio), então
+               trocar a referência não muda nada visualmente fora do
+               mobile */
         }
 
         /* ─── CABEÇALHO DA SEÇÃO — fixo, nunca muda com a troca de kit ─── */
@@ -312,7 +319,15 @@
             grid-template-areas: "left model right";
             gap: 36px;
             align-items: center;
-            position: relative;
+            /* position:relative removido — .inspira-grid não é mais o
+               ancestral posicionado das setas (agora é .container, ver
+               updateNavArrowPosition). Mantê-la position:relative aqui
+               criava uma inconsistência: em ≤564px o JS calcula a
+               posição relativa ao .container (grid vira display:contents
+               e perde a caixa), mas em >564px o grid continuava sendo
+               uma caixa real e MAIS PRÓXIMA que o container — o
+               navegador ancorava ali, não no container que o JS estava
+               presumindo, desalinhando as setas verticalmente */
         }
 
         .col-left {
@@ -381,7 +396,7 @@
         }
 
         .kit-stat-desc {
-            font-size: clamp(9px, 0.41vw + 6.70px, 12px);
+            font-size: clamp(11.5px, 0.34vw + 9.58px, 14px);
             line-height: 1.45;
             color: rgba(136, 14, 79, 0.65);
         }
@@ -391,7 +406,7 @@
             display: inline-flex;
             align-items: center;
             gap: clamp(5px, 0.68vw + 1.17px, 10px);
-            font-size: clamp(9.5px, 0.75vw + 5.29px, 15px);
+            font-size: clamp(13px, 0.54vw + 9.93px, 17px);
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--season-primary);
@@ -408,7 +423,7 @@
         .inspira-title {
             font-family: 'Caveat', cursive;
             font-weight: 700;
-            font-size: clamp(28px, 5.43vw - 2.65px, 68px);
+            font-size: clamp(40px, 4.35vw + 15.48px, 72px);
             line-height: 1.02;
             color: var(--season-label);
         }
@@ -634,20 +649,23 @@
         /* hotspot dots — posições em % ilustrativas, calibrar com a foto real */
         .hotspot {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             background: var(--season-badge);
-            border: 3px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 4px rgba(255, 23, 68, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.25);
             transform: translate(-50%, -50%);
             z-index: 3;
+            cursor: pointer;
+            /* clicável — pula até o card de produto correspondente, ver
+               scrollToCard() no JS */
         }
 
         .hotspot::after {
             content: '';
             position: absolute;
-            inset: -8px;
+            inset: -6px;
             border-radius: 50%;
             border: 1.5px solid rgba(255, 23, 68, 0.5);
             animation: hotspot-pulse 2.2s ease-out infinite;
@@ -740,6 +758,16 @@
 
         .product-callout:hover {
             border-color: var(--season-cta);
+        }
+
+        .product-callout.hs-active {
+            border-color: var(--season-cta);
+            border-width: 2px;
+            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.18);
+            transition: border-color var(--transition), border-width var(--transition), box-shadow var(--transition);
+            /* acende ao clicar no hotspot correspondente na foto — ver
+               jump() no JS, que adiciona essa classe e some sozinha
+               depois de alguns segundos */
         }
 
         .product-callout-photo {
@@ -984,6 +1012,23 @@
             .product-callout::before {
                 display: none;
             }
+
+            /* CAUSA RAIZ do toggle sobrepondo o cabeçalho: .container
+               ganhou position:relative numa rodada anterior (pra âncora
+               das setas), e virou o ancestral posicionado mais próximo do
+               toggle — antes era .inspira (topo da seção, 80px ACIMA de
+               onde o cabeçalho começa, dava folga de sobra). Agora o
+               topo do .container já coincide quase com o início do
+               cabeçalho, então top:14px (relativo ao container) sobra
+               quase nada de folga. -66px = 14px (folga original,
+               relativa à seção) − 80px (padding-top da seção, "gasto"
+               antes do container começar) — restaura a MESMA folga
+               visual de antes, só que recalculada pro novo ancestral.
+               Só nessa faixa: em desktop, o toggle relativo ao container
+               é o efeito que você gostou, não mexi lá. */
+            .inspira-mode-toggle {
+                top: -66px;
+            }
         }
 
         /* ─── esconder as setas na faixa intermediária (900px → 565px) —
@@ -1003,28 +1048,121 @@
            48 padding = 564px) — abaixo disso, o modelo não cabe mais no
            mínimo definido, então empilha. ─── */
         @media (max-width: 564px) {
-            .inspira-grid {
-                grid-template-columns: 1fr;
-                grid-template-areas:
-                    "left"
-                    "model"
-                    "right";
-                gap: 32px;
+
+            /* ─── REORDENAÇÃO MOBILE — "achata" a hierarquia (header → grid
+               → col-left) numa única sequência via display:contents, pra
+               poder intercalar itens que hoje vivem em níveis de
+               aninhamento diferentes. Ordem final: rótulo pequeno → título
+               grande → subtítulo → tabs → peças do kit → foto → cards. ─── */
+            .inspira .container {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                /* itens achatados via display:contents não colapsam
+                   margem entre si (diferente do fluxo de bloco normal) —
+                   por isso zero as margens individuais de cada item logo
+                   abaixo, deixando esse gap como ÚNICA fonte de
+                   espaçamento (evita que margem própria + gap se somem e
+                   fiquem exagerados) */
             }
 
-            .col-left,
+            .inspira-header,
+            #inspira-view-acessorios,
+            .inspira-grid,
+            .col-left {
+                display: contents;
+                /* "some" da árvore visual sem sumir do DOM — os filhos
+                   passam a competir direto pela ordem do .container.
+                   IMPORTANTE: usar o id #inspira-view-acessorios (não a
+                   classe .inspira-view) — a classe é compartilhada com a
+                   view "Decoração", que fica escondida via atributo
+                   [hidden]; regra de autor com mesma especificidade SEMPRE
+                   vence [hidden] (que é regra do navegador), então usar a
+                   classe revelava o conteúdo escondido junto */
+            }
+
+            .inspira-header-eyebrow {
+                order: 1;
+                margin-bottom: 0;
+            }
+
+            .inspira-header-title {
+                order: 2;
+                margin-bottom: 0;
+            }
+
+            .inspira-sub {
+                order: 3;
+                text-align: center;
+                margin: 0;
+            }
+
+            .inspira-tabs {
+                order: 4;
+                margin-top: 0;
+            }
+
+            .kit-summary-card {
+                order: 5;
+            }
+
+            .col-model {
+                order: 6;
+            }
+
+            .col-right {
+                order: 7;
+            }
+
+            .inspira-footer {
+                order: 8;
+            }
+
+            /* .inspira-eyebrow ("Sugestão de Kit") + .inspira-title (nome
+               do kit) saem do fluxo — viram legenda sobreposta no canto
+               superior esquerdo da foto, aproveitando o vão vazio que já
+               existe ali (margem transparente do PNG antes das penas) */
+            .inspira-eyebrow,
+            .inspira-title {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                max-width: 58%;
+                text-align: left;
+                z-index: 3;
+            }
+
+            .inspira-eyebrow {
+                font-size: 10px !important;
+                /* teto próprio pro contexto de legenda sobreposta — o
+                   clamp() geral (13-17px) foi pensado pra coluna de
+                   texto normal (tablet/desktop) e vazava pra cá também,
+                   ficando grande demais em cima da foto */
+            }
+
+            .inspira-title {
+                top: 34px;
+                line-height: 0.95;
+                font-size: 24px !important;
+                /* mesmo motivo do eyebrow acima — o clamp() geral
+                   (40-72px) é grande demais pra caber em 58% da largura
+                   do frame sem sobrepor a máscara/rosto da modelo */
+            }
+
+            /* selo "Alto giro no Carnaval" sai do mobile — corta pra
+               deixar o fluxo mais enxuto, como decidido na discussão */
+            .col-left-decor {
+                display: none;
+            }
+
             .col-right {
                 text-align: center;
-                align-items: center;
-            }
-
-            .col-right {
                 align-items: stretch;
             }
 
             .kit-summary-icons {
                 justify-content: center;
-                /* text-align:center do .col-left não afeta um flex row —
+                /* text-align:center do pai não afeta um flex row —
                    os ícones ficavam colados à esquerda sem isso */
             }
 
@@ -1050,6 +1188,17 @@
                 height: auto;
                 width: 100%;
             }
+
+            .inspira-tab {
+                font-size: 11px;
+                padding: 7px 16px;
+            }
+
+            .model-nav-arrow {
+                width: 34px;
+                height: 34px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -1070,7 +1219,7 @@
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
             <div class="inspira-header">
                 <span class="inspira-header-eyebrow"><span class="inspira-mode-word">Acessórios</span></span>
-                <h1 class="inspira-header-title">Nyr <em>Inspira</em></h1>
+                <h1 class="inspira-header-title">NYR <em>Inspira</em></h1>
 
                 <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
                 <div class="inspira-mode-toggle" role="tablist">
@@ -1381,7 +1530,10 @@
         // fixo relativo à seção inteira não bateria com a foto.
         function updateNavArrowPosition() {
             const frame = document.querySelector('.model-frame');
-            const grid = document.querySelector('.inspira-grid');
+            const grid = document.querySelector('.inspira .container');
+            // .container em vez de .inspira-grid — a grid vira
+            // display:contents no mobile (≤564px) e perde a caixa; o
+            // container tem o mesmo retângulo em qualquer largura
             const prev = document.querySelector('.model-nav-prev');
             const next = document.querySelector('.model-nav-next');
             if (!frame || !grid || !prev || !next) return;
@@ -1473,9 +1625,72 @@
             });
         }
 
+        // Hotspot clicável — clicando no ponto, a página rola suavemente
+        // até o card de produto correspondente (mesmo id do data-target
+        // já usado pelo drawConnectors pra desenhar a linha).
+        document.querySelectorAll('.hotspot').forEach(dot => {
+            dot.setAttribute('role', 'button');
+            dot.setAttribute('tabindex', '0');
+            const targetEl = document.getElementById(dot.dataset.target);
+            if (targetEl) {
+                dot.setAttribute('aria-label', 'Ver produto correspondente');
+            }
+            let highlightTimer = null;
+            const jump = () => {
+                const target = document.getElementById(dot.dataset.target);
+                if (!target) return;
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // acende a borda do card, apaga qualquer outro card
+                // aceso antes, e some sozinha depois de um tempo
+                document.querySelectorAll('.product-callout.hs-active')
+                    .forEach(el => el.classList.remove('hs-active'));
+                target.classList.add('hs-active');
+                clearTimeout(highlightTimer);
+                highlightTimer = setTimeout(() => target.classList.remove('hs-active'), 2200);
+            };
+            dot.addEventListener('click', jump);
+            dot.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+            });
+        });
+
+        // Posiciona a legenda sobreposta (nome do kit, .inspira-eyebrow +
+        // .inspira-title) em cima da foto — SÓ no mobile (≤564px), via
+        // CSS. O problema: esses elementos não são descendentes de
+        // .model-frame (são primos — filhos de .col-left, que é irmã de
+        // .col-model), então position:absolute puro nunca conseguiria
+        // ancorar neles de verdade — a busca por ancestral posicionado
+        // atravessa toda a cadeia de display:contents e para no
+        // .container, bem mais acima. Aqui a gente mede a posição real
+        // da foto e traduz manualmente pra coordenadas relativas ao
+        // .container (a âncora real), simulando o efeito de "grudar na
+        // foto" sem precisar mudar a estrutura do DOM.
+        function updateMobileOverlay() {
+            const frame = document.querySelector('.model-frame');
+            const container = document.querySelector('.inspira .container');
+            const eyebrow = document.querySelector('.col-left .inspira-eyebrow');
+            const title = document.querySelector('.col-left .inspira-title');
+            if (!frame || !container || !eyebrow || !title) return;
+
+            const frameRect = frame.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const left = frameRect.left - containerRect.left - 20;
+            const topBase = frameRect.top - containerRect.top;
+
+            eyebrow.style.left = left + 'px';
+            eyebrow.style.top = (topBase + 12) + 'px';
+            title.style.left = left + 'px';
+            title.style.top = (topBase + 34) + 'px';
+            // inofensivo fora do mobile — o CSS só aplica position:absolute
+            // dentro do @media (max-width:564px), então esses estilos
+            // inline ficam sem efeito visual nas outras larguras
+        }
+
         function updateAll() {
             updateModePill();
             updateNavArrowPosition();
+            updateMobileOverlay();
             drawConnectors();
         }
         window.addEventListener('load', updateAll);
