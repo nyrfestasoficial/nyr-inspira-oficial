@@ -1791,9 +1791,23 @@
                     if (this.y > canvas.height + 20) this.reset(false);
                 }
 
-                draw() {
+                draw(dampBoxes) {
+                    let alpha = this.opacity * this.fadeIn;
+                    if (dampBoxes && dampBoxes.length) {
+                        for (const box of dampBoxes) {
+                            if (this.x >= box.left && this.x <= box.right &&
+                                this.y >= box.top && this.y <= box.bottom) {
+                                alpha *= 0.12; // dentro do elemento — bem apagado
+                                break;
+                            } else if (this.x >= box.outerLeft && this.x <= box.outerRight &&
+                                this.y >= box.outerTop && this.y <= box.outerBottom) {
+                                alpha *= 0.45; // faixa de transição, evita corte abrupto
+                                break;
+                            }
+                        }
+                    }
                     ctx.save();
-                    ctx.globalAlpha = this.opacity * this.fadeIn;
+                    ctx.globalAlpha = alpha;
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angle);
                     ctx.fillStyle = this.color;
@@ -1819,6 +1833,45 @@
 
             let pieces = [];
             let lastTime = 0;
+            const PAD = 40; // faixa de transição ao redor de cada elemento
+
+            // elementos protegidos: .col-left cobre desktop/tablet (onde
+            // ainda é uma caixa real); os outros 3 cobrem o mobile
+            // especificamente, onde .col-left vira display:contents e
+            // perde a caixa única — mas eles continuam sendo caixas de
+            // verdade, só o PAI deles é que "sumiu"
+            const dampTargets = [
+                document.querySelector('.col-left'),
+                document.querySelector('.inspira-sub'),
+                document.querySelector('.inspira-tabs'),
+                document.querySelector('.kit-summary-card')
+            ].filter(Boolean);
+
+            // mede cada elemento a cada frame, convertendo pra coordenadas
+            // do canvas (não da viewport) — precisa ser "ao vivo" porque
+            // eles mudam de posição/tamanho com breakpoint, troca de kit
+            // etc. Se um elemento estiver com display:contents (caso da
+            // .col-left no mobile), getBoundingClientRect() retorna tudo
+            // zerado, e ele simplesmente é ignorado nessa lista
+            function getDampBoxes() {
+                const cr = canvas.getBoundingClientRect();
+                const boxes = [];
+                for (const el of dampTargets) {
+                    const r = el.getBoundingClientRect();
+                    if (r.width === 0 && r.height === 0) continue;
+                    boxes.push({
+                        left: r.left - cr.left,
+                        top: r.top - cr.top,
+                        right: r.right - cr.left,
+                        bottom: r.bottom - cr.top,
+                        outerLeft: r.left - cr.left - PAD,
+                        outerTop: r.top - cr.top - PAD,
+                        outerRight: r.right - cr.left + PAD,
+                        outerBottom: r.bottom - cr.top + PAD
+                    });
+                }
+                return boxes;
+            }
 
             function resizeCanvas() {
                 const rect = section.getBoundingClientRect();
@@ -1844,7 +1897,8 @@
                 const dt = lastTime ? Math.min((ts - lastTime) / 16.667, 3) : 1;
                 lastTime = ts;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                pieces.forEach(p => { p.update(dt); p.draw(); });
+                const dampBoxes = getDampBoxes();
+                pieces.forEach(p => { p.update(dt); p.draw(dampBoxes); });
                 requestAnimationFrame(loop);
             }
 
