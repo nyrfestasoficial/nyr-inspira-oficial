@@ -1756,7 +1756,14 @@
             ];
 
             const SHAPES = ['circle', 'rect', 'line'];
-            let PIECE_COUNT = window.innerWidth < 768 ? 90 : 170;
+            function getPieceCount() {
+                const w = window.innerWidth;
+                if (w < 565) return 65;   // mobile (mesmo corte usado no resto do arquivo)
+                if (w <= 900) return 100;  // tablet (idem)
+                if (w <= 1366) return 140; // monitores pequenos
+                return 170;                // monitores grandes
+            }
+            let PIECE_COUNT = getPieceCount();
 
             class Piece {
                 constructor(scatter = false) { this.reset(scatter); }
