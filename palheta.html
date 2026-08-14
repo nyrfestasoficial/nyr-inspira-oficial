@@ -115,23 +115,6 @@
             pointer-events: none;
             z-index: 0;
             display: block;
-            /* proteção de legibilidade: máscara de gradiente HORIZONTAL —
-               vívido nos ~6% externos de cada lado (fora do .container,
-               onde não tem texto nenhum em telas largas), bem diluído
-               nos 82% centrais (onde mora TODO o conteúdo — col-left,
-               foto, col-right, cabeçalho, rodapé, já que tudo isso vive
-               dentro do .container). Em telas estreitas, onde o
-               .container ocupa quase 100% da largura, isso deixa o
-               confete uma textura de fundo bem discreta atrás do texto —
-               efeito desejado, não colateral. */
-            mask-image: linear-gradient(to right,
-                    black 0%, black 6%,
-                    rgba(0, 0, 0, 0.12) 18%, rgba(0, 0, 0, 0.12) 82%,
-                    black 94%, black 100%);
-            -webkit-mask-image: linear-gradient(to right,
-                    black 0%, black 6%,
-                    rgba(0, 0, 0, 0.12) 18%, rgba(0, 0, 0, 0.12) 82%,
-                    black 94%, black 100%);
         }
 
         .inspira .container {
@@ -1245,7 +1228,159 @@
                 font-size: 18px;
             }
         }
+
+        /* ═══════════════════════════════════════════════════════════
+           TEMA ESCURO — .theme-dark — Mix (6 + 21)
+           bg/cardBg/mid/label da 21, primary/border da 6.
+
+           O cta/badge tem DUAS variantes testáveis — adicione a classe
+           extra no HTML pra escolher:
+             <section class="inspira theme-dark cta-magenta">  (padrão)
+             <section class="inspira theme-dark cta-red">
+           Só essa classe muda; o resto (verde, dourado, preto) é igual
+           nos dois testes. ═══════════════════════════════════════ */
+        .inspira.theme-dark {
+            --season-primary: #39FF14;
+            --season-mid: #FFD600;
+            --season-label: #FFFFFF;
+            --season-border: rgba(57, 255, 20, 0.25);
+            background: #000000;
+        }
+
+        /* texto CLARO sobre fundo escuro (corpo de texto geral) —
+           independe da variante de cta escolhida */
+        .inspira.theme-dark .inspira-decor-placeholder p,
+        .inspira.theme-dark .kit-stat-desc,
+        .inspira.theme-dark .inspira-sub,
+        .inspira.theme-dark .placeholder-swatch,
+        .inspira.theme-dark .kit-summary-card p,
+        .inspira.theme-dark .product-callout-desc,
+        .inspira.theme-dark .inspira-tip {
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .inspira.theme-dark .inspira-tab {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .inspira.theme-dark .product-callout-ref {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* cartões — fundo branco vira cartão escuro */
+        .inspira.theme-dark .inspira-mode-toggle,
+        .inspira.theme-dark .inspira-tab,
+        .inspira.theme-dark .kit-stat-badge,
+        .inspira.theme-dark .model-nav-arrow,
+        .inspira.theme-dark .product-callout {
+            background: #0D0D0D;
+        }
+
+        /* bordas/sombras em verde (--season-primary) — independem da
+           variante de cta */
+        .inspira.theme-dark .inspira-tab,
+        .inspira.theme-dark .kit-stat-badge,
+        .inspira.theme-dark .kit-summary-icons img,
+        .inspira.theme-dark .placeholder-swatch,
+        .inspira.theme-dark .model-nav-arrow,
+        .inspira.theme-dark .product-callout,
+        .inspira.theme-dark .inspira-footer {
+            border-color: rgba(57, 255, 20, 0.25);
+        }
+
+        .inspira.theme-dark .inspira-tab:hover {
+            border-color: rgba(57, 255, 20, 0.5);
+        }
+
+        .inspira.theme-dark .model-nav-arrow {
+            box-shadow: 0 4px 14px rgba(57, 255, 20, 0.15);
+        }
+
+        .inspira.theme-dark .kit-summary-card,
+        .inspira.theme-dark .placeholder-swatch {
+            background: rgba(57, 255, 20, 0.06);
+            border-color: rgba(57, 255, 20, 0.25);
+        }
+
+        .inspira.theme-dark .kit-dot {
+            background: rgba(57, 255, 20, 0.3);
+        }
+
+        /* dourado (--season-mid) */
+        .inspira.theme-dark .kit-summary-icons span {
+            color: rgba(255, 214, 0, 0.9);
+        }
+
+        /* ─── VARIANTE cta-magenta (#FF10F0, da paleta 6) ───
+           magenta claro/vívido — precisa de texto ESCURO forçado */
+        .inspira.theme-dark.cta-magenta {
+            --season-cta: #FF10F0;
+            --season-badge: #FF10F0;
+        }
+
+        .inspira.theme-dark.cta-magenta .inspira-mode-btn.active,
+        .inspira.theme-dark.cta-magenta .mode-dot,
+        .inspira.theme-dark.cta-magenta .kit-stat-icon,
+        .inspira.theme-dark.cta-magenta .kit-summary-label,
+        .inspira.theme-dark.cta-magenta .model-nav-arrow:hover,
+        .inspira.theme-dark.cta-magenta .inspira-tab.active,
+        .inspira.theme-dark.cta-magenta .inspira-btn {
+            color: #0D0D0D;
+        }
+
+        .inspira.theme-dark.cta-magenta .inspira-mode-toggle {
+            background-image:
+                linear-gradient(#0D0D0D, #0D0D0D),
+                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 16, 240, 0.35));
+            box-shadow:
+                0 1px 2px rgba(57, 255, 20, 0.08),
+                0 6px 16px rgba(57, 255, 20, 0.12),
+                0 16px 32px rgba(57, 255, 20, 0.08);
+        }
+
+        .inspira.theme-dark.cta-magenta .hotspot {
+            box-shadow: 0 0 0 3px rgba(255, 16, 240, 0.3);
+        }
+
+        .inspira.theme-dark.cta-magenta .hotspot::after {
+            border-color: rgba(255, 16, 240, 0.55);
+        }
+
+        .inspira.theme-dark.cta-magenta .connector-svg path {
+            stroke: rgba(255, 16, 240, 0.6);
+        }
+
+        /* ─── VARIANTE cta-red (#FF1744, da paleta 21) ───
+           vermelho saturado — texto branco (já vem da regra base,
+           nenhum override extra necessário aqui) */
+        .inspira.theme-dark.cta-red {
+            --season-cta: #FF1744;
+            --season-badge: #FF1744;
+        }
+
+        .inspira.theme-dark.cta-red .inspira-mode-toggle {
+            background-image:
+                linear-gradient(#0D0D0D, #0D0D0D),
+                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 23, 68, 0.35));
+            box-shadow:
+                0 1px 2px rgba(57, 255, 20, 0.08),
+                0 6px 16px rgba(57, 255, 20, 0.12),
+                0 16px 32px rgba(57, 255, 20, 0.08);
+        }
+
+        .inspira.theme-dark.cta-red .hotspot {
+            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.3);
+        }
+
+        .inspira.theme-dark.cta-red .hotspot::after {
+            border-color: rgba(255, 23, 68, 0.55);
+        }
+
+        .inspira.theme-dark.cta-red .connector-svg path {
+            stroke: rgba(255, 23, 68, 0.6);
+        }
     </style>
+
 </head>
 
 <body>
@@ -1258,7 +1393,7 @@
         Fonts atualizado (Creepster trocada por Caveat).
     </div>
 
-    <section class="inspira">
+    <section class="inspira theme-dark cta-magenta">
         <canvas class="inspira-confetti" id="inspiraConfetti" aria-hidden="true"></canvas>
 
         <div class="container">
@@ -1756,24 +1891,49 @@
             // paleta Carnaval — mistura os tons da seção com cores vívidas
             // extras (roxo, dourado, ciano, verde, azul, laranja-queimado),
             // com opacidades variadas pra dar sensação de profundidade
-            // (mesma lógica da hero: cores fortes + tons translúcidos)
-            const PALETTE = [
-                'rgba(194, 24, 91, 0.85)',   // --season-primary
-                'rgba(255, 87, 34, 0.85)',   // --season-cta
-                'rgba(255, 64, 129, 0.80)',  // --season-mid
-                'rgba(255, 23, 68, 0.80)',   // --season-badge
-                'rgba(123, 31, 162, 0.75)',  // roxo
-                'rgba(255, 193, 7, 0.85)',   // dourado
-                'rgba(0, 188, 212, 0.70)',   // ciano
-                'rgba(67, 160, 71, 0.70)',   // verde
-                'rgba(63, 81, 181, 0.65)',   // azul
-                'rgba(255, 111, 0, 0.80)',   // laranja-queimado
-                'rgba(194, 24, 91, 0.30)',   // camada translúcida, dá profundidade
-                'rgba(123, 31, 162, 0.25)',
+            // (mesma lógica da hero: cores fortes + tons translúcidos).
+            // Se .theme-dark estiver ativo, usa a paleta neon em vez da
+            // rosa — os hex aqui precisam bater com os --season-* do
+            // bloco .theme-dark no CSS (não dá pra ler var() direto no
+            // canvas, por isso duplicado como literal)
+            const isDark = section.classList.contains('theme-dark');
+            const ctaColor = section.classList.contains('cta-red')
+                ? 'rgba(255, 23, 68, 1)'
+                : 'rgba(255, 16, 240, 1)'; // padrão: magenta
+            const ctaColorSoft = section.classList.contains('cta-red')
+                ? 'rgba(255, 23, 68, 0.5)'
+                : 'rgba(255, 16, 240, 0.5)';
+            const PALETTE = isDark ? [
+                'rgba(57, 255, 20, 1)',      // --season-primary (verde)
+                ctaColor,                     // --season-cta / badge (magenta ou vermelho)
+                'rgba(255, 214, 0, 0.95)',   // --season-mid (dourado)
+                'rgba(57, 255, 20, 0.55)',   // camada translúcida, dá profundidade
+                ctaColorSoft,
+                'rgba(255, 214, 0, 0.45)',
+            ] : [
+                'rgba(194, 24, 91, 1)',      // --season-primary
+                'rgba(255, 87, 34, 1)',      // --season-cta
+                'rgba(255, 64, 129, 0.95)',  // --season-mid
+                'rgba(255, 23, 68, 0.95)',   // --season-badge
+                'rgba(123, 31, 162, 0.95)',  // roxo
+                'rgba(255, 193, 7, 1)',      // dourado
+                'rgba(0, 188, 212, 0.9)',    // ciano
+                'rgba(67, 160, 71, 0.9)',    // verde
+                'rgba(63, 81, 181, 0.85)',   // azul
+                'rgba(255, 111, 0, 0.95)',   // laranja-queimado
+                'rgba(194, 24, 91, 0.65)',   // camada translúcida, dá profundidade
+                'rgba(123, 31, 162, 0.6)',
             ];
 
             const SHAPES = ['circle', 'rect', 'line'];
-            let PIECE_COUNT = window.innerWidth < 768 ? 90 : 170;
+            function getPieceCount() {
+                const w = window.innerWidth;
+                if (w < 565) return 65;   // mobile (mesmo corte usado no resto do arquivo)
+                if (w <= 900) return 100;  // tablet (idem)
+                if (w <= 1366) return 140; // monitores pequenos
+                return 170;                // monitores grandes
+            }
+            let PIECE_COUNT = getPieceCount();
 
             class Piece {
                 constructor(scatter = false) { this.reset(scatter); }
@@ -1789,7 +1949,7 @@
                     this.color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
                     this.shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
                     this.aspect = Math.random() * 1.5 + 0.5;
-                    this.opacity = Math.random() * 0.6 + 0.3;
+                    this.opacity = Math.random() * 0.25 + 0.75;
                     this.fadeIn = scatter ? 1 : 0;
                 }
 
@@ -1801,9 +1961,23 @@
                     if (this.y > canvas.height + 20) this.reset(false);
                 }
 
-                draw() {
+                draw(dampBoxes) {
+                    let alpha = this.opacity * this.fadeIn;
+                    if (dampBoxes && dampBoxes.length) {
+                        for (const box of dampBoxes) {
+                            if (this.x >= box.left && this.x <= box.right &&
+                                this.y >= box.top && this.y <= box.bottom) {
+                                alpha *= 0.12; // dentro do elemento — bem apagado
+                                break;
+                            } else if (this.x >= box.outerLeft && this.x <= box.outerRight &&
+                                this.y >= box.outerTop && this.y <= box.outerBottom) {
+                                alpha *= 0.45; // faixa de transição, evita corte abrupto
+                                break;
+                            }
+                        }
+                    }
                     ctx.save();
-                    ctx.globalAlpha = this.opacity * this.fadeIn;
+                    ctx.globalAlpha = alpha;
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angle);
                     ctx.fillStyle = this.color;
@@ -1829,6 +2003,45 @@
 
             let pieces = [];
             let lastTime = 0;
+            const PAD = 40; // faixa de transição ao redor de cada elemento
+
+            // elementos protegidos: .col-left cobre desktop/tablet (onde
+            // ainda é uma caixa real); os outros 3 cobrem o mobile
+            // especificamente, onde .col-left vira display:contents e
+            // perde a caixa única — mas eles continuam sendo caixas de
+            // verdade, só o PAI deles é que "sumiu"
+            const dampTargets = [
+                document.querySelector('.col-left'),
+                document.querySelector('.inspira-sub'),
+                document.querySelector('.inspira-tabs'),
+                document.querySelector('.kit-summary-card')
+            ].filter(Boolean);
+
+            // mede cada elemento a cada frame, convertendo pra coordenadas
+            // do canvas (não da viewport) — precisa ser "ao vivo" porque
+            // eles mudam de posição/tamanho com breakpoint, troca de kit
+            // etc. Se um elemento estiver com display:contents (caso da
+            // .col-left no mobile), getBoundingClientRect() retorna tudo
+            // zerado, e ele simplesmente é ignorado nessa lista
+            function getDampBoxes() {
+                const cr = canvas.getBoundingClientRect();
+                const boxes = [];
+                for (const el of dampTargets) {
+                    const r = el.getBoundingClientRect();
+                    if (r.width === 0 && r.height === 0) continue;
+                    boxes.push({
+                        left: r.left - cr.left,
+                        top: r.top - cr.top,
+                        right: r.right - cr.left,
+                        bottom: r.bottom - cr.top,
+                        outerLeft: r.left - cr.left - PAD,
+                        outerTop: r.top - cr.top - PAD,
+                        outerRight: r.right - cr.left + PAD,
+                        outerBottom: r.bottom - cr.top + PAD
+                    });
+                }
+                return boxes;
+            }
 
             function resizeCanvas() {
                 const rect = section.getBoundingClientRect();
@@ -1854,7 +2067,8 @@
                 const dt = lastTime ? Math.min((ts - lastTime) / 16.667, 3) : 1;
                 lastTime = ts;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                pieces.forEach(p => { p.update(dt); p.draw(); });
+                const dampBoxes = getDampBoxes();
+                pieces.forEach(p => { p.update(dt); p.draw(dampBoxes); });
                 requestAnimationFrame(loop);
             }
 

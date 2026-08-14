@@ -1230,9 +1230,8 @@
         }
 
         /* ═══════════════════════════════════════════════════════════
-           TEMA ESCURO — .theme-dark — Paleta 6 "Dark Neon"
-           Reaproveitável: pras próximas paletas (21, 26, 39), só troca
-           os valores de cor aqui dentro, a estrutura já está pronta.
+           TEMA ESCURO — .theme-dark — Paleta 21 "Neon Carnival Classic"
+           (era Paleta 6 "Dark Neon" — mesma estrutura, valores trocados)
 
            Por que precisa de TANTO override: os 7 tokens de sazonalidade
            (--season-*) já cobrem a maior parte do arquivo — mas ~29
@@ -1241,26 +1240,19 @@
            os tokens não alcança essas linhas, então cada uma precisa de
            uma entrada aqui. ═══════════════════════════════════════ */
         .inspira.theme-dark {
-            --season-primary: #39FF14;
-            --season-cta: #FF10F0;
-            --season-mid: #00FFF0;
-            --season-badge: #FF10F0;
-            --season-label: #F0F0F0;
-            --season-border: rgba(57, 255, 20, 0.25);
-            background: #0D0D0F;
+            --season-primary: #00E676;
+            --season-cta: #FF1744;
+            --season-mid: #FFD600;
+            --season-badge: #FF1744;
+            --season-label: #FFFFFF;
+            --season-border: rgba(0, 230, 118, 0.3);
+            background: #000000;
         }
 
-        /* texto ESCURO sobre fundo vívido (botões/pílulas ativas) —
-           branco/claro teria contraste ruim em cima de neon saturado */
-        .inspira.theme-dark .inspira-mode-btn.active,
-        .inspira.theme-dark .mode-dot,
-        .inspira.theme-dark .kit-stat-icon,
-        .inspira.theme-dark .kit-summary-label,
-        .inspira.theme-dark .model-nav-arrow:hover,
-        .inspira.theme-dark .inspira-tab.active,
-        .inspira.theme-dark .inspira-btn {
-            color: #0D0D0F;
-        }
+        /* nessa paleta o cta é um vermelho saturado (#FF1744, não um
+           neon claro tipo o magenta da 6) — texto branco já tem
+           contraste bom em cima dele, não precisa forçar texto escuro
+           nos botões/pílulas como na Dark Neon */
 
         /* texto CLARO sobre fundo escuro (corpo de texto geral) */
         .inspira.theme-dark .inspira-decor-placeholder p,
@@ -1270,15 +1262,15 @@
         .inspira.theme-dark .kit-summary-card p,
         .inspira.theme-dark .product-callout-desc,
         .inspira.theme-dark .inspira-tip {
-            color: rgba(240, 240, 240, 0.72);
+            color: rgba(255, 255, 255, 0.72);
         }
 
         .inspira.theme-dark .inspira-tab {
-            color: rgba(240, 240, 240, 0.55);
+            color: rgba(255, 255, 255, 0.55);
         }
 
         .inspira.theme-dark .product-callout-ref {
-            color: rgba(240, 240, 240, 0.45);
+            color: rgba(255, 255, 255, 0.45);
         }
 
         /* cartões — fundo branco vira cartão escuro */
@@ -1287,20 +1279,20 @@
         .inspira.theme-dark .kit-stat-badge,
         .inspira.theme-dark .model-nav-arrow,
         .inspira.theme-dark .product-callout {
-            background: #1a1a1e;
+            background: #0D0D0D;
         }
 
         .inspira.theme-dark .inspira-mode-toggle {
             background-image:
-                linear-gradient(#1a1a1e, #1a1a1e),
-                linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(255, 16, 240, 0.35));
+                linear-gradient(#0D0D0D, #0D0D0D),
+                linear-gradient(135deg, rgba(0, 230, 118, 0.35), rgba(255, 23, 68, 0.35));
             box-shadow:
-                0 1px 2px rgba(57, 255, 20, 0.08),
-                0 6px 16px rgba(57, 255, 20, 0.12),
-                0 16px 32px rgba(57, 255, 20, 0.08);
+                0 1px 2px rgba(0, 230, 118, 0.08),
+                0 6px 16px rgba(0, 230, 118, 0.12),
+                0 16px 32px rgba(0, 230, 118, 0.08);
         }
 
-        /* bordas/sombras — rosa vira verde-neon */
+        /* bordas/sombras — rosa vira verde neon */
         .inspira.theme-dark .inspira-tab,
         .inspira.theme-dark .kit-stat-badge,
         .inspira.theme-dark .kit-summary-icons img,
@@ -1308,42 +1300,42 @@
         .inspira.theme-dark .model-nav-arrow,
         .inspira.theme-dark .product-callout,
         .inspira.theme-dark .inspira-footer {
-            border-color: rgba(57, 255, 20, 0.22);
+            border-color: rgba(0, 230, 118, 0.22);
         }
 
         .inspira.theme-dark .inspira-tab:hover {
-            border-color: rgba(57, 255, 20, 0.5);
+            border-color: rgba(0, 230, 118, 0.5);
         }
 
         .inspira.theme-dark .model-nav-arrow {
-            box-shadow: 0 4px 14px rgba(57, 255, 20, 0.15);
+            box-shadow: 0 4px 14px rgba(0, 230, 118, 0.15);
         }
 
         .inspira.theme-dark .kit-summary-card,
         .inspira.theme-dark .placeholder-swatch {
-            background: rgba(57, 255, 20, 0.06);
-            border-color: rgba(57, 255, 20, 0.25);
+            background: rgba(0, 230, 118, 0.06);
+            border-color: rgba(0, 230, 118, 0.25);
         }
 
         .inspira.theme-dark .kit-dot {
-            background: rgba(57, 255, 20, 0.3);
+            background: rgba(0, 230, 118, 0.3);
         }
 
         .inspira.theme-dark .kit-summary-icons span {
-            color: rgba(0, 255, 240, 0.85);
+            color: rgba(255, 214, 0, 0.9);
         }
 
-        /* hotspot/conector — badge agora é magenta neon */
+        /* hotspot/conector — badge agora é vermelho neon */
         .inspira.theme-dark .hotspot {
-            box-shadow: 0 0 0 3px rgba(255, 16, 240, 0.3);
+            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.3);
         }
 
         .inspira.theme-dark .hotspot::after {
-            border-color: rgba(255, 16, 240, 0.55);
+            border-color: rgba(255, 23, 68, 0.55);
         }
 
         .inspira.theme-dark .connector-svg path {
-            stroke: rgba(255, 16, 240, 0.6);
+            stroke: rgba(255, 23, 68, 0.6);
         }
     </style>
 
@@ -1864,16 +1856,13 @@
             // canvas, por isso duplicado como literal)
             const isDark = section.classList.contains('theme-dark');
             const PALETTE = isDark ? [
-                'rgba(57, 255, 20, 1)',      // --season-primary (verde neon)
-                'rgba(255, 16, 240, 1)',     // --season-cta (magenta neon)
-                'rgba(0, 255, 240, 0.95)',   // --season-mid (ciano)
-                'rgba(255, 16, 240, 0.9)',   // --season-badge
-                'rgba(180, 255, 60, 0.9)',   // verde-limão extra
-                'rgba(255, 255, 0, 0.9)',    // amarelo neon extra
-                'rgba(255, 60, 200, 0.85)',  // rosa-choque extra
-                'rgba(57, 255, 20, 0.55)',   // camada translúcida, dá profundidade
-                'rgba(0, 255, 240, 0.5)',
-                'rgba(255, 16, 240, 0.45)',
+                'rgba(0, 230, 118, 1)',      // --season-primary (verde)
+                'rgba(255, 23, 68, 1)',      // --season-cta (vermelho)
+                'rgba(255, 214, 0, 0.95)',   // --season-mid (dourado)
+                'rgba(255, 23, 68, 0.9)',    // --season-badge
+                'rgba(0, 230, 118, 0.55)',   // camada translúcida, dá profundidade
+                'rgba(255, 214, 0, 0.5)',
+                'rgba(255, 23, 68, 0.45)',
             ] : [
                 'rgba(194, 24, 91, 1)',      // --season-primary
                 'rgba(255, 87, 34, 1)',      // --season-cta
