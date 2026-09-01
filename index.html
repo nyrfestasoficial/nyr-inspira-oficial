@@ -1324,11 +1324,11 @@
                 // print anotado pelo usuário (X = errado, ✓ = aprovado) —
                 // top ficou confirmado certo, os outros 3 foram corrigidos
                 hotspots: [
-                    { x: 48, y: 7, productIndex: 0 },   // tiara de flores — corrigida, um pouco mais à esquerda
+                    { x: 48, y: 8, productIndex: 0 },   // tiara de flores — corrigida, um pouco mais à esquerda
                     { x: 58, y: 16, productIndex: 1 },  // brinco verde — corrigido, estava caindo na bochecha
                     { x: 51, y: 35, productIndex: 2 },  // colar havaiano — corrigido, estava alto demais (perto da clavícula)
                     { x: 61, y: 28, productIndex: 3 },  // top de flores — confirmado certo (✓ no print)
-                    { x: 39, y: 43, productIndex: 4 }   // saia de folhas — aguardando confirmação
+                    { x: 50, y: 45, productIndex: 4 }   // saia de folhas — aguardando confirmação
                 ]
             },
             {
@@ -1371,9 +1371,9 @@
                 // (a foto real gerada por IA) — productIndex 0 (Kit Tiara+Capa)
                 // recebe 2 hotspots, um nos chifres e outro na capa
                 hotspots: [
-                    { x: 51, y: 5, productIndex: 0 },   // chifres — ajuste fino final, baseado em desenho de referência do usuário (junção dos chifres, acima da linha do cabelo)
+                    { x: 51, y: 5.5, productIndex: 0 },   // chifres — ajuste fino final, baseado em desenho de referência do usuário (junção dos chifres, acima da linha do cabelo)
                     { x: 40, y: 25, productIndex: 0 },  // capa vermelha com estampa de teia
-                    { x: 49, y: 13, productIndex: 1 },  // máscara preta
+                    { x: 56, y: 12.7, productIndex: 1 },  // máscara preta
                     { x: 60, y: 37, productIndex: 2 },  // luva na mão da cintura
                     { x: 48, y: 49, productIndex: 3 },  // saia vermelha/preta
                     { x: 21, y: 57, productIndex: 4 }   // chicote — recalibrado, estava caindo fora do objeto
@@ -1413,6 +1413,17 @@
                     { code: 'MOD-6410', name: 'Cartela de Bigode', desc: '12un, preto, sortidos.' },
                     { code: 'MOD-313', name: 'Suspensórios', desc: 'Estampa temática, sortidos.' },
                     { code: 'MOD-6470A', name: 'Gancho de Pirata', desc: 'Plástico, acessório de mão.' }
+                ],
+                // medido direto na imagem, corrigido com base no print
+                // anotado (a correção proativa não bateu certo dessa vez —
+                // o fator varia um pouco entre imagens, então voltamos a
+                // depender do print pra esse ajuste fino)
+                hotspots: [
+                    { x: 45, y: 5.2, productIndex: 0 },   // bandana com caveira — desceu, estava flutuando acima do tecido
+                    { x: 43, y: 8.6, productIndex: 1 },   // tapa-olho — desceu bastante, estava junto da bandana
+                    { x: 50, y: 12.5, productIndex: 2 },  // bigode — ajuste fino, um pouco mais em cima do bigode de verdade
+                    { x: 59.5, y: 40, productIndex: 3 },    // suspensório — ajuste leve, direita/baixo, abaixo da estampa de caveira
+                    { x: 17, y: 25.5, productIndex: 4 }   // gancho na mão — desceu, do topo do gancho pro tecido preto
                 ]
             },
             {
@@ -1427,6 +1438,15 @@
                     { code: 'MOD-1187', name: 'Rádio Policial', desc: 'Kit com 2 peças.' },
                     { code: 'MOD-6481', name: 'Cassetete de Plástico', desc: '35cm, acessório de mão.' },
                     { code: 'MOD-6958A', name: 'Algema', desc: 'Acessório temático.' }
+                ],
+                // medido direto na imagem real (INSPIRA_POLICIAL.webp)
+                hotspots: [
+                    { x: 52.5, y: 5.3, productIndex: 0 },   // quepe (topo do boné)
+                    { x: 52, y: 14, productIndex: 1 },  // bigode 
+                    { x: 58.5, y: 26.8, productIndex: 2 }, // distintivo no peito
+                    { x: 58, y: 43.8, productIndex: 3 },  // rádio (unidade na cintura)
+                    { x: 33, y: 19, productIndex: 4 }, // cabo do cassetete — ajuste fino
+                    { x: 39, y: 55, productIndex: 5 }   // algema — ajuste fino, no corpo metálico
                 ]
             },
             {
@@ -1439,6 +1459,13 @@
                     { code: 'MOD-6248', name: 'Asa de Anjo Branca', desc: 'Detalhe de marabu macio.' },
                     { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
                     { code: 'MOD-1079', name: 'Meia-Calça Arrastão', desc: '7/8, branca, par.' }
+                ],
+
+                hotspots: [
+                    { x: 47, y: 8, productIndex: 0 },   // tiara
+                    { x: 85, y: 25, productIndex: 1 },  // asa de anjo 
+                    { x: 40, y: 45, productIndex: 2 }, // saia tule
+                    { x: 50, y: 60, productIndex: 3 },  // meia-calça
                 ]
             },
             {
@@ -1452,6 +1479,13 @@
                     { code: 'NYR-6474', name: 'Estetoscópio de Plástico', desc: 'Acessório temático realista.' },
                     { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
                     { code: 'MOD-1072', name: 'Meia-Calça 7/8', desc: 'Branca, estilo enfermeira.' }
+                ],
+                hotspots: [
+                    { x: 47, y: 7.3, productIndex: 0 },   // chapéu de enfermeira
+                    { x: 70, y: 19, productIndex: 1 },  // termômetro de plástico
+                    { x: 56.3, y: 27, productIndex: 2 },  // estetoscópio de plástico
+                    { x: 50, y: 45, productIndex: 3 },  // saia tule
+                    { x: 70, y: 70, productIndex: 4 }   // meia-calça
                 ]
             },
             {
@@ -1466,6 +1500,15 @@
                     { code: 'MOD-6904', name: 'Colar Havaiano de Flores', desc: 'Flores em tecido, pacote c/12.' },
                     { code: 'MOD-930', name: 'Saia Havaiana Metalizada', desc: 'Elástico, cores sortidas.' },
                     { code: 'MOD-1078', name: 'Meia-Calça Arrastão', desc: '7/8, vermelha, par.' }
+                ],
+
+                hotspots: [
+                    { x: 50, y: 13, productIndex: 0 },   // máscara metalizada
+                    { x: 56, y: 18, productIndex: 1 },  // brinco de fitas coloridas
+                    { x: 48.5, y: 21, productIndex: 2 },  // gargantilha com lantejoula
+                    { x: 48, y: 36, productIndex: 3 },  // colar havaiano de flores
+                    { x: 46, y: 45, productIndex: 4 },   // saia havaiana metalizada
+                    { x: 52, y: 60, productIndex: 5 }  // meia-calça arrastão vermelha 
                 ]
             },
             {
@@ -1478,6 +1521,13 @@
                     { code: 'MOD-891', name: 'Asa de Anjo Preta', desc: 'Tamanho P, com pena.' },
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.' }
+                ],
+                 hotspots: [
+                    { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
+                    { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
+                    { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
+                    { x: 62, y: 65, productIndex: 3 }  // colar havaiano de flores
+                  
                 ]
             }
         ];
