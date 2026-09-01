@@ -306,6 +306,9 @@
             gap: 10px;
             margin-top: 26px;
             flex-wrap: wrap;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .inspira-tab {
@@ -555,6 +558,7 @@
             height: 100%;
             width: auto;
             object-fit: contain;
+            transition: opacity 0.25s ease;
         }
 
         /* ─── setas de navegação — ciclam entre os kits. Ancoradas nas
@@ -671,12 +675,12 @@
         /* hotspot dots — posições em % ilustrativas, calibrar com a foto real */
         .hotspot {
             position: absolute;
-            width: 11px;
-            height: 11px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--season-badge);
-            border: 2px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.25);
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.25);
             transform: translate(-50%, -50%);
             z-index: 3;
             cursor: pointer;
@@ -687,7 +691,7 @@
         .hotspot::after {
             content: '';
             position: absolute;
-            inset: -6px;
+            inset: -4px;
             border-radius: 50%;
             border: 1.5px solid rgba(255, 23, 68, 0.5);
             animation: hotspot-pulse 2.2s ease-out infinite;
@@ -705,41 +709,10 @@
             }
         }
 
-        /* posições calibradas medindo diretamente o canal alpha/cor da
-           imagem landingPage_nyr-inspira.png (800×1536) — mesma
-           metodologia usada no Vampiro, mas agora com 5 peças em vez de 3 */
-        #hs-mascara {
-            top: 13%;
-            left: 52%;
-            /* corrigido: a versão anterior (top:8% left:55%) caía nas
-               penas, não na máscara — recalibrado isolando só o dourado
-               da máscara e excluindo o magenta/amarelo das penas */
-        }
-
-        #hs-luva {
-            top: 13%;
-            left: 71%;
-            /* luva erguida (mão direita) — a modelo usa luva nos dois
-               braços, mas o produto é vendido como par único; escolhi a
-               mão erguida por ficar mais destacada visualmente, igual à
-               garra do Vampiro. A outra luva mediu top:53% left:15% se
-               preferir trocar */
-        }
-
-        #hs-colar {
-            top: 30%;
-            left: 51%;
-        }
-
-        #hs-saia {
-            top: 51%;
-            left: 45%;
-        }
-
-        #hs-meia {
-            top: 73%;
-            left: 51%;
-        }
+        /* posições calibradas do Bloquinho original (foto antiga) foram
+           removidas daqui — o sistema agora usa posição inline via style
+           (left/top em %), gerada dinamicamente por placeholderHotspots()
+           no JS, já que cada kit tem sua própria foto e contagem de peças */
 
         /* ─── linhas conectoras (SVG overlay) ─── */
         .connector-svg {
@@ -823,7 +796,7 @@
         .product-callout-title-row {
             display: flex;
             align-items: baseline;
-            gap: 9px;
+            gap: 4px;
             flex-wrap: wrap;
             margin-bottom: 6px;
         }
@@ -837,15 +810,9 @@
             flex-shrink: 0;
         }
 
-        .product-callout-ref::before {
-            content: 'CÓD. ';
-            opacity: 0.7;
-            font-weight: 400;
-        }
-
         .product-callout-name {
             font-family: 'Anton', sans-serif;
-            font-size: clamp(15px, 0.41vw + 12.70px, 18px);
+            font-size: 15px;
             letter-spacing: 0.2px;
             color: var(--season-label);
             line-height: 1.22;
@@ -952,11 +919,6 @@
             .inspira-eyebrow {
                 font-size: 17px;
                 /* LP: .section-eyebrow em ≥1500px */
-            }
-
-            .product-callout-name {
-                font-size: 20px;
-                /* LP: .card-name em ≥1500px */
             }
 
             .product-callout-desc {
@@ -1260,12 +1222,8 @@
                             class="mode-dot"></span>Decoração</button>
                 </div>
 
-                <!-- SEASON-TABS (placeholder) — trocam o kit exibido dentro da sazonalidade corrente -->
-                <div class="inspira-tabs">
-                    <button class="inspira-tab active">Bloquinho</button>
-                    <button class="inspira-tab">Sereia</button>
-                    <button class="inspira-tab">Tropical</button>
-                </div>
+                <!-- SEASON-TABS — geradas via JS a partir do array KITS -->
+                <div class="inspira-tabs" id="inspiraTabs"></div>
             </div>
 
             <!-- VIEW: ACESSÓRIOS (visível por padrão) -->
@@ -1281,42 +1239,16 @@
                     <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
                     <div class="col-left">
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
-                        <h2 class="inspira-title">Bloquinho</h2>
+                        <h2 class="inspira-title" id="kitTitle">Bloquinho</h2>
                         <p class="inspira-sub">Peças do catálogo já combinadas numa sugestão pronta pra vitrine —
                             use como está, ou adapte do seu jeito.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
-                            <div class="kit-summary-icons">
-                                <span class="placeholder-swatch"
-                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">SAIA</span>
-                                <span>+</span>
-                                <span class="placeholder-swatch"
-                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MÁSCARA</span>
-                                <span>+</span>
-                                <span class="placeholder-swatch"
-                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">MEIA</span>
-                                <span>+</span>
-                                <span class="placeholder-swatch"
-                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">COLAR</span>
-                                <span>+</span>
-                                <span class="placeholder-swatch"
-                                    style="width:46px;height:46px;border-radius:8px;font-size:9px;">LUVA</span>
-                            </div>
+                            <div class="kit-summary-icons" id="kitSummaryIcons"></div>
                             <p>Tudo que seu cliente precisa pra montar um look completo de Carnaval.</p>
                         </div>
 
-                        <!-- selo de performance do kit — placeholder, sem dado real ainda -->
-                        <div class="col-left-decor">
-                            <div class="kit-stat-badge">
-                                <span class="kit-stat-icon">✓</span>
-                                <div>
-                                    <div class="kit-stat-title">Alto giro no Carnaval</div>
-                                    <p class="kit-stat-desc">Kit com alta demanda na temporada — indicado pra
-                                        reposição rápida.</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- COLUNA 2 — foto do modelo + hotspots -->
@@ -1326,127 +1258,24 @@
                                 <!-- overlay de linhas — desenhadas via JS abaixo, ligando cada hotspot ao card correspondente -->
                                 <svg class="connector-svg" id="connectorSvg"></svg>
 
-                                <img class="model-photo"
+                                <img class="model-photo" id="modelPhoto"
                                     src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
                                     alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
 
-                                <span class="hotspot" id="hs-mascara" data-target="card-mascara"></span>
-                                <span class="hotspot" id="hs-luva" data-target="card-luva"></span>
-                                <span class="hotspot" id="hs-colar" data-target="card-colar"></span>
-                                <span class="hotspot" id="hs-saia" data-target="card-saia"></span>
-                                <span class="hotspot" id="hs-meia" data-target="card-meia"></span>
+                                <div id="hotspotsLayer"></div>
                             </div>
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
                             <div class="kit-switcher-indicator">
                                 <span class="kit-switcher-label">Bloquinho · <span class="kit-switcher-count">1 de
                                         3</span></span>
-                                <div class="kit-switcher-dots">
-                                    <span class="kit-dot active" data-index="0"></span>
-                                    <span class="kit-dot" data-index="1"></span>
-                                    <span class="kit-dot" data-index="2"></span>
-                                </div>
+                                <div class="kit-switcher-dots" id="kitDots"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- COLUNA 3 — cards de produto -->
-                    <div class="col-right">
-                        <div class="product-callout" id="card-mascara">
-                            <div class="product-callout-photo placeholder-swatch" style="font-size:10px;">
-                                FOTO<br>MÁSCARA
-                            </div>
-                            <div class="product-callout-body">
-                                <div class="product-callout-title-row">
-                                    <span class="product-callout-ref">XXXXX</span>
-                                    <h3 class="product-callout-name">Máscara de Carnaval</h3>
-                                </div>
-                                <p class="product-callout-desc">Máscara decorada com glitter e penas coloridas,
-                                    acabamento de destaque.</p>
-                                <button class="product-callout-video-btn">
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                    Ver Vídeo
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="product-callout" id="card-luva">
-                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>LUVA
-                            </div>
-                            <div class="product-callout-body">
-                                <div class="product-callout-title-row">
-                                    <span class="product-callout-ref">XXXXX</span>
-                                    <h3 class="product-callout-name">Luva de Tecido</h3>
-                                </div>
-                                <p class="product-callout-desc">Par de luvas em tecido fosco, cores vibrantes
-                                    combinando com o look.</p>
-                                <button class="product-callout-video-btn">
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                    Ver Vídeo
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="product-callout" id="card-colar">
-                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>COLAR
-                            </div>
-                            <div class="product-callout-body">
-                                <div class="product-callout-title-row">
-                                    <span class="product-callout-ref">XXXXX</span>
-                                    <h3 class="product-callout-name">Colar Havaiano</h3>
-                                </div>
-                                <p class="product-callout-desc">Colar de flores coloridas sortidas, clássico item
-                                    de Bloquinho.</p>
-                                <button class="product-callout-video-btn">
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                    Ver Vídeo
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="product-callout" id="card-saia">
-                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>SAIA
-                            </div>
-                            <div class="product-callout-body">
-                                <div class="product-callout-title-row">
-                                    <span class="product-callout-ref">XXXXX</span>
-                                    <h3 class="product-callout-name">Saia de Franjas</h3>
-                                </div>
-                                <p class="product-callout-desc">Saia metalizada de franjas coloridas, rodada,
-                                    acabamento brilhante.</p>
-                                <button class="product-callout-video-btn">
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                    Ver Vídeo
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="product-callout" id="card-meia">
-                            <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>MEIA
-                            </div>
-                            <div class="product-callout-body">
-                                <div class="product-callout-title-row">
-                                    <span class="product-callout-ref">XXXXX</span>
-                                    <h3 class="product-callout-name">Meia Arrastão</h3>
-                                </div>
-                                <p class="product-callout-desc">Meia-calça arrastão preta, cobertura até a coxa,
-                                    acabamento sensual.</p>
-                                <button class="product-callout-video-btn">
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
-                                    Ver Vídeo
-                                </button>
-                            </div>
-                        </div>
+                    <!-- COLUNA 3 — cards de produto — gerados via JS -->
+                    <div class="col-right" id="colRightCards">
                     </div>
 
                 </div>
@@ -1473,18 +1302,350 @@
     </section>
 
     <script>
-        // ─── KIT SWITCHER — sincroniza season-tabs, setas e dots ───
-        // nota: só "Bloquinho" tem conteúdo real hoje (foto + hotspots +
-        // cards). Sereia/Tropical são placeholders — ciclar troca o nome
-        // do kit no título e o estado ativo de tabs/dots, mas a foto e os
-        // cards continuam sendo os do Bloquinho até essas peças existirem.
-        const kitNames = ['Bloquinho', 'Sereia', 'Tropical'];
+        // ─── OS 10 KITS (por enquanto só os 3 primeiros) — dados reais
+        // do catálogo, paleta extraída das fotos. Hotspots com posição
+        // PLACEHOLDER (x/y em %) — ainda não calibrados visualmente,
+        // porque não temos acesso pra abrir as URLs das fotos e ver a
+        // composição de perto. Precisam de ajuste fino depois.
+        const KITS = [
+            {
+                name: 'Tropical',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187877/INSPIRA_TROPICAL_wcj818.webp',
+                alt: 'Modelo vestindo look tropical havaiano',
+                palette: { primary: '#33691E', cta: '#FF7043', light: '#F1F8E9', mid: '#EC407A', badge: '#FF7043', label: '#1B4D0F', border: '#33691E' },
+                products: [
+                    { code: 'MOD-6906', name: 'Tiara Havaiana Flores', desc: 'Tiara colorida e reforçada.' },
+                    { code: 'MOD-1117', name: 'Brinco Fitas Lantejoula', desc: 'Par, fitas longas e brilhantes.' },
+                    { code: 'MOD-6916', name: 'Colar Havaiano Flores', desc: 'Flores em tecido, pacote c/12.' },
+                    { code: 'H-40', name: 'Top Havaiano com Flores', desc: 'Flores em tecido, com cordas.' },
+                    { code: 'MOD-229', name: 'Saia Havaiana com Folhas', desc: 'Franjas sintéticas, elástico.' }
+                ],
+                // calibrado a partir do PDF, depois corrigido com base no
+                // print anotado pelo usuário (X = errado, ✓ = aprovado) —
+                // top ficou confirmado certo, os outros 3 foram corrigidos
+                hotspots: [
+                    { x: 48, y: 7, productIndex: 0 },   // tiara de flores — corrigida, um pouco mais à esquerda
+                    { x: 58, y: 16, productIndex: 1 },  // brinco verde — corrigido, estava caindo na bochecha
+                    { x: 51, y: 35, productIndex: 2 },  // colar havaiano — corrigido, estava alto demais (perto da clavícula)
+                    { x: 61, y: 28, productIndex: 3 },  // top de flores — confirmado certo (✓ no print)
+                    { x: 39, y: 43, productIndex: 4 }   // saia de folhas — aguardando confirmação
+                ]
+            },
+            {
+                name: 'Colorido',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187904/INSPIRA_COLORIDO_swa9ad.webp',
+                alt: 'Modelo vestindo look colorido metalizado',
+                palette: { primary: '#8E24AA', cta: '#FB8C00', light: '#F7F1FA', mid: '#1E88E5', badge: '#FB8C00', label: '#5C2E75', border: '#8E24AA' },
+                products: [
+                    { code: 'MOD-1113', name: 'Brinco Fitas Metalizadas', desc: 'Par, efeito espelhado.' },
+                    { code: 'MOD-1158', name: 'Colar com Pingente', desc: 'Pingente temático sortido.' },
+                    { code: 'MOD-1138', name: 'Leque Arco-Íris', desc: '33x64cm, cores vibrantes.' },
+                    { code: 'MOD-1169', name: 'Top Metalizado Pompom', desc: 'Metalizado, com pompom.' },
+                    { code: 'MOD-1001', name: 'Ombreiras Metalizadas', desc: 'Par, brilho nos ombros.' },
+                    { code: 'MOD-1095', name: 'Saia Havaiana Metalizada', desc: 'Franjas metalizadas, 38cm.' }
+                ],
+                // calibrado a partir do PDF, corrigido com base no print
+                // anotado — leque/top/saia confirmados certos (✓/sem marca)
+                hotspots: [
+                    { x: 45, y: 15, productIndex: 0 },  // brinco de fitas — corrigido, estava alto demais
+                    { x: 39, y: 17, productIndex: 1 },  // colar — corrigido pro nível do choker, não mais no pingente
+                    { x: 77, y: 16, productIndex: 2 },  // leque arco-íris na mão — confirmado certo
+                    { x: 46, y: 23, productIndex: 3 },  // top com pompom colorido — confirmado certo (✓ no print)
+                    { x: 51, y: 19, productIndex: 4 },  // ombreira — sem alvo desenhado explícito, estimativa em cima do tecido vermelho
+                    { x: 42, y: 45, productIndex: 5 }   // saia metalizada — confirmada certa (✓ no print)
+                ]
+            },
+            {
+                name: 'Diabinha',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788188973/INSPIRA_DIABINHA_poeqzp.webp',
+                alt: 'Modelo vestindo fantasia de diabinha',
+                palette: { primary: '#D32F2F', cta: '#1A1A1A', light: '#FBEAEA', mid: '#4A1414', badge: '#D32F2F', label: '#E31E24', border: '#D32F2F' },
+                products: [
+                    { code: 'MOD-252', name: 'Kit Tiara + Capa', desc: '2 peças, até o cotovelo.' },
+                    { code: 'H-17', name: 'Máscara Lisa de Plástico', desc: 'Cores sortidas, liso.' },
+                    { code: 'MOD-675', name: 'Luvas de Tecido', desc: '40cm, vermelha, par.' },
+                    { code: 'MOD-898', name: 'Saia Tulê', desc: '30cm, cores mescladas.' },
+                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, vermelho, destaque.' }
+                ],
+                // calibrado olhando a página 10 do PDF landingPage_nyr-inspira.pdf
+                // (a foto real gerada por IA) — productIndex 0 (Kit Tiara+Capa)
+                // recebe 2 hotspots, um nos chifres e outro na capa
+                hotspots: [
+                    { x: 51, y: 5, productIndex: 0 },   // chifres — ajuste fino final, baseado em desenho de referência do usuário (junção dos chifres, acima da linha do cabelo)
+                    { x: 40, y: 25, productIndex: 0 },  // capa vermelha com estampa de teia
+                    { x: 49, y: 13, productIndex: 1 },  // máscara preta
+                    { x: 60, y: 37, productIndex: 2 },  // luva na mão da cintura
+                    { x: 48, y: 49, productIndex: 3 },  // saia vermelha/preta
+                    { x: 21, y: 57, productIndex: 4 }   // chicote — recalibrado, estava caindo fora do objeto
+                ]
+            },
+            {
+                name: 'Sensual',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187877/INSPIRA_SENSUAL_ffq0ke.webp',
+                alt: 'Modelo vestindo fantasia sensual preta',
+                palette: { primary: '#8E2A4B', cta: '#B33A5E', light: '#F5EBEF', mid: '#4A4A4A', badge: '#8E2A4B', label: '#5C2E42', border: '#8E2A4B' },
+                products: [
+                    { code: 'MOD-944', name: 'Máscara Gatinha Plástico', desc: 'Formato gatinha, liso.' },
+                    { code: 'MOD-674', name: 'Luvas de Tecido', desc: '40cm, preta, par.' },
+                    { code: 'MOD-257', name: 'Saia Tulê com Brilho', desc: '30cm, preta, brilhante.' },
+                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, acessório de destaque.' },
+                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.' }
+                ],
+                // calibrado direto na imagem real (INSPIRA_SENSUAL.webp),
+                // depois corrigido com base no print anotado — máscara e
+                // saia confirmadas certas (✓ no print)
+                hotspots: [
+                    { x: 50, y: 6, productIndex: 0 },   // máscara de gatinha — confirmada certa
+                    { x: 74, y: 35, productIndex: 1 },  // luva — ajuste fino, um pouco mais à esquerda, em cima do tecido
+                    { x: 50, y: 39, productIndex: 2 },  // saia de tulê com brilho — confirmada certa
+                    { x: 85, y: 55, productIndex: 3 },  // cabo do chicote — ajuste fino, mais em cima do cabo de verdade
+                    { x: 48, y: 64, productIndex: 4 }   // meia-calça — corrigida, desceu da faixa preta pra malha (perto do joelho)
+                ]
+            },
+            {
+                name: 'Pirata',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187897/INSPIRA_PIRATA_zsr9kd.webp',
+                alt: 'Modelo vestindo fantasia de pirata',
+                palette: { primary: '#7A5C2E', cta: '#DAA520', light: '#F3E9D2', mid: '#C9A24B', badge: '#1A1A1A', label: '#4A3B1F', border: '#7A5C2E' },
+                products: [
+                    { code: 'MOD-6550', name: 'Bandana Pirata', desc: 'Estampa caveira, sortida.' },
+                    { code: 'MOD-6414', name: 'Tapa-Olho Pirata', desc: 'Plástico, elástico ajustável.' },
+                    { code: 'MOD-6410', name: 'Cartela de Bigode', desc: '12un, preto, sortidos.' },
+                    { code: 'MOD-313', name: 'Suspensórios', desc: 'Estampa temática, sortidos.' },
+                    { code: 'MOD-6470A', name: 'Gancho de Pirata', desc: 'Plástico, acessório de mão.' }
+                ]
+            },
+            {
+                name: 'Policial',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187877/INSPIRA_POLICIAL_igfsxg.webp',
+                alt: 'Modelo vestindo fantasia de policial',
+                palette: { primary: '#1B2A4A', cta: '#C62828', light: '#EAF1FB', mid: '#5C6B85', badge: '#1B2A4A', label: '#1B2A4A', border: '#1B2A4A' },
+                products: [
+                    { code: 'H-26', name: 'Quepe Policial', desc: 'Azul, acabamento oficial.' },
+                    { code: 'MOD-486', name: 'Cartela de Bigode', desc: '12un, cores sortidas.' },
+                    { code: 'NYR-6472', name: 'Distintivo de Plástico', desc: 'Detalhe realista.' },
+                    { code: 'MOD-1187', name: 'Rádio Policial', desc: 'Kit com 2 peças.' },
+                    { code: 'MOD-6481', name: 'Cassetete de Plástico', desc: '35cm, acessório de mão.' },
+                    { code: 'MOD-6958A', name: 'Algema', desc: 'Acessório temático.' }
+                ]
+            },
+            {
+                name: 'Anjo',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187903/INSPIRA_ANJO_kkkbry.webp',
+                alt: 'Modelo vestindo fantasia de anjo branco',
+                palette: { primary: '#B8A05E', cta: '#7B92B8', light: '#FBF9F4', mid: '#E8DCC0', badge: '#B8A05E', label: '#7A6A3E', border: '#B8A05E' },
+                products: [
+                    { code: 'MOD-409', name: 'Tiara de Anjo Branca', desc: 'Acabamento delicado.' },
+                    { code: 'MOD-6248', name: 'Asa de Anjo Branca', desc: 'Detalhe de marabu macio.' },
+                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
+                    { code: 'MOD-1079', name: 'Meia-Calça Arrastão', desc: '7/8, branca, par.' }
+                ]
+            },
+            {
+                name: 'Enfermeira',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187903/INSPIRA_ENFERMEIRA_u7dgru.webp',
+                alt: 'Modelo vestindo fantasia de enfermeira',
+                palette: { primary: '#E31E24', cta: '#E31E24', light: '#FDEBEC', mid: '#F5A6A9', badge: '#E31E24', label: '#7A1F24', border: '#E31E24' },
+                products: [
+                    { code: 'H-99', name: 'Chapéu de Enfermeira', desc: 'Modelo clássico, branco/vermelho.' },
+                    { code: 'NYR-6480', name: 'Termômetro de Plástico', desc: '38cm, acessório temático.' },
+                    { code: 'NYR-6474', name: 'Estetoscópio de Plástico', desc: 'Acessório temático realista.' },
+                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
+                    { code: 'MOD-1072', name: 'Meia-Calça 7/8', desc: 'Branca, estilo enfermeira.' }
+                ]
+            },
+            {
+                name: 'Bloquinho',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187902/INSPIRA_BLOQUINHO_tpio6g.webp',
+                alt: 'Modelo vestindo look de bloquinho de Carnaval',
+                palette: { primary: '#D6336C', cta: '#1E5AA8', light: '#FDF1F0', mid: '#D4A017', badge: '#D32F2F', label: '#5C1130', border: '#D6336C' },
+                products: [
+                    { code: 'MOD-6830', name: 'Máscara Metalizada Glitter', desc: 'Penas e glitter sortidos.' },
+                    { code: 'MOD-1115', name: 'Brinco Fitas Coloridas', desc: 'Par, fitas de tecido colorido.' },
+                    { code: 'MOD-1150', name: 'Gargantilha com Lantejoula', desc: 'Acabamento brilhante.' },
+                    { code: 'MOD-6904', name: 'Colar Havaiano de Flores', desc: 'Flores em tecido, pacote c/12.' },
+                    { code: 'MOD-930', name: 'Saia Havaiana Metalizada', desc: 'Elástico, cores sortidas.' },
+                    { code: 'MOD-1078', name: 'Meia-Calça Arrastão', desc: '7/8, vermelha, par.' }
+                ]
+            },
+            {
+                name: 'Anjo Negro',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187903/INSPIRA_ANJO-NEGRO_yf3bjl.webp',
+                alt: 'Modelo vestindo fantasia de anjo negro',
+                palette: { primary: '#3A3345', cta: '#5C4B75', light: '#EDEAF0', mid: '#8A7A9E', badge: '#3A3345', label: '#2B2633', border: '#3A3345' },
+                products: [
+                    { code: 'MOD-878', name: 'Tiara de Anjo Preta', desc: 'Acabamento delicado.' },
+                    { code: 'MOD-891', name: 'Asa de Anjo Preta', desc: 'Tamanho P, com pena.' },
+                    { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.' },
+                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.' }
+                ]
+            }
+        ];
+
+        // pré-carrega as fotos de todos os kits em segundo plano, assim
+        // que a página carrega — depois disso, trocar de aba usa a
+        // imagem já em cache do navegador, sem esperar rede de novo
+        function preloadKitImages() {
+            KITS.forEach(k => {
+                const im = new Image();
+                im.src = k.image;
+            });
+        }
+        preloadKitImages();
+
+        // posições placeholder de hotspot — distribuição genérica
+        // vertical com leve ziguezague horizontal, NÃO calibrada
+        // visualmente ainda
+        function placeholderHotspots(n) {
+            const xs = [50, 62, 38, 58, 42, 50];
+            const pts = [];
+            for (let i = 0; i < n; i++) {
+                const y = n === 1 ? 15 : 15 + i * (70 / (n - 1));
+                pts.push({ x: xs[i % xs.length], y: y });
+            }
+            return pts;
+        }
+
         let activeKitIndex = 0;
 
-        function setActiveKit(index) {
-            activeKitIndex = (index + kitNames.length) % kitNames.length;
-            const name = kitNames[activeKitIndex];
+        // gera as tabs uma única vez, a partir do array KITS
+        function buildTabs() {
+            const wrap = document.getElementById('inspiraTabs');
+            wrap.innerHTML = KITS.map((k, i) =>
+                `<button class="inspira-tab${i === 0 ? ' active' : ''}">${k.name}</button>`
+            ).join('');
+            wrap.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+                tab.addEventListener('click', () => renderKit(i));
+            });
+        }
 
+        // gera os dots uma única vez
+        function buildDots() {
+            const wrap = document.getElementById('kitDots');
+            wrap.innerHTML = KITS.map((k, i) =>
+                `<span class="kit-dot${i === 0 ? ' active' : ''}" data-index="${i}"></span>`
+            ).join('');
+            wrap.querySelectorAll('.kit-dot').forEach((dot, i) => {
+                dot.addEventListener('click', () => renderKit(i));
+            });
+        }
+
+        // religa clique+teclado nos hotspots — precisa rodar de novo toda
+        // vez que os hotspots são regenerados (renderKit apaga e recria
+        // os elementos, então os listeners antigos morrem junto)
+        // troca a foto com fade — some (opacity:0), troca o src só
+        // depois que a imagem nova já estiver pronta (usando um Image()
+        // auxiliar pra "testar" o carregamento sem afetar a tag <img> que
+        // está na tela), e só então revela de novo. Evita o "pop" abrupto
+        // ou o flash em branco de trocar o src cru.
+        function swapModelPhoto(kit) {
+            const img = document.getElementById('modelPhoto');
+            img.style.opacity = '0';
+
+            const loader = new Image();
+            const reveal = () => {
+                img.src = kit.image;
+                img.alt = kit.alt;
+                requestAnimationFrame(() => {
+                    img.style.opacity = '1';
+                });
+            };
+            loader.onload = reveal;
+            loader.onerror = reveal; // não deixa a foto sumida pra sempre se der erro
+            loader.src = kit.image;
+        }
+
+        function attachHotspotHandlers() {
+            document.querySelectorAll('.hotspot').forEach(dot => {
+                dot.setAttribute('role', 'button');
+                dot.setAttribute('tabindex', '0');
+                dot.setAttribute('aria-label', 'Ver produto correspondente');
+                let highlightTimer = null;
+                const jump = () => {
+                    const target = document.getElementById(dot.dataset.target);
+                    if (!target) return;
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.querySelectorAll('.product-callout.hs-active')
+                        .forEach(el => el.classList.remove('hs-active'));
+                    target.classList.add('hs-active');
+                    clearTimeout(highlightTimer);
+                    highlightTimer = setTimeout(() => target.classList.remove('hs-active'), 2200);
+                };
+                dot.addEventListener('click', jump);
+                dot.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+                });
+            });
+        }
+
+        // ─── A função principal — troca TUDO pro kit escolhido: paleta,
+        // foto, hotspots (posição placeholder), cards de produto, título,
+        // tabs/dots ativos, e religa tudo que depende do DOM novo ───
+        function renderKit(index) {
+            activeKitIndex = (index + KITS.length) % KITS.length;
+            const kit = KITS[activeKitIndex];
+
+            // paleta — os 7 tokens de sazonalidade, aplicados na seção
+            // inteira (o resto do CSS já lê essas variáveis)
+            const section = document.querySelector('.inspira');
+            section.style.setProperty('--season-primary', kit.palette.primary);
+            section.style.setProperty('--season-cta', kit.palette.cta);
+            section.style.setProperty('--season-light', kit.palette.light);
+            section.style.setProperty('--season-mid', kit.palette.mid);
+            section.style.setProperty('--season-badge', kit.palette.badge);
+            section.style.setProperty('--season-label', kit.palette.label);
+            section.style.setProperty('--season-border', kit.palette.border);
+            section.style.background = kit.palette.light;
+            if (window.updateConfettiPalette) window.updateConfettiPalette(kit.palette);
+
+            // título
+            document.getElementById('kitTitle').textContent = kit.name;
+
+            // resumo de peças (ícones "+")
+            const iconsHtml = kit.products.map((p, i) => {
+                const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
+                return `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>${sep}`;
+            }).join('');
+            document.getElementById('kitSummaryIcons').innerHTML = iconsHtml;
+
+            // foto — troca com fade (ver swapModelPhoto), não é mais um
+            // swap cru de src
+            swapModelPhoto(kit);
+
+            // hotspots — se o kit declarar sua própria lista (kit.hotspots),
+            // usa ela (permite N hotspots por produto, ex: Diabinha com
+            // tiara+capa apontando pro mesmo card). Se não, cai no
+            // placeholder genérico de 1 hotspot por produto.
+            const hotspotDefs = kit.hotspots
+                ? kit.hotspots
+                : placeholderHotspots(kit.products.length).map((pt, i) => ({ x: pt.x, y: pt.y, productIndex: i }));
+            const hotspotsHtml = hotspotDefs.map((h, i) => {
+                const id = `hs-${activeKitIndex}-${i}`;
+                const targetId = `card-${activeKitIndex}-${h.productIndex}`;
+                return `<span class="hotspot" id="${id}" data-target="${targetId}" style="left:${h.x}%; top:${h.y}%;"></span>`;
+            }).join('');
+            document.getElementById('hotspotsLayer').innerHTML = hotspotsHtml;
+
+            // cards de produto
+            const cardsHtml = kit.products.map((p, i) => `
+                <div class="product-callout" id="card-${activeKitIndex}-${i}">
+                    <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>${p.name.split(' ')[0].toUpperCase()}</div>
+                    <div class="product-callout-body">
+                        <div class="product-callout-title-row">
+                            <span class="product-callout-ref">${p.code}</span>
+                            <h3 class="product-callout-name">${p.name}</h3>
+                        </div>
+                        <p class="product-callout-desc">${p.desc}</p>
+                        <button class="product-callout-video-btn">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                            Ver Vídeo
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('colRightCards').innerHTML = cardsHtml;
+
+            // tabs/dots ativos + indicador de posição
             document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
                 tab.classList.toggle('active', i === activeKitIndex);
             });
@@ -1492,20 +1653,20 @@
                 dot.classList.toggle('active', i === activeKitIndex);
             });
             document.querySelector('.kit-switcher-label').innerHTML =
-                `${name} · <span class="kit-switcher-count">${activeKitIndex + 1} de ${kitNames.length}</span>`;
-            document.querySelector('.inspira-title').textContent = name;
+                `${kit.name} · <span class="kit-switcher-count">${activeKitIndex + 1} de ${KITS.length}</span>`;
+
+            // religa tudo que depende dos elementos recém-criados
+            attachHotspotHandlers();
+            updateAll();
         }
 
-        document.querySelectorAll('.inspira-tab').forEach((tab, i) => {
-            tab.addEventListener('click', () => setActiveKit(i));
-        });
-        document.querySelectorAll('.kit-dot').forEach((dot, i) => {
-            dot.addEventListener('click', () => setActiveKit(i));
-        });
+        buildTabs();
+        buildDots();
         document.querySelector('.model-nav-prev')
-            .addEventListener('click', () => setActiveKit(activeKitIndex - 1));
+            .addEventListener('click', () => renderKit(activeKitIndex - 1));
         document.querySelector('.model-nav-next')
-            .addEventListener('click', () => setActiveKit(activeKitIndex + 1));
+            .addEventListener('click', () => renderKit(activeKitIndex + 1));
+        renderKit(0);
 
         // ─── TOGGLE ACESSÓRIOS / DECORAÇÃO ───
         // Decoração ainda não tem conteúdo real — troca só a UI (fade+slide
@@ -1655,35 +1816,10 @@
             });
         }
 
-        // Hotspot clicável — clicando no ponto, a página rola suavemente
-        // até o card de produto correspondente (mesmo id do data-target
-        // já usado pelo drawConnectors pra desenhar a linha).
-        document.querySelectorAll('.hotspot').forEach(dot => {
-            dot.setAttribute('role', 'button');
-            dot.setAttribute('tabindex', '0');
-            const targetEl = document.getElementById(dot.dataset.target);
-            if (targetEl) {
-                dot.setAttribute('aria-label', 'Ver produto correspondente');
-            }
-            let highlightTimer = null;
-            const jump = () => {
-                const target = document.getElementById(dot.dataset.target);
-                if (!target) return;
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                // acende a borda do card, apaga qualquer outro card
-                // aceso antes, e some sozinha depois de um tempo
-                document.querySelectorAll('.product-callout.hs-active')
-                    .forEach(el => el.classList.remove('hs-active'));
-                target.classList.add('hs-active');
-                clearTimeout(highlightTimer);
-                highlightTimer = setTimeout(() => target.classList.remove('hs-active'), 2200);
-            };
-            dot.addEventListener('click', jump);
-            dot.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
-            });
-        });
+        // Hotspot clicável — handler real está em attachHotspotHandlers(),
+        // chamado de dentro de renderKit() toda vez que os hotspots são
+        // regenerados (não dá mais pra religar uma vez só aqui em cima,
+        // já que os elementos morrem e nascem de novo a cada troca de kit)
 
         // Posiciona a legenda sobreposta (nome do kit, .inspira-eyebrow +
         // .inspira-title) em cima da foto — SÓ no mobile (≤564px), via
@@ -1736,24 +1872,53 @@
             if (!canvas || !section) return;
             const ctx = canvas.getContext('2d');
 
-            // paleta Carnaval — mistura os tons da seção com cores vívidas
-            // extras (roxo, dourado, ciano, verde, azul, laranja-queimado),
-            // com opacidades variadas pra dar sensação de profundidade
-            // (mesma lógica da hero: cores fortes + tons translúcidos)
-            const PALETTE = [
-                'rgba(194, 24, 91, 1)',      // --season-primary
-                'rgba(255, 87, 34, 1)',      // --season-cta
-                'rgba(255, 64, 129, 0.95)',  // --season-mid
-                'rgba(255, 23, 68, 0.95)',   // --season-badge
-                'rgba(123, 31, 162, 0.95)',  // roxo
-                'rgba(255, 193, 7, 1)',      // dourado
-                'rgba(0, 188, 212, 0.9)',    // ciano
-                'rgba(67, 160, 71, 0.9)',    // verde
-                'rgba(63, 81, 181, 0.85)',   // azul
-                'rgba(255, 111, 0, 0.95)',   // laranja-queimado
-                'rgba(194, 24, 91, 0.65)',   // camada translúcida, dá profundidade
-                'rgba(123, 31, 162, 0.6)',
+            // paleta do confete — agora dinâmica, recalculada por
+            // updateConfettiPalette() toda vez que o kit muda (chamado de
+            // dentro de renderKit()). Como as peças escolhem cor de novo
+            // a cada reset() — e isso acontece o tempo todo, conforme
+            // saem pela base — a troca de cor acontece de forma orgânica,
+            // gradual, não é um "reset" abrupto de tudo de uma vez.
+            let PALETTE = [
+                'rgba(194, 24, 91, 1)',
+                'rgba(255, 87, 34, 1)',
+                'rgba(255, 64, 129, 0.95)',
+                'rgba(255, 23, 68, 0.95)',
+                'rgba(194, 24, 91, 0.55)',
+                'rgba(255, 87, 34, 0.5)',
             ];
+
+            function hexToRgbStr(hex) {
+                hex = hex.replace('#', '');
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+                return `${r}, ${g}, ${b}`;
+            }
+
+            // exposta em window pra renderKit() (fora dessa IIFE)
+            // conseguir chamar quando o kit trocar
+            window.updateConfettiPalette = function (kitPalette) {
+                const p = hexToRgbStr(kitPalette.primary);
+                const c = hexToRgbStr(kitPalette.cta);
+                const m = hexToRgbStr(kitPalette.mid);
+                const b = hexToRgbStr(kitPalette.badge);
+                PALETTE = [
+                    `rgba(${p}, 1)`,
+                    `rgba(${c}, 1)`,
+                    `rgba(${m}, 0.95)`,
+                    `rgba(${b}, 0.95)`,
+                    `rgba(${p}, 0.55)`,
+                    `rgba(${c}, 0.5)`,
+                ];
+            };
+
+            // aplica a paleta do kit ativo já de cara — sem isso, o
+            // confete só pegaria a cor certa na PRÓXIMA troca de aba,
+            // já que essa IIFE roda depois da primeira chamada de
+            // renderKit(0) lá em cima no arquivo
+            if (typeof KITS !== 'undefined' && KITS[activeKitIndex]) {
+                window.updateConfettiPalette(KITS[activeKitIndex].palette);
+            }
 
             const SHAPES = ['circle', 'rect', 'line'];
             function getPieceCount() {
