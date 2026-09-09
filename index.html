@@ -29,6 +29,16 @@
             --season-badge: #FF1744;
             --season-label: #880E4F;
             --season-border: #C2185B;
+            /* canais RGB separados (sem #, sem parênteses) — necessários
+               porque rgba() não aceita hex direto; essas duas são
+               atualizadas junto das outras em renderKit(), permitindo que
+               sombras/bordas com opacidade (rgba(var(--x-rgb), 0.2)) também
+               reajam à paleta do kit ativo */
+            --season-primary-rgb: 194, 24, 91;
+            --season-cta-rgb: 255, 87, 34;
+            --season-mid-rgb: 255, 64, 129;
+            --season-badge-rgb: 255, 23, 68;
+            --season-label-rgb: 136, 14, 79;
         }
 
         * {
@@ -184,15 +194,15 @@
             padding: 4px;
             gap: 2px;
             box-shadow:
-                0 1px 2px rgba(194, 24, 91, 0.06),
-                0 6px 16px rgba(194, 24, 91, 0.10),
-                0 16px 32px rgba(194, 24, 91, 0.06);
+                0 1px 2px rgba(var(--season-primary-rgb), 0.06),
+                0 6px 16px rgba(var(--season-primary-rgb), 0.10),
+                0 16px 32px rgba(var(--season-primary-rgb), 0.06);
             /* borda com leve gradiente em vez de linha sólida cinza-rosa —
                truque do duplo background (padding-box + border-box) */
             border: 1px solid transparent;
             background-image:
                 linear-gradient(#ffffff, #ffffff),
-                linear-gradient(135deg, rgba(194, 24, 91, 0.35), rgba(255, 87, 34, 0.35));
+                linear-gradient(135deg, rgba(var(--season-primary-rgb), 0.35), rgba(var(--season-cta-rgb), 0.35));
             background-origin: border-box;
             background-clip: padding-box, border-box;
             z-index: 6;
@@ -294,7 +304,7 @@
 
         .inspira-decor-placeholder p {
             font-size: 14px;
-            color: rgba(136, 14, 79, 0.65);
+            color: rgba(var(--season-label-rgb), 0.65);
             line-height: 1.5;
         }
 
@@ -317,9 +327,9 @@
             font-weight: 600;
             letter-spacing: 0.6px;
             text-transform: uppercase;
-            color: rgba(136, 14, 79, 0.55);
+            color: rgba(var(--season-label-rgb), 0.55);
             background: #ffffff;
-            border: 1px solid rgba(194, 24, 91, 0.25);
+            border: 1px solid rgba(var(--season-primary-rgb), 0.25);
             padding: 10px 24px;
             border-radius: 100px;
             transition: color var(--transition), background var(--transition), border-color var(--transition);
@@ -327,7 +337,7 @@
 
         .inspira-tab:hover {
             color: var(--season-label);
-            border-color: rgba(194, 24, 91, 0.5);
+            border-color: rgba(var(--season-primary-rgb), 0.5);
         }
 
         .inspira-tab.active {
@@ -380,51 +390,6 @@
             text-align: left;
         }
 
-        .col-left-decor {
-            margin-top: clamp(8px, 1.36vw + 0.34px, 18px);
-        }
-
-        .kit-stat-badge {
-            display: flex;
-            text-align: left;
-            align-items: flex-start;
-            gap: clamp(6px, 0.82vw + 1.40px, 12px);
-            background: #ffffff;
-            border: 1px solid rgba(194, 24, 91, 0.15);
-            border-radius: 14px;
-            padding: clamp(8px, 1.09vw + 1.87px, 16px) clamp(9px, 1.22vw + 2.10px, 18px);
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 12px 28px rgba(0, 0, 0, 0.08);
-        }
-
-        .kit-stat-icon {
-            flex-shrink: 0;
-            width: clamp(21px, 1.49vw + 12.57px, 32px);
-            height: clamp(21px, 1.49vw + 12.57px, 32px);
-            border-radius: 50%;
-            background: var(--season-cta);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(11px, 0.68vw + 7.17px, 16px);
-            font-weight: 700;
-        }
-
-        .kit-stat-title {
-            font-family: 'Anton', sans-serif;
-            font-size: clamp(11px, 0.48vw + 8.32px, 14.5px);
-            color: var(--season-label);
-            letter-spacing: 0.2px;
-            margin-bottom: 4px;
-        }
-
-        .kit-stat-desc {
-            font-size: clamp(11.5px, 0.34vw + 9.58px, 14px);
-            line-height: 1.45;
-            color: rgba(136, 14, 79, 0.65);
-        }
-
         .inspira-eyebrow {
             font-family: 'Caveat', cursive;
             display: inline-flex;
@@ -455,13 +420,13 @@
         .inspira-sub {
             font-size: clamp(15px, 0.41vw + 12.70px, 18px);
             line-height: 1.5;
-            color: rgba(136, 14, 79, 0.7);
+            color: rgba(var(--season-label-rgb), 0.7);
             margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
         }
 
         .kit-summary-card {
-            background: rgba(194, 24, 91, 0.06);
-            border: 1px solid rgba(194, 24, 91, 0.25);
+            background: rgba(var(--season-primary-rgb), 0.06);
+            border: 1px solid rgba(var(--season-primary-rgb), 0.25);
             border-radius: 14px;
             padding: clamp(9px, 1.22vw + 2.10px, 18px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.06);
@@ -495,13 +460,13 @@
             height: clamp(27px, 2.58vw + 12.44px, 46px);
             border-radius: 8px;
             object-fit: cover;
-            border: 1px solid rgba(194, 24, 91, 0.2);
+            border: 1px solid rgba(var(--season-primary-rgb), 0.2);
         }
 
         .kit-summary-icons span {
             font-family: 'Anton', sans-serif;
             font-size: clamp(10px, 0.68vw + 6.17px, 15px);
-            color: rgba(255, 64, 129, 0.8);
+            color: rgba(var(--season-mid-rgb), 0.8);
         }
 
         /* swatch placeholder — usado enquanto não há foto real da peça */
@@ -509,18 +474,37 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(194, 24, 91, 0.05);
-            border: 1px dashed rgba(194, 24, 91, 0.3);
-            color: rgba(136, 14, 79, 0.5);
+            background: rgba(var(--season-primary-rgb), 0.05);
+            border: 1px dashed rgba(var(--season-primary-rgb), 0.3);
+            color: rgba(var(--season-label-rgb), 0.5);
             font-family: 'Barlow Condensed', sans-serif;
             text-align: center;
             line-height: 1.2;
         }
 
+        /* variante de .placeholder-swatch pra quando já existe foto real —
+           mesmo tamanho/formato (46x46, cantos arredondados), mas sem a
+           borda tracejada/fundo tintado, já que ali dentro vai uma <img>
+           de verdade, não mais texto */
+        .kit-summary-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .kit-summary-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .kit-summary-card p {
             font-size: clamp(13px, 0.41vw + 10.70px, 16px);
             line-height: 1.5;
-            color: rgba(136, 14, 79, 0.7);
+            color: rgba(var(--season-label-rgb), 0.7);
         }
 
         /* ─── COLUNA 2 — Foto + hotspots ───
@@ -574,7 +558,7 @@
             height: 48px;
             border-radius: 50%;
             background: #ffffff;
-            border: 1px solid rgba(194, 24, 91, 0.2);
+            border: 1px solid rgba(var(--season-primary-rgb), 0.2);
             color: var(--season-primary);
             font-size: 26px;
             line-height: 1;
@@ -582,7 +566,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(194, 24, 91, 0.1);
+            box-shadow: 0 4px 14px rgba(var(--season-primary-rgb), 0.1);
             transition: background var(--transition), color var(--transition), border-color var(--transition);
             z-index: 5;
         }
@@ -633,7 +617,7 @@
             width: 11px;
             height: 11px;
             border-radius: 50%;
-            background: rgba(194, 24, 91, 0.25);
+            background: rgba(var(--season-primary-rgb), 0.25);
             cursor: pointer;
             transition: background var(--transition), transform var(--transition);
         }
@@ -680,7 +664,7 @@
             border-radius: 50%;
             background: var(--season-badge);
             border: 1.5px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.25);
+            box-shadow: 0 0 0 2px rgba(var(--season-badge-rgb), 0.25);
             transform: translate(-50%, -50%);
             z-index: 3;
             cursor: pointer;
@@ -693,7 +677,7 @@
             position: absolute;
             inset: -4px;
             border-radius: 50%;
-            border: 1.5px solid rgba(255, 23, 68, 0.5);
+            border: 1.5px solid rgba(var(--season-badge-rgb), 0.5);
             animation: hotspot-pulse 2.2s ease-out infinite;
         }
 
@@ -727,7 +711,7 @@
 
         .connector-svg path {
             fill: none;
-            stroke: rgba(255, 23, 68, 0.55);
+            stroke: rgba(var(--season-badge-rgb), 0.55);
             stroke-width: 1.5;
             stroke-dasharray: 4 4;
         }
@@ -742,7 +726,7 @@
         .product-callout {
             position: relative;
             background: #ffffff;
-            border: 1px solid rgba(194, 24, 91, 0.15);
+            border: 1px solid rgba(var(--season-primary-rgb), 0.15);
             border-radius: 12px;
             padding: clamp(6.5px, 0.78vw, 9.1px);
             display: flex;
@@ -764,7 +748,7 @@
         .product-callout.hs-active {
             border-color: var(--season-cta);
             border-width: 2px;
-            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.18);
+            box-shadow: 0 0 0 4px rgba(var(--season-cta-rgb), 0.18);
             transition: border-color var(--transition), border-width var(--transition), box-shadow var(--transition);
             /* acende ao clicar no hotspot correspondente na foto — ver
                jump() no JS, que adiciona essa classe e some sozinha
@@ -806,7 +790,7 @@
             font-size: clamp(10.8px, 0.23vw + 9.50px, 12.5px);
             font-weight: 600;
             letter-spacing: 1.2px;
-            color: rgba(136, 14, 79, 0.45);
+            color: rgba(var(--season-label-rgb), 0.45);
             flex-shrink: 0;
         }
 
@@ -822,7 +806,7 @@
             font-family: 'Barlow', sans-serif;
             font-size: clamp(11.5px, 0.20vw + 10.35px, 13px);
             line-height: 1.45;
-            color: rgba(136, 14, 79, 0.65);
+            color: rgba(var(--season-label-rgb), 0.65);
             margin-bottom: 7px;
         }
 
@@ -831,7 +815,7 @@
             align-items: center;
             gap: 4px;
             padding: clamp(3.25px, 0.39vw, 3.9px) clamp(5.85px, 0.65vw, 7.8px);
-            border: 1.5px solid rgba(194, 24, 91, 0.3);
+            border: 1.5px solid rgba(var(--season-primary-rgb), 0.3);
             border-radius: 100px;
             color: var(--season-primary);
             font-family: 'Barlow Condensed', sans-serif;
@@ -875,14 +859,14 @@
             justify-content: space-between;
             gap: 24px;
             flex-wrap: wrap;
-            border-top: 1px solid rgba(194, 24, 91, 0.15);
+            border-top: 1px solid rgba(var(--season-primary-rgb), 0.15);
             padding-top: 28px;
         }
 
         .inspira-tip {
             font-size: 13.5px;
             line-height: 1.5;
-            color: rgba(136, 14, 79, 0.7);
+            color: rgba(var(--season-label-rgb), 0.7);
             max-width: 520px;
         }
 
@@ -1139,12 +1123,6 @@
                    do frame sem sobrepor a máscara/rosto da modelo */
             }
 
-            /* selo "Alto giro no Carnaval" sai do mobile — corta pra
-               deixar o fluxo mais enxuto, como decidido na discussão */
-            .col-left-decor {
-                display: none;
-            }
-
             .col-right {
                 text-align: center;
                 align-items: stretch;
@@ -1302,11 +1280,21 @@
     </section>
 
     <script>
-        // ─── OS 10 KITS (por enquanto só os 3 primeiros) — dados reais
-        // do catálogo, paleta extraída das fotos. Hotspots com posição
-        // PLACEHOLDER (x/y em %) — ainda não calibrados visualmente,
-        // porque não temos acesso pra abrir as URLs das fotos e ver a
-        // composição de perto. Precisam de ajuste fino depois.
+        // ─── OS 10 KITS — dados reais do catálogo, paleta extraída das
+        // fotos, hotspots calibrados visualmente em cima da imagem real
+        // de cada kit.
+        //
+        // Cada produto (dentro de "products") aceita um campo opcional
+        // "image" com a URL da foto do produto (fundo neutro/branco,
+        // ~300x300px, quadrada — ver conversa sobre resolução). Enquanto
+        // esse campo não existir, o card e o resumo do kit caem
+        // automaticamente no placeholder de texto (comportamento atual).
+        // Basta adicionar `image: 'https://...'` no produto quando a foto
+        // estiver pronta — não precisa mexer em mais nada.
+        //
+        // Exemplo:
+        //   { code: 'MOD-229', name: 'Saia Havaiana com Folhas',
+        //     desc: '...', image: 'https://res.cloudinary.com/.../saia.webp' }
         const KITS = [
             {
                 name: 'Tropical',
@@ -1314,11 +1302,11 @@
                 alt: 'Modelo vestindo look tropical havaiano',
                 palette: { primary: '#33691E', cta: '#FF7043', light: '#F1F8E9', mid: '#EC407A', badge: '#FF7043', label: '#1B4D0F', border: '#33691E' },
                 products: [
-                    { code: 'MOD-6906', name: 'Tiara Havaiana Flores', desc: 'Tiara colorida e reforçada.' },
-                    { code: 'MOD-1117', name: 'Brinco Fitas Lantejoula', desc: 'Par, fitas longas e brilhantes.' },
-                    { code: 'MOD-6916', name: 'Colar Havaiano Flores', desc: 'Flores em tecido, pacote c/12.' },
-                    { code: 'H-40', name: 'Top Havaiano com Flores', desc: 'Flores em tecido, com cordas.' },
-                    { code: 'MOD-229', name: 'Saia Havaiana com Folhas', desc: 'Franjas sintéticas, elástico.' }
+                    { code: 'MOD-6906', name: 'Tiara Havaiana Flores', desc: 'Tiara colorida e reforçada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370124/INSPIRA_TROPICAL_MOD-6906_ujwtfz.webp' },
+                    { code: 'MOD-1117', name: 'Brinco Fitas Lantejoula', desc: 'Par, fitas longas e brilhantes.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370126/INSPIRA_TROPICAL_MOD-1117_pwgmo9.webp' },
+                    { code: 'MOD-6916', name: 'Colar Havaiano Flores', desc: 'Flores em tecido, pacote c/12.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370123/INSPIRA_TROPICAL_MOD-6916_mo7o75.webp' },
+                    { code: 'H-40', name: 'Top Havaiano com Flores', desc: 'Flores em tecido, com cordas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370128/INSPIRA_TROPICAL_H-40_eketuu.webp' },
+                    { code: 'MOD-229', name: 'Saia Havaiana com Folhas', desc: 'Franjas sintéticas, elástico.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370127/INSPIRA_TROPICAL_MOD-229_h18eeo.webp' }
                 ],
                 // calibrado a partir do PDF, depois corrigido com base no
                 // print anotado pelo usuário (X = errado, ✓ = aprovado) —
@@ -1337,12 +1325,12 @@
                 alt: 'Modelo vestindo look colorido metalizado',
                 palette: { primary: '#8E24AA', cta: '#FB8C00', light: '#F7F1FA', mid: '#1E88E5', badge: '#FB8C00', label: '#5C2E75', border: '#8E24AA' },
                 products: [
-                    { code: 'MOD-1113', name: 'Brinco Fitas Metalizadas', desc: 'Par, efeito espelhado.' },
-                    { code: 'MOD-1158', name: 'Colar com Pingente', desc: 'Pingente temático sortido.' },
-                    { code: 'MOD-1138', name: 'Leque Arco-Íris', desc: '33x64cm, cores vibrantes.' },
-                    { code: 'MOD-1169', name: 'Top Metalizado Pompom', desc: 'Metalizado, com pompom.' },
-                    { code: 'MOD-1001', name: 'Ombreiras Metalizadas', desc: 'Par, brilho nos ombros.' },
-                    { code: 'MOD-1095', name: 'Saia Havaiana Metalizada', desc: 'Franjas metalizadas, 38cm.' }
+                    { code: 'MOD-1113', name: 'Brinco Fitas Metalizadas', desc: 'Par, efeito espelhado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370118/INSPIRA_COLORIDO_MOD-1113_zxwdpf.webp' },
+                    { code: 'MOD-1158', name: 'Colar com Pingente', desc: 'Pingente temático sortido.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370116/INSPIRA_COLORIDO_MOD-1158_ls8g7f.webp' },
+                    { code: 'MOD-1138', name: 'Leque Arco-Íris', desc: '33x64cm, cores vibrantes.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370117/INSPIRA_COLORIDO_MOD-1138_i5bvtt.webp' },
+                    { code: 'MOD-1169', name: 'Top Metalizado Pompom', desc: 'Metalizado, com pompom.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370114/INSPIRA_COLORIDO_MOD-1169_jhrkhd.webp' },
+                    { code: 'MOD-1001', name: 'Ombreiras Metalizadas', desc: 'Par, brilho nos ombros.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370121/INSPIRA_COLORIDO_MOD-1001_rxl6gw.webp' },
+                    { code: 'MOD-1095', name: 'Saia Havaiana Metalizada', desc: 'Franjas metalizadas, 38cm.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788370120/INSPIRA_COLORIDO_MOD-1095_l1nnli.webp' }
                 ],
                 // calibrado a partir do PDF, corrigido com base no print
                 // anotado — leque/top/saia confirmados certos (✓/sem marca)
@@ -1361,11 +1349,11 @@
                 alt: 'Modelo vestindo fantasia de diabinha',
                 palette: { primary: '#D32F2F', cta: '#1A1A1A', light: '#FBEAEA', mid: '#4A1414', badge: '#D32F2F', label: '#E31E24', border: '#D32F2F' },
                 products: [
-                    { code: 'MOD-252', name: 'Kit Tiara + Capa', desc: '2 peças, até o cotovelo.' },
-                    { code: 'H-17', name: 'Máscara Lisa de Plástico', desc: 'Cores sortidas, liso.' },
-                    { code: 'MOD-675', name: 'Luvas de Tecido', desc: '40cm, vermelha, par.' },
-                    { code: 'MOD-898', name: 'Saia Tulê', desc: '30cm, cores mescladas.' },
-                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, vermelho, destaque.' }
+                    { code: 'MOD-252', name: 'Kit Tiara + Capa', desc: '2 peças, até o cotovelo.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956972/INSPIRA_DIABINHA_MOD-252_ginooh.webp' },
+                    { code: 'H-17', name: 'Máscara Lisa de Plástico', desc: 'Cores sortidas, liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956974/INSPIRA_DIABINHA_H-17_qrietu.webp' },
+                    { code: 'MOD-675', name: 'Luvas de Tecido', desc: '40cm, vermelha, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956969/INSPIRA_DIABINHA_MOD-675_y0wyde.webp' },
+                    { code: 'MOD-898', name: 'Saia Tulê', desc: '30cm, cores mescladas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956965/INSPIRA_DIABINHA_MOD-898_jm6j0h.webp' },
+                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, vermelho, destaque.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956971/INSPIRA_DIABINHA_MOD-427_pj8szh.webp' }
                 ],
                 // calibrado olhando a página 10 do PDF landingPage_nyr-inspira.pdf
                 // (a foto real gerada por IA) — productIndex 0 (Kit Tiara+Capa)
@@ -1385,11 +1373,11 @@
                 alt: 'Modelo vestindo fantasia sensual preta',
                 palette: { primary: '#8E2A4B', cta: '#B33A5E', light: '#F5EBEF', mid: '#4A4A4A', badge: '#8E2A4B', label: '#5C2E42', border: '#8E2A4B' },
                 products: [
-                    { code: 'MOD-944', name: 'Máscara Gatinha Plástico', desc: 'Formato gatinha, liso.' },
-                    { code: 'MOD-674', name: 'Luvas de Tecido', desc: '40cm, preta, par.' },
-                    { code: 'MOD-257', name: 'Saia Tulê com Brilho', desc: '30cm, preta, brilhante.' },
-                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, acessório de destaque.' },
-                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.' }
+                    { code: 'MOD-944', name: 'Máscara Gatinha Plástico', desc: 'Formato gatinha, liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956764/INSPIRA_SENSUAL_MOD-944_m7dwqe.webp' },
+                    { code: 'MOD-674', name: 'Luvas de Tecido', desc: '40cm, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956764/INSPIRA_SENSUAL_MOD-674_bd3ndn.webp' },
+                    { code: 'MOD-257', name: 'Saia Tulê com Brilho', desc: '30cm, preta, brilhante.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956766/INSPIRA_SENSUAL_MOD-257_owzffd.webp' },
+                    { code: 'MOD-427', name: 'Chicote Couro Sintético', desc: '50cm, acessório de destaque.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956765/INSPIRA_SENSUAL_MOD-427_kt3g6k.webp' },
+                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956774/INSPIRA_SENSUAL_MOD-1077_qr332s.webp' }
                 ],
                 // calibrado direto na imagem real (INSPIRA_SENSUAL.webp),
                 // depois corrigido com base no print anotado — máscara e
@@ -1408,11 +1396,11 @@
                 alt: 'Modelo vestindo fantasia de pirata',
                 palette: { primary: '#7A5C2E', cta: '#DAA520', light: '#F3E9D2', mid: '#C9A24B', badge: '#1A1A1A', label: '#4A3B1F', border: '#7A5C2E' },
                 products: [
-                    { code: 'MOD-6550', name: 'Bandana Pirata', desc: 'Estampa caveira, sortida.' },
-                    { code: 'MOD-6414', name: 'Tapa-Olho Pirata', desc: 'Plástico, elástico ajustável.' },
-                    { code: 'MOD-6410', name: 'Cartela de Bigode', desc: '12un, preto, sortidos.' },
-                    { code: 'MOD-313', name: 'Suspensórios', desc: 'Estampa temática, sortidos.' },
-                    { code: 'MOD-6470A', name: 'Gancho de Pirata', desc: 'Plástico, acessório de mão.' }
+                    { code: 'MOD-6550', name: 'Bandana Pirata', desc: 'Estampa caveira, sortida.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956921/INSPIRA_PIRATA_MOD-6550_ary0k0.webp' },
+                    { code: 'MOD-6414', name: 'Tapa-Olho Pirata', desc: 'Plástico, elástico ajustável.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956877/INSPIRA_PIRATA_MOD-6414_dxwko0.webp' },
+                    { code: 'MOD-6410', name: 'Cartela de Bigode', desc: '12un, preto, sortidos.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956878/INSPIRA_PIRATA_MOD-6410_qlcfzr.webp' },
+                    { code: 'MOD-313', name: 'Suspensórios', desc: 'Estampa temática, sortidos.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956879/INSPIRA_PIRATA_MOD-313_ot345f.webp' },
+                    { code: 'MOD-6470A', name: 'Gancho de Pirata', desc: 'Plástico, acessório de mão.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956875/INSPIRA_PIRATA_MOD-6470A_nhknv6.webp' }
                 ],
                 // medido direto na imagem, corrigido com base no print
                 // anotado (a correção proativa não bateu certo dessa vez —
@@ -1432,12 +1420,12 @@
                 alt: 'Modelo vestindo fantasia de policial',
                 palette: { primary: '#1B2A4A', cta: '#C62828', light: '#EAF1FB', mid: '#5C6B85', badge: '#1B2A4A', label: '#1B2A4A', border: '#1B2A4A' },
                 products: [
-                    { code: 'H-26', name: 'Quepe Policial', desc: 'Azul, acabamento oficial.' },
-                    { code: 'MOD-486', name: 'Cartela de Bigode', desc: '12un, cores sortidas.' },
-                    { code: 'NYR-6472', name: 'Distintivo de Plástico', desc: 'Detalhe realista.' },
-                    { code: 'MOD-1187', name: 'Rádio Policial', desc: 'Kit com 2 peças.' },
-                    { code: 'MOD-6481', name: 'Cassetete de Plástico', desc: '35cm, acessório de mão.' },
-                    { code: 'MOD-6958A', name: 'Algema', desc: 'Acessório temático.' }
+                    { code: 'H-26', name: 'Quepe Policial', desc: 'Azul, acabamento oficial.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957493/INSPIRA_POLICIAL_H-26_nug9fz.webp' },
+                    { code: 'MOD-486', name: 'Cartela de Bigode', desc: '12un, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956675/INSPIRA_POLICIAL_MOD-486_hzw4p5.webp' },
+                    { code: 'NYR-6472', name: 'Distintivo de Plástico', desc: 'Detalhe realista.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956675/INSPIRA_POLICIAL_NYR-6472_vwa7ag.webp' },
+                    { code: 'MOD-1187', name: 'Rádio Policial', desc: 'Kit com 2 peças.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956675/INSPIRA_POLICIAL_MOD-1187_zsteau.webp' },
+                    { code: 'MOD-6481', name: 'Cassetete de Plástico', desc: '35cm, acessório de mão.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956674/INSPIRA_POLICIAL_MOD-6481_rdsblo.webp' },
+                    { code: 'MOD-6958A', name: 'Algema', desc: 'Acessório temático.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956675/INSPIRA_POLICIAL_MOD-6958A_ryuqym.webp' }
                 ],
                 // medido direto na imagem real (INSPIRA_POLICIAL.webp)
                 hotspots: [
@@ -1455,10 +1443,10 @@
                 alt: 'Modelo vestindo fantasia de anjo branco',
                 palette: { primary: '#B8A05E', cta: '#7B92B8', light: '#FBF9F4', mid: '#E8DCC0', badge: '#B8A05E', label: '#7A6A3E', border: '#B8A05E' },
                 products: [
-                    { code: 'MOD-409', name: 'Tiara de Anjo Branca', desc: 'Acabamento delicado.' },
-                    { code: 'MOD-6248', name: 'Asa de Anjo Branca', desc: 'Detalhe de marabu macio.' },
-                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
-                    { code: 'MOD-1079', name: 'Meia-Calça Arrastão', desc: '7/8, branca, par.' }
+                    { code: 'MOD-409', name: 'Tiara de Anjo Branca', desc: 'Acabamento delicado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956818/INSPIRA_ANJO_MOD-409_im2mym.webp' },
+                    { code: 'MOD-6248', name: 'Asa de Anjo Branca', desc: 'Detalhe de marabu macio.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956816/INSPIRA_ANJO_MOD-6248_anuja4.webp' },
+                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956817/INSPIRA_ANJO_MOD-1010_h5jqbu.webp' },
+                    { code: 'MOD-1079', name: 'Meia-Calça Arrastão', desc: '7/8, branca, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956817/INSPIRA_ANJO_MOD-1079_jbzlvy.webp' }
                 ],
 
                 hotspots: [
@@ -1474,11 +1462,11 @@
                 alt: 'Modelo vestindo fantasia de enfermeira',
                 palette: { primary: '#E31E24', cta: '#E31E24', light: '#FDEBEC', mid: '#F5A6A9', badge: '#E31E24', label: '#7A1F24', border: '#E31E24' },
                 products: [
-                    { code: 'H-99', name: 'Chapéu de Enfermeira', desc: 'Modelo clássico, branco/vermelho.' },
-                    { code: 'NYR-6480', name: 'Termômetro de Plástico', desc: '38cm, acessório temático.' },
-                    { code: 'NYR-6474', name: 'Estetoscópio de Plástico', desc: 'Acessório temático realista.' },
-                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.' },
-                    { code: 'MOD-1072', name: 'Meia-Calça 7/8', desc: 'Branca, estilo enfermeira.' }
+                    { code: 'H-99', name: 'Chapéu de Enfermeira', desc: 'Modelo clássico, branco/vermelho.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956713/INSPIRA_ENFERMEIRA_H-99_jjgjru.webp' },
+                    { code: 'NYR-6480', name: 'Termômetro de Plástico', desc: '38cm, acessório temático.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956712/INSPIRA_ENFERMEIRA_NYR-6480_ujempn.webp' },
+                    { code: 'NYR-6474', name: 'Estetoscópio de Plástico', desc: 'Acessório temático realista.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956712/INSPIRA_ENFERMEIRA_INSPIRA_ENFERMEIRA_NYR-6474_km7aer.webp' },
+                    { code: 'MOD-1010', name: 'Saia Tulê', desc: '40cm, branca lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957569/INSPIRA_ENFERMEIRA_MOD-1010_rjgfuu.webp' },
+                    { code: 'MOD-1072', name: 'Meia-Calça 7/8', desc: 'Branca, estilo enfermeira.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956712/INSPIRA_ENFERMEIRA_MOD-1072_fpcxrf.webp' }
                 ],
                 hotspots: [
                     { x: 47, y: 7.3, productIndex: 0 },   // chapéu de enfermeira
@@ -1494,12 +1482,12 @@
                 alt: 'Modelo vestindo look de bloquinho de Carnaval',
                 palette: { primary: '#D6336C', cta: '#1E5AA8', light: '#FDF1F0', mid: '#D4A017', badge: '#D32F2F', label: '#5C1130', border: '#D6336C' },
                 products: [
-                    { code: 'MOD-6830', name: 'Máscara Metalizada Glitter', desc: 'Penas e glitter sortidos.' },
-                    { code: 'MOD-1115', name: 'Brinco Fitas Coloridas', desc: 'Par, fitas de tecido colorido.' },
-                    { code: 'MOD-1150', name: 'Gargantilha com Lantejoula', desc: 'Acabamento brilhante.' },
-                    { code: 'MOD-6904', name: 'Colar Havaiano de Flores', desc: 'Flores em tecido, pacote c/12.' },
-                    { code: 'MOD-930', name: 'Saia Havaiana Metalizada', desc: 'Elástico, cores sortidas.' },
-                    { code: 'MOD-1078', name: 'Meia-Calça Arrastão', desc: '7/8, vermelha, par.' }
+                    { code: 'MOD-6830', name: 'Máscara Metalizada Glitter', desc: 'Penas e glitter sortidos.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956849/INSPIRA_BLOQUINHO_MOD-6830_jxrhtj.webp' },
+                    { code: 'MOD-1115', name: 'Brinco Fitas Coloridas', desc: 'Par, fitas de tecido colorido.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956851/INSPIRA_BLOQUINHO_MOD-1115_zbhkna.webp' },
+                    { code: 'MOD-1150', name: 'Gargantilha com Lantejoula', desc: 'Acabamento brilhante.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956850/INSPIRA_BLOQUINHO_MOD-1150_zopsz2.webp' },
+                    { code: 'MOD-6904', name: 'Colar Havaiano de Flores', desc: 'Flores em tecido, pacote c/12.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956846/INSPIRA_BLOQUINHO_MOD-6904_dl9jxz.webp' },
+                    { code: 'MOD-930', name: 'Saia Havaiana Metalizada', desc: 'Elástico, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956853/INSPIRA_BLOQUINHO_MOD-930_sdrqyt.webp' },
+                    { code: 'MOD-1078', name: 'Meia-Calça Arrastão', desc: '7/8, vermelha, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956847/INSPIRA_BLOQUINHO_MOD-1078_nbysbu.webp' }
                 ],
 
                 hotspots: [
@@ -1517,17 +1505,17 @@
                 alt: 'Modelo vestindo fantasia de anjo negro',
                 palette: { primary: '#3A3345', cta: '#5C4B75', light: '#EDEAF0', mid: '#8A7A9E', badge: '#3A3345', label: '#2B2633', border: '#3A3345' },
                 products: [
-                    { code: 'MOD-878', name: 'Tiara de Anjo Preta', desc: 'Acabamento delicado.' },
-                    { code: 'MOD-891', name: 'Asa de Anjo Preta', desc: 'Tamanho P, com pena.' },
-                    { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.' },
-                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.' }
+                    { code: 'MOD-878', name: 'Tiara de Anjo Preta', desc: 'Acabamento delicado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956901/INSPIRA_ANJO-NEGRO_MOD-878_q9y9sa.webp' },
+                    { code: 'MOD-891', name: 'Asa de Anjo Preta', desc: 'Tamanho P, com pena.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956900/INSPIRA_ANJO-NEGRO_MOD-891_yzaukg.webp' },
+                    { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
+                    { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp' }
                 ],
-                 hotspots: [
+                hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
-                    { x: 62, y: 65, productIndex: 3 }  // colar havaiano de flores
-                  
+                    { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
+
                 ]
             }
         ];
@@ -1554,6 +1542,17 @@
                 pts.push({ x: xs[i % xs.length], y: y });
             }
             return pts;
+        }
+
+        // converte hex ('#C2185B') pra string "r, g, b" — usada tanto por
+        // renderKit() (pra alimentar as variáveis --season-*-rgb, que os
+        // rgba() no CSS consomem) quanto pelo confete mais abaixo
+        function hexToRgbStr(hex) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `${r}, ${g}, ${b}`;
         }
 
         let activeKitIndex = 0;
@@ -1645,16 +1644,27 @@
             section.style.setProperty('--season-badge', kit.palette.badge);
             section.style.setProperty('--season-label', kit.palette.label);
             section.style.setProperty('--season-border', kit.palette.border);
+            // canais RGB separados — alimentam os rgba(var(--x-rgb), N)
+            // espalhados pelo CSS (sombras/bordas com opacidade)
+            section.style.setProperty('--season-primary-rgb', hexToRgbStr(kit.palette.primary));
+            section.style.setProperty('--season-cta-rgb', hexToRgbStr(kit.palette.cta));
+            section.style.setProperty('--season-mid-rgb', hexToRgbStr(kit.palette.mid));
+            section.style.setProperty('--season-badge-rgb', hexToRgbStr(kit.palette.badge));
+            section.style.setProperty('--season-label-rgb', hexToRgbStr(kit.palette.label));
             section.style.background = kit.palette.light;
             if (window.updateConfettiPalette) window.updateConfettiPalette(kit.palette);
 
             // título
             document.getElementById('kitTitle').textContent = kit.name;
 
-            // resumo de peças (ícones "+")
+            // resumo de peças (ícones "+") — usa a foto real do produto
+            // (p.image) quando existir; senão cai no placeholder de texto
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
-                return `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>${sep}`;
+                const icon = p.image
+                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
+                return `${icon}${sep}`;
             }).join('');
             document.getElementById('kitSummaryIcons').innerHTML = iconsHtml;
 
@@ -1676,10 +1686,15 @@
             }).join('');
             document.getElementById('hotspotsLayer').innerHTML = hotspotsHtml;
 
-            // cards de produto
-            const cardsHtml = kit.products.map((p, i) => `
+            // cards de produto — mesma lógica: foto real (p.image) quando
+            // existir, senão placeholder de texto
+            const cardsHtml = kit.products.map((p, i) => {
+                const photoHtml = p.image
+                    ? `<div class="product-callout-photo"><img src="${p.image}" alt="${p.name}"></div>`
+                    : `<div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>${p.name.split(' ')[0].toUpperCase()}</div>`;
+                return `
                 <div class="product-callout" id="card-${activeKitIndex}-${i}">
-                    <div class="product-callout-photo placeholder-swatch" style="font-size:9px;">FOTO<br>${p.name.split(' ')[0].toUpperCase()}</div>
+                    ${photoHtml}
                     <div class="product-callout-body">
                         <div class="product-callout-title-row">
                             <span class="product-callout-ref">${p.code}</span>
@@ -1692,7 +1707,8 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             document.getElementById('colRightCards').innerHTML = cardsHtml;
 
             // tabs/dots ativos + indicador de posição
@@ -1937,13 +1953,9 @@
                 'rgba(255, 87, 34, 0.5)',
             ];
 
-            function hexToRgbStr(hex) {
-                hex = hex.replace('#', '');
-                const r = parseInt(hex.substring(0, 2), 16);
-                const g = parseInt(hex.substring(2, 4), 16);
-                const b = parseInt(hex.substring(4, 6), 16);
-                return `${r}, ${g}, ${b}`;
-            }
+            // hexToRgbStr agora é compartilhada (definida mais acima,
+            // antes de renderKit) — removida a cópia local que existia
+            // só aqui dentro
 
             // exposta em window pra renderKit() (fora dessa IIFE)
             // conseguir chamar quando o kit trocar
