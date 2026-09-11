@@ -422,6 +422,46 @@
             }
         }
 
+        /* ─── ≤465px: decor-legend vira lista horizontal, igual
+           col-right/product-callout de Acessórios (foto pequena ao lado
+           do texto, não mais card vertical empilhado) — mesmo HTML
+           (title-row/ref/video-btn já são os mesmos de product-callout,
+           só decor-legend-item/photo/body mudam de eixo aqui) ─── */
+        @media (max-width: 465px) {
+            .decor-legend {
+                display: flex;
+                flex-direction: column;
+                gap: clamp(6.5px, 0.85vw, 9.1px);
+            }
+
+            .decor-legend-item {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                gap: clamp(6.5px, 1.04vw, 10.4px);
+                padding: clamp(6.5px, 0.78vw, 9.1px);
+            }
+
+            .decor-legend-photo {
+                width: clamp(72px, 9vw, 108px);
+                aspect-ratio: 1 / 1;
+                border-radius: 10px;
+                flex-shrink: 0;
+            }
+
+            .decor-legend-number {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+                top: 6px;
+                left: 6px;
+            }
+
+            .decor-legend-body {
+                padding: 2px 0 0;
+            }
+        }
+
         /* ─── SEASON-TABS — trocam o kit exibido dentro da sazonalidade corrente ─── */
         .inspira-tabs {
             display: flex;
@@ -485,7 +525,8 @@
             grid-area: model;
         }
 
-        .model-stack, .decor-photo-stack {
+        .model-stack,
+        .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -665,7 +706,8 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow, .decor-nav-arrow {
+        .model-nav-arrow,
+        .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -684,7 +726,8 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover, .decor-nav-arrow:hover {
+        .model-nav-arrow:hover,
+        .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -698,7 +741,8 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator, .decor-switcher-indicator {
+        .kit-switcher-indicator,
+        .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -706,7 +750,8 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label, .decor-switcher-label {
+        .kit-switcher-label,
+        .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -715,18 +760,21 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count, .decor-switcher-count {
+        .kit-switcher-count,
+        .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots, .decor-switcher-dots {
+        .kit-switcher-dots,
+        .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot, .decor-dot {
+        .kit-dot,
+        .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -735,7 +783,8 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active, .decor-dot.active {
+        .kit-dot.active,
+        .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1121,8 +1170,21 @@
         /* ─── esconder as setas na faixa intermediária (900px → 565px) —
            layout tablet, sem necessidade de navegação por seta aqui;
            os dots do kit-switcher-indicator continuam disponíveis ─── */
-        @media (max-width: 900px) and (min-width: 565px) {
+        /* ─── esconder as setas de Acessórios abaixo de 1240px (volta só
+           no mobile, ≤564px, onde tem regra própria de tamanho reduzido
+           mais abaixo) — faixa estendida de 900px pra 1239px a pedido ─── */
+        @media (max-width: 1239px) and (min-width: 565px) {
             .model-nav-arrow {
+                display: none;
+            }
+        }
+
+        /* ─── esconder as setas de Decoração só na faixa 801-1239px —
+           ficam visíveis tanto em desktop (≥1240px) quanto no "tablet"
+           de Decoração (565-800px, onde a grid já é 1 coluna) e no
+           mobile (≤564px, sem essa restrição aqui — a pedido) ─── */
+        @media (max-width: 1239px) and (min-width: 801px) {
+            .decor-nav-arrow {
                 display: none;
             }
         }
@@ -1194,10 +1256,17 @@
             .inspira-tabs {
                 order: 4;
                 margin-top: 0;
+                display: none;
+                /* pedido explícito: tabs somem abaixo de 565px nas duas
+                   abas (Acessórios e Decoração) — o order acima fica sem
+                   efeito prático agora, mas não atrapalha, então deixei */
             }
 
             .kit-summary-card {
                 order: 5;
+                display: none;
+                /* mesmo pedido — some nas duas abas (classe compartilhada
+                   entre .col-left e .decor-col-left) */
             }
 
             .col-model {
@@ -1307,7 +1376,8 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow, .decor-nav-arrow {
+            .model-nav-arrow,
+            .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
@@ -1696,12 +1766,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp' }
                 ],
-                 hotspots: [
+                hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-                  
+
                 ]
             }
         ];
@@ -2092,8 +2162,15 @@
                     <span class="decor-legend-number">${i + 1}</span>
                     ${photoHtml}
                     <div class="decor-legend-body">
-                        <div class="decor-legend-name">${p.name}</div>
+                        <div class="product-callout-title-row">
+                            <span class="product-callout-ref">${p.code}</span>
+                            <div class="decor-legend-name">${p.name}</div>
+                        </div>
                         <p class="decor-legend-desc">${p.desc}</p>
+                        <button class="product-callout-video-btn">
+                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                            Ver Vídeo
+                        </button>
                     </div>
                 </div>
             `;
