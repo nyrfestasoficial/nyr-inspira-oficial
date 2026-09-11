@@ -485,8 +485,7 @@
             grid-area: model;
         }
 
-        .model-stack,
-        .decor-photo-stack {
+        .model-stack, .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -666,8 +665,7 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow,
-        .decor-nav-arrow {
+        .model-nav-arrow, .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -686,8 +684,7 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover,
-        .decor-nav-arrow:hover {
+        .model-nav-arrow:hover, .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -701,8 +698,7 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator,
-        .decor-switcher-indicator {
+        .kit-switcher-indicator, .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -710,8 +706,7 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label,
-        .decor-switcher-label {
+        .kit-switcher-label, .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -720,21 +715,18 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count,
-        .decor-switcher-count {
+        .kit-switcher-count, .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots,
-        .decor-switcher-dots {
+        .kit-switcher-dots, .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot,
-        .decor-dot {
+        .kit-dot, .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -743,8 +735,7 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active,
-        .decor-dot.active {
+        .kit-dot.active, .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1316,8 +1307,7 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow,
-            .decor-nav-arrow {
+            .model-nav-arrow, .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
@@ -1706,12 +1696,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp' }
                 ],
-                hotspots: [
+                 hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-
+                  
                 ]
             }
         ];
@@ -2123,6 +2113,7 @@
             }
 
             attachDecorMarkerHandlers();
+            updateAll();
         }
 
         function attachDecorMarkerHandlers() {
