@@ -297,6 +297,7 @@
 
         .decor-photo-frame {
             position: relative;
+            width: 100%;
             aspect-ratio: 3 / 2;
             border-radius: 16px;
             overflow: hidden;
@@ -484,14 +485,14 @@
             grid-area: model;
         }
 
-        .model-stack {
+        .model-stack,
+        .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* agrupa .model-frame + .kit-switcher-indicator num único
-               filho de .col-model, pra empilhar verticalmente sem
-               depender da direção do flex de .col-model (que é
-               horizontal, pra alinhar a coluna toda no grid) */
+            /* agrupa .model-frame + .kit-switcher-indicator (ou o
+               equivalente de decoração) num único filho, pra empilhar
+               verticalmente sem depender da direção do flex do pai */
         }
 
         .col-right {
@@ -665,7 +666,8 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow {
+        .model-nav-arrow,
+        .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -684,7 +686,8 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover {
+        .model-nav-arrow:hover,
+        .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -698,7 +701,8 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator {
+        .kit-switcher-indicator,
+        .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -706,7 +710,8 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label {
+        .kit-switcher-label,
+        .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -715,18 +720,21 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count {
+        .kit-switcher-count,
+        .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots {
+        .kit-switcher-dots,
+        .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot {
+        .kit-dot,
+        .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -735,7 +743,8 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active {
+        .kit-dot.active,
+        .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1154,7 +1163,7 @@
             }
 
             .inspira-header,
-            #inspira-view-acessorios,
+            #inspira-view-acessorios:not([hidden]),
             .inspira-grid,
             .col-left {
                 display: contents;
@@ -1165,7 +1174,14 @@
                    view "Decoração", que fica escondida via atributo
                    [hidden]; regra de autor com mesma especificidade SEMPRE
                    vence [hidden] (que é regra do navegador), então usar a
-                   classe revelava o conteúdo escondido junto */
+                   classe revelava o conteúdo escondido junto.
+                   BUG ENCONTRADO DEPOIS: mesmo usando o ID, a especificidade
+                   de ID (1-0-0-0) TAMBÉM vencia o [hidden] (0-0-1-0) do
+                   PRÓPRIO elemento quando Decoração estava ativa — ou seja,
+                   Acessórios vazava mesmo escondido. O :not([hidden]) força
+                   essa regra a simplesmente não bater quando o atributo
+                   estiver presente, cedendo pro comportamento nativo do
+                   navegador nesse caso. */
             }
 
             .inspira-header-eyebrow {
@@ -1205,12 +1221,37 @@
                 order: 8;
             }
 
+            /* #inspira-view-decoracao NÃO é display:contents (fica como
+               bloco normal, ao contrário de #inspira-view-acessorios) —
+               então ELE MESMO é item direto do flex de .container, e
+               precisa de order próprio. Sem isso, cai no padrão order:0
+               do flexbox e passa na frente do eyebrow(1)/título(2) do
+               cabeçalho, empurrando o cabeçalho pra baixo da página —
+               bug visto depois do fix do vazamento.
+               CORRIGIDO DE order:3 PRA order:9: as .inspira-tabs também
+               são filhas de .inspira-header (sempre achatadas, mesmo em
+               Decoração) e têm order:4 — com o decor-view em order:3
+               (menor), ele vinha ANTES das tabs, empurrando as tabs pro
+               fim de tudo. order:9 garante que o decor-view sempre vem
+               depois do eyebrow/título/tabs, não importa o que mais
+               exista achatado no meio (inclusive os order 1-8 já usados
+               por Acessórios, que nunca coexistem com Decoração de
+               qualquer forma, já que só uma view fica visível por vez). */
+            #inspira-view-decoracao {
+                order: 9;
+            }
+
             /* .inspira-eyebrow ("Sugestão de Kit") + .inspira-title (nome
                do kit) saem do fluxo — viram legenda sobreposta no canto
                superior esquerdo da foto, aproveitando o vão vazio que já
-               existe ali (margem transparente do PNG antes das penas) */
-            .inspira-eyebrow,
-            .inspira-title {
+               existe ali (margem transparente do PNG antes das penas).
+               ESCOPADO só pra dentro de Acessórios — sem o prefixo
+               #inspira-view-acessorios, essas classes (reaproveitadas por
+               .decor-col-left) também viravam absolute em Decoração, sem
+               nenhum sentido lá (não existe a mesma margem transparente
+               de foto pra "encaixar" a legenda) */
+            #inspira-view-acessorios .inspira-eyebrow,
+            #inspira-view-acessorios .inspira-title {
                 position: absolute;
                 top: 12px;
                 left: 12px;
@@ -1219,7 +1260,7 @@
                 z-index: 3;
             }
 
-            .inspira-eyebrow {
+            #inspira-view-acessorios .inspira-eyebrow {
                 font-size: 10px !important;
                 /* teto próprio pro contexto de legenda sobreposta — o
                    clamp() geral (13-17px) foi pensado pra coluna de
@@ -1227,7 +1268,7 @@
                    ficando grande demais em cima da foto */
             }
 
-            .inspira-title {
+            #inspira-view-acessorios .inspira-title {
                 top: 34px;
                 line-height: 0.95;
                 font-size: 24px !important;
@@ -1275,7 +1316,8 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow {
+            .model-nav-arrow,
+            .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
@@ -1383,6 +1425,15 @@
             <!-- VIEW: DECORAÇÃO (placeholder — sem conteúdo real ainda, só a troca de UI) -->
             <div id="inspira-view-decoracao" class="inspira-view" hidden>
                 <div class="decor-grid">
+                    <!-- setas de navegação — mesma lógica de posicionamento de
+                     Acessórios (função genérica compartilhada), mas com
+                     classe própria pra não ambiguar com o
+                     querySelectorAll('.model-nav-arrow') existente, e sem
+                     herdar a regra que esconde entre 900-565px (mantidas
+                     visíveis aqui por enquanto, a pedido) -->
+                    <button class="decor-nav-arrow decor-nav-prev" aria-label="Cenário anterior">‹</button>
+                    <button class="decor-nav-arrow decor-nav-next" aria-label="Próximo cenário">›</button>
+
                     <div class="decor-col-left">
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
@@ -1396,14 +1447,30 @@
                         </div>
                     </div>
 
-                    <div class="decor-photo-frame">
-                        <img class="decor-photo" id="decorPhoto" src="" alt="">
-                        <div class="decor-photo-placeholder" id="decorPhotoPlaceholder"></div>
-                        <div id="decorMarkersLayer"></div>
+                    <div class="decor-photo-stack">
+                        <div class="decor-photo-frame">
+                            <img class="decor-photo" id="decorPhoto" src="" alt="">
+                            <div class="decor-photo-placeholder" id="decorPhotoPlaceholder"></div>
+                            <div id="decorMarkersLayer"></div>
+                        </div>
+
+                        <!-- indicador de posição — nome do cenário ativo + dots -->
+                        <div class="decor-switcher-indicator">
+                            <span class="decor-switcher-label" id="decorSwitcherLabel">Cenário · <span
+                                    class="decor-switcher-count">1 de 5</span></span>
+                            <div class="decor-switcher-dots" id="decorDots"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="decor-legend" id="decorLegend"></div>
+
+                <div class="inspira-footer">
+                    <p class="inspira-tip"><strong>Dica NYR:</strong> a decoração ambienta o espaço, não a festa —
+                        use os cenários pra inspirar o lojista a decorar vitrine, balcão ou recepção, mesmo fora do
+                        segmento de festas.</p>
+                    <button class="inspira-btn">Quero Esse Cenário</button>
+                </div>
             </div>
         </div>
     </section>
@@ -1808,6 +1875,16 @@
             });
         }
 
+        function buildDecorDots() {
+            const wrap = document.getElementById('decorDots');
+            wrap.innerHTML = DECOR_KITS.map((k, i) =>
+                `<span class="decor-dot${i === 0 ? ' active' : ''}" data-index="${i}"></span>`
+            ).join('');
+            wrap.querySelectorAll('.decor-dot').forEach((dot, i) => {
+                dot.addEventListener('click', () => renderDecorKit(i));
+            });
+        }
+
         // religa clique+teclado nos hotspots — precisa rodar de novo toda
         // vez que os hotspots são regenerados (renderKit apaga e recria
         // os elementos, então os listeners antigos morrem junto)
@@ -2036,6 +2113,14 @@
             document.querySelectorAll('#inspiraTabs .inspira-tab').forEach((tab, i) => {
                 tab.classList.toggle('active', i === activeDecorIndex);
             });
+            document.querySelectorAll('.decor-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === activeDecorIndex);
+            });
+            const switcherLabel = document.getElementById('decorSwitcherLabel');
+            if (switcherLabel) {
+                switcherLabel.innerHTML =
+                    `${kit.name} · <span class="decor-switcher-count">${activeDecorIndex + 1} de ${DECOR_KITS.length}</span>`;
+            }
 
             attachDecorMarkerHandlers();
         }
@@ -2084,10 +2169,15 @@
 
         buildTabs();
         buildDots();
+        buildDecorDots();
         document.querySelector('.model-nav-prev')
             .addEventListener('click', () => renderKit(activeKitIndex - 1));
         document.querySelector('.model-nav-next')
             .addEventListener('click', () => renderKit(activeKitIndex + 1));
+        document.querySelector('.decor-nav-prev')
+            .addEventListener('click', () => renderDecorKit(activeDecorIndex - 1));
+        document.querySelector('.decor-nav-next')
+            .addEventListener('click', () => renderDecorKit(activeDecorIndex + 1));
         renderKit(0);
 
         // ─── TOGGLE ACESSÓRIOS / DECORAÇÃO ───
@@ -2148,20 +2238,20 @@
         // centro do .model-frame — necessário porque a altura do
         // cabeçalho (eyebrow + alavanca + tabs) varia, então um "top: 50%"
         // fixo relativo à seção inteira não bateria com a foto.
-        function updateNavArrowPosition() {
-            const frame = document.querySelector('.model-frame');
-            const grid = document.querySelector('.inspira .container');
-            // .container em vez de .inspira-grid — a grid vira
-            // display:contents no mobile (≤564px) e perde a caixa; o
-            // container tem o mesmo retângulo em qualquer largura
-            const prev = document.querySelector('.model-nav-prev');
-            const next = document.querySelector('.model-nav-next');
+        // versão genérica — recebe os 4 seletores em vez de assumir os de
+        // Acessórios, pra poder ser reaproveitada por Decoração sem
+        // duplicar a matemática fina (testada linha por linha) de novo
+        function positionNavArrows(frameSel, gridSel, prevSel, nextSel) {
+            const frame = document.querySelector(frameSel);
+            const grid = document.querySelector(gridSel);
+            const prev = document.querySelector(prevSel);
+            const next = document.querySelector(nextSel);
             if (!frame || !grid || !prev || !next) return;
 
             const frameRect = frame.getBoundingClientRect();
             const gridRect = grid.getBoundingClientRect();
             const top = frameRect.top - gridRect.top + frameRect.height / 2;
-            document.querySelectorAll('.model-nav-arrow').forEach(a => {
+            [prev, next].forEach(a => {
                 a.style.top = top + 'px';
                 a.style.transform = 'translateY(-50%)';
             });
@@ -2212,6 +2302,14 @@
             prev.style.right = 'auto';
             next.style.left = (gridWidth + safeGap) + 'px';
             next.style.right = 'auto';
+        }
+
+        function updateNavArrowPosition() {
+            positionNavArrows('.model-frame', '.inspira .container', '.model-nav-prev', '.model-nav-next');
+        }
+
+        function updateDecorNavArrowPosition() {
+            positionNavArrows('.decor-photo-frame', '.inspira .container', '.decor-nav-prev', '.decor-nav-next');
         }
 
         // Desenha as linhas SVG do hotspot até o card correspondente.
@@ -2499,6 +2597,7 @@
         function updateAll() {
             updateModePill();
             updateNavArrowPosition();
+            updateDecorNavArrowPosition();
             updateMobileOverlay();
             drawConnectors();
         }

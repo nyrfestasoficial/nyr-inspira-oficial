@@ -281,31 +281,144 @@
             }
         }
 
-        .inspira-decor-placeholder {
-            text-align: center;
-            padding: 80px 24px;
-            max-width: 460px;
-            margin: 0 auto;
+        /* ─── DECORAÇÃO — col-left (reaproveitada de Acessórios) + foto à
+           direita, proporção 583:452 (~1.29:1) medida no protótipo ─── */
+        .decor-col-left {
+            text-align: left;
         }
 
-        .inspira-decor-placeholder-icon {
-            font-size: 40px;
+        .decor-grid {
+            display: grid;
+            grid-template-columns: minmax(280px, 1fr) minmax(300px, 1.29fr);
+            gap: 36px;
+            align-items: center;
+            padding: clamp(20px, 3vw, 40px) 0 clamp(24px, 3vw, 36px);
+        }
+
+        .decor-photo-frame {
+            position: relative;
+            aspect-ratio: 3 / 2;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f2f2f2;
+        }
+
+        .decor-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
-            margin-bottom: 14px;
         }
 
-        .inspira-decor-placeholder h3 {
-            font-family: 'Anton', sans-serif;
-            font-size: 22px;
-            color: var(--season-label);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .inspira-decor-placeholder p {
-            font-size: 14px;
-            color: rgba(var(--season-label-rgb), 0.65);
+        .decor-photo-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            background: rgba(var(--season-primary-rgb), 0.05);
+            border: 1px dashed rgba(var(--season-primary-rgb), 0.3);
+            color: rgba(var(--season-label-rgb), 0.55);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 13px;
             line-height: 1.5;
+        }
+
+        .decor-marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--season-badge);
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            color: #ffffff;
+            font-family: 'Anton', sans-serif;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* legenda — largura total, cards verticais (foto em cima, depois
+           título, depois descrição) — diferente dos product-callout de
+           Acessórios, que são horizontais */
+        .decor-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .decor-legend-item {
+            position: relative;
+            border-radius: 14px;
+            border: 1px solid rgba(var(--season-primary-rgb), 0.12);
+            background: #ffffff;
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .decor-legend-item:hover {
+            border-color: rgba(var(--season-primary-rgb), 0.35);
+        }
+
+        .decor-legend-item.hs-active {
+            border-color: var(--season-cta);
+            box-shadow: 0 0 0 2px rgba(var(--season-cta-rgb), 0.15);
+        }
+
+        .decor-legend-photo {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: block;
+            object-fit: cover;
+            background: #f2f2f2;
+        }
+
+        .decor-legend-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--season-badge);
+            color: #ffffff;
+            font-family: 'Anton', sans-serif;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .decor-legend-body {
+            padding: 12px 14px 16px;
+        }
+
+        .decor-legend-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 14px;
+            color: var(--season-label);
+            margin-bottom: 4px;
+        }
+
+        .decor-legend-desc {
+            font-size: 12px;
+            color: rgba(var(--season-label-rgb), 0.65);
+            line-height: 1.4;
+        }
+
+        @media (max-width: 800px) {
+            .decor-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ─── SEASON-TABS — trocam o kit exibido dentro da sazonalidade corrente ─── */
@@ -1269,12 +1382,28 @@
 
             <!-- VIEW: DECORAÇÃO (placeholder — sem conteúdo real ainda, só a troca de UI) -->
             <div id="inspira-view-decoracao" class="inspira-view" hidden>
-                <div class="inspira-decor-placeholder">
-                    <span class="inspira-decor-placeholder-icon">🎈</span>
-                    <h3>Kits de decoração chegando em breve</h3>
-                    <p>Essa view já está com a troca de UI funcionando — falta só o conteúdo real dos kits de
-                        decoração entrar aqui.</p>
+                <div class="decor-grid">
+                    <div class="decor-col-left">
+                        <span class="inspira-eyebrow">Sugestão de Cenário</span>
+                        <h2 class="inspira-title" id="decorTitle">Cenário</h2>
+                        <p class="inspira-sub" id="decorSub">Itens do catálogo já combinados numa sugestão de
+                            ambientação pronta pra vitrine.</p>
+
+                        <div class="kit-summary-card">
+                            <span class="kit-summary-label">Itens Deste Cenário</span>
+                            <div class="kit-summary-icons" id="decorSummaryIcons"></div>
+                            <p>Tudo que seu cliente precisa pra montar essa decoração completa.</p>
+                        </div>
+                    </div>
+
+                    <div class="decor-photo-frame">
+                        <img class="decor-photo" id="decorPhoto" src="" alt="">
+                        <div class="decor-photo-placeholder" id="decorPhotoPlaceholder"></div>
+                        <div id="decorMarkersLayer"></div>
+                    </div>
                 </div>
+
+                <div class="decor-legend" id="decorLegend"></div>
             </div>
         </div>
     </section>
@@ -1555,7 +1684,107 @@
             return `${r}, ${g}, ${b}`;
         }
 
-        let activeKitIndex = 0;
+        // ─── CENÁRIOS DE DECORAÇÃO — mesma estrutura do KITS (name, image,
+        // palette, products, hotspots), só que "hotspots" aqui vira marcador
+        // numerado tolerante (não precisa acertar pixel exato de um objeto
+        // pequeno — só a região aproximada da cena). image: null até termos
+        // fotos reais geradas — cai num placeholder visual enquanto isso.
+        // ESTES 2 CENÁRIOS SÃO PLACEHOLDER, só pra provar o mecanismo.
+        const DECOR_KITS = [
+            {
+                name: 'Arco-Íris',
+                fullTitle: 'Loja de Festas',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/ARCO-IRIS_gon179.webp',
+                alt: 'Cenário decorado — parede de loja de festas com sombrinhas, varal e máscara coloridos',
+                palette: { primary: '#D98C00', cta: '#E63946', light: '#FDF6E3', mid: '#2E8B57', badge: '#1E88E5', label: '#6B4413', border: '#D98C00' },
+                products: [
+                    { code: 'MOD-360/943', name: 'Sombrinha + Espiral Carnaval', desc: 'Sombrinha 50cm + kit 6 espirais sortidos.' },
+                    { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.' },
+                    { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.' }
+                ],
+                hotspots: [
+                    { x: 30, y: 30, productIndex: 0 },
+                    { x: 65, y: 40, productIndex: 1 },
+                    { x: 45, y: 70, productIndex: 2 }
+                ]
+            },
+            {
+                name: 'Dourado',
+                fullTitle: 'Shopping Dourado',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/DOURADO_dbdiqi.webp',
+                alt: 'Cenário decorado — painel dourado de shopping com cortina metalizada e máscaras',
+                palette: { primary: '#B8860B', cta: '#D4A017', light: '#FDF6E0', mid: '#E8C158', badge: '#8B6508', label: '#4A3505', border: '#B8860B' },
+                products: [
+                    { code: 'MOD-1109', name: 'Painel Máscara Fitas Metalizadas', desc: '73x98cm, fitas metalizadas.' },
+                    { code: 'MOD-1110', name: 'Painel Máscara Fitas Sortidas', desc: '50x86cm, cores sortidas.' },
+                    { code: 'MOD-653', name: 'Cortina Shimmer Wall', desc: '2x1m, metalizada dourada.' },
+                    { code: 'MOD-648', name: 'Cortina Metalizada Dourada', desc: '2x1m, acabamento liso.' }
+                ],
+                hotspots: [
+                    { x: 25, y: 35, productIndex: 0 },
+                    { x: 55, y: 25, productIndex: 1 },
+                    { x: 30, y: 65, productIndex: 2 },
+                    { x: 70, y: 55, productIndex: 3 }
+                ]
+            },
+            {
+                name: 'Folia',
+                fullTitle: 'Restaurante Folia',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/FOLIA_absqkv.webp',
+                alt: 'Cenário decorado — parede de restaurante com banner Folia, bandeirinhas e máscara coloridos',
+                palette: { primary: '#C0392B', cta: '#2980B9', light: '#FAF3E8', mid: '#F1C40F', badge: '#27AE60', label: '#5C3A21', border: '#C0392B' },
+                products: [
+                    { code: 'MOD-1177', name: 'Varal Folia de Papel', desc: 'Tema Carnaval, papel.' },
+                    { code: 'MOD-1183', name: 'Varal Decorativo Carnaval', desc: 'Mesmo formato do varal folia.' },
+                    { code: 'MOD-1175', name: 'Painel Máscara de Papel', desc: '53x27cm, metalizado.' },
+                    { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.' }
+                ],
+                hotspots: [
+                    { x: 35, y: 20, productIndex: 0 },
+                    { x: 65, y: 20, productIndex: 1 },
+                    { x: 50, y: 55, productIndex: 2 },
+                    { x: 20, y: 45, productIndex: 3 }
+                ]
+            },
+            {
+                name: 'Prata-Rose',
+                fullTitle: 'Hotel Prata-Rose',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PRATA-ROSE_miulvc.webp',
+                alt: 'Cenário decorado — lobby de hotel com cortinas prata e rose gold e máscaras metalizadas',
+                palette: { primary: '#B76E79', cta: '#A45A64', light: '#FAF4F2', mid: '#C9A66B', badge: '#8B3A42', label: '#5C2A30', border: '#B76E79' },
+                products: [
+                    { code: 'MOD-1171', name: 'Painel Máscara de Papel', desc: '53x30cm, metalizado.' },
+                    { code: 'MOD-1105', name: 'Painel Máscara Plástico', desc: '73x33cm, acabamento liso.' },
+                    { code: 'MOD-987', name: 'Cortina Ondulada Prata', desc: '2x1m, metalizada.' },
+                    { code: 'MOD-739', name: 'Cortina Holográfica Rose Gold', desc: '2x1m, metalizada.' }
+                ],
+                hotspots: [
+                    { x: 25, y: 25, productIndex: 0 },
+                    { x: 55, y: 30, productIndex: 1 },
+                    { x: 20, y: 55, productIndex: 2 },
+                    { x: 70, y: 55, productIndex: 3 }
+                ]
+            },
+            {
+                name: 'Penas',
+                fullTitle: 'Farmácia',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PENAS_trwzc8.webp',
+                alt: 'Cenário decorado — vitrine de farmácia com painel de penas Carnaval e adesivos coloridos',
+                palette: { primary: '#8E44AD', cta: '#E91E63', light: '#F8F5FC', mid: '#F39C12', badge: '#16A085', label: '#4A235A', border: '#8E44AD' },
+                products: [
+                    { code: 'MOD-1180', name: 'Painel Papel Cartonado', desc: '90x60cm, rígido, vívido.' },
+                    { code: 'MOD-1186', name: 'Kit Enfeite de Papel', desc: '4 peças, 15x20cm.' },
+                    { code: 'MOD-1151', name: 'Cartela de Adesivo Grande', desc: 'Autocolante.' }
+                ],
+                hotspots: [
+                    { x: 30, y: 30, productIndex: 0 },
+                    { x: 65, y: 40, productIndex: 1 },
+                    { x: 45, y: 70, productIndex: 2 }
+                ]
+            }
+        ];
+
+        let activeDecorIndex = 0;
 
         // gera as tabs uma única vez, a partir do array KITS
         function buildTabs() {
@@ -1726,6 +1955,133 @@
             updateAll();
         }
 
+        // ─── DECORAÇÃO — paralelo ao renderKit(), mas com marcador
+        // numerado tolerante em vez de hotspot pixel-preciso, e legenda
+        // em vez de cards de produto na coluna direita
+        function renderDecorKit(index) {
+            activeDecorIndex = (index + DECOR_KITS.length) % DECOR_KITS.length;
+            const kit = DECOR_KITS[activeDecorIndex];
+
+            const section = document.querySelector('.inspira');
+            section.style.setProperty('--season-primary', kit.palette.primary);
+            section.style.setProperty('--season-cta', kit.palette.cta);
+            section.style.setProperty('--season-light', kit.palette.light);
+            section.style.setProperty('--season-mid', kit.palette.mid);
+            section.style.setProperty('--season-badge', kit.palette.badge);
+            section.style.setProperty('--season-label', kit.palette.label);
+            section.style.setProperty('--season-border', kit.palette.border);
+            section.style.setProperty('--season-primary-rgb', hexToRgbStr(kit.palette.primary));
+            section.style.setProperty('--season-cta-rgb', hexToRgbStr(kit.palette.cta));
+            section.style.setProperty('--season-mid-rgb', hexToRgbStr(kit.palette.mid));
+            section.style.setProperty('--season-badge-rgb', hexToRgbStr(kit.palette.badge));
+            section.style.setProperty('--season-label-rgb', hexToRgbStr(kit.palette.label));
+            section.style.background = kit.palette.light;
+            if (window.updateConfettiPalette) window.updateConfettiPalette(kit.palette);
+
+            // foto — ou o placeholder, se ainda não tiver imagem real
+            const img = document.getElementById('decorPhoto');
+            const placeholder = document.getElementById('decorPhotoPlaceholder');
+            if (kit.image) {
+                img.src = kit.image;
+                img.alt = kit.alt || '';
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.textContent = `Foto do cenário "${kit.name}" ainda não gerada — placeholder.`;
+            }
+
+            // col-left — título e resumo de itens
+            document.getElementById('decorTitle').textContent = kit.fullTitle;
+            const iconsHtml = kit.products.map((p, i) => {
+                const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
+                const icon = p.image
+                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
+                return `${icon}${sep}`;
+            }).join('');
+            document.getElementById('decorSummaryIcons').innerHTML = iconsHtml;
+
+            // marcadores numerados — posição tolerante (região aproximada,
+            // não pixel exato). O número exibido é a ORDEM no array
+            // hotspots, não o productIndex (podem divergir).
+            const markersHtml = kit.hotspots.map((h, i) => {
+                const targetId = `decor-legend-${activeDecorIndex}-${h.productIndex}`;
+                return `<span class="decor-marker" data-target="${targetId}" style="left:${h.x}%; top:${h.y}%;">${i + 1}</span>`;
+            }).join('');
+            document.getElementById('decorMarkersLayer').innerHTML = markersHtml;
+
+            // legenda — cards verticais (foto em cima, número sobreposto
+            // no canto, depois título e descrição empilhados)
+            const legendHtml = kit.hotspots.map((h, i) => {
+                const p = kit.products[h.productIndex];
+                const photoHtml = p.image
+                    ? `<img class="decor-legend-photo" src="${p.image}" alt="${p.name}">`
+                    : `<div class="decor-legend-photo placeholder-swatch" style="font-size:9px;">FOTO<br>${p.name.split(' ')[0].toUpperCase()}</div>`;
+                return `
+                <div class="decor-legend-item" id="decor-legend-${activeDecorIndex}-${h.productIndex}">
+                    <span class="decor-legend-number">${i + 1}</span>
+                    ${photoHtml}
+                    <div class="decor-legend-body">
+                        <div class="decor-legend-name">${p.name}</div>
+                        <p class="decor-legend-desc">${p.desc}</p>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            document.getElementById('decorLegend').innerHTML = legendHtml;
+
+            document.querySelectorAll('#inspiraTabs .inspira-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === activeDecorIndex);
+            });
+
+            attachDecorMarkerHandlers();
+        }
+
+        function attachDecorMarkerHandlers() {
+            document.querySelectorAll('.decor-marker').forEach(marker => {
+                marker.setAttribute('role', 'button');
+                marker.setAttribute('tabindex', '0');
+                marker.setAttribute('aria-label', 'Ver produto correspondente');
+                const jump = () => {
+                    const target = document.getElementById(marker.dataset.target);
+                    if (!target) return;
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.querySelectorAll('.decor-legend-item.hs-active')
+                        .forEach(el => el.classList.remove('hs-active'));
+                    target.classList.add('hs-active');
+                    setTimeout(() => target.classList.remove('hs-active'), 2200);
+                };
+                marker.addEventListener('click', jump);
+                marker.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+                });
+            });
+            // clicar no item da legenda destaca o próprio item — não faz
+            // sentido "rolar até um pixel da foto", só confirma qual é
+            document.querySelectorAll('.decor-legend-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.decor-legend-item.hs-active')
+                        .forEach(el => el.classList.remove('hs-active'));
+                    item.classList.add('hs-active');
+                    setTimeout(() => item.classList.remove('hs-active'), 2200);
+                });
+            });
+        }
+
+        // gera as tabs de cenários de decoração — mesmo padrão de buildTabs()
+        function buildDecorTabs() {
+            const wrap = document.getElementById('inspiraTabs');
+            wrap.innerHTML = DECOR_KITS.map((k, i) =>
+                `<button class="inspira-tab${i === 0 ? ' active' : ''}">${k.name}</button>`
+            ).join('');
+            wrap.querySelectorAll('.inspira-tab').forEach((tab, i) => {
+                tab.addEventListener('click', () => renderDecorKit(i));
+            });
+        }
+
         buildTabs();
         buildDots();
         document.querySelector('.model-nav-prev')
@@ -1755,8 +2111,15 @@
                 document.querySelector('.inspira-mode-word').textContent =
                     isDecor ? 'Decoração' : 'Acessórios';
 
-                // as season-tabs só fazem sentido dentro de Acessórios
-                document.querySelector('.inspira-tabs').style.display = isDecor ? 'none' : 'flex';
+                // as season-tabs mostram os KITS em Acessórios, ou os
+                // DECOR_KITS em Decoração — reconstroem a cada troca
+                if (isDecor) {
+                    buildDecorTabs();
+                    renderDecorKit(activeDecorIndex);
+                } else {
+                    buildTabs();
+                    renderKit(activeKitIndex);
+                }
 
                 // reaplica a animação de entrada (a classe já saiu do DOM
                 // reflow, então remover/re-adicionar reinicia o keyframe)
