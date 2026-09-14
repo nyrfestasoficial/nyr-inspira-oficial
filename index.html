@@ -576,6 +576,13 @@
             line-height: 1.5;
             color: rgba(var(--season-label-rgb), 0.7);
             margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
+            text-align: left;
+            /* explícito aqui, não só herdado de .col-left/.decor-col-left
+               — em ≤564px, .col-left também vira display:contents, e
+               herança de propriedade através de display:contents é
+               historicamente instável entre navegadores. Deixar
+               explícito na própria regra remove essa dependência por
+               completo, pras duas abas, em qualquer largura. */
         }
 
         .kit-summary-card {
@@ -879,6 +886,89 @@
             flex: 0 0 100%;
             height: 100%;
             scroll-snap-align: start;
+        }
+
+        /* ─── FOTO EM TELA CHEIA — "promove" o próprio .model-frame /
+           .decor-photo-frame que já existe (não é um modal com conteúdo
+           duplicado) — hotspots, swipe-zone, tudo continua funcionando,
+           porque é o mesmo elemento, só reposicionado via CSS. ─── */
+        .photo-expand-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55);
+            color: #ffffff;
+            border: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 4;
+            /* acima do swipe-zone(1)/decor-marker(2)/hotspot(3) — sempre
+               clicável, mesmo se algum marcador cair perto do canto */
+        }
+
+        .photo-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 22px;
+            line-height: 1;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 6;
+        }
+
+        .is-photo-fullscreen .photo-close-btn {
+            display: flex;
+        }
+
+        .is-photo-fullscreen .photo-expand-btn {
+            display: none;
+        }
+
+        /* especificidade de 2 classes (0-2-0) vence qualquer regra de
+           media query que define largura/altura de .model-frame ou
+           .decor-photo-frame (todas com especificidade 0-1-0) — não
+           precisa de !important nem duplicar regra por breakpoint */
+        .model-frame.is-photo-fullscreen,
+        .decor-photo-frame.is-photo-fullscreen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            aspect-ratio: unset;
+            margin: 0;
+            background: rgba(0, 0, 0, 0.92);
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .model-frame.is-photo-fullscreen .model-photo,
+        .decor-photo-frame.is-photo-fullscreen .decor-photo {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            /* contain, não cover — em tela cheia queremos ver a foto
+               inteira, não cortada pra preencher a proporção do frame */
         }
 
         .hotspot::after {
@@ -1321,7 +1411,7 @@
 
             .inspira-sub {
                 order: 3;
-                text-align: center;
+                text-align: left;
                 margin: 0;
             }
 
@@ -1412,6 +1502,11 @@
             .col-right {
                 text-align: center;
                 align-items: stretch;
+            }
+
+            .decor-grid {
+                gap: 18px;
+                /* reduzido de 36px só nessa faixa — pedido explícito */
             }
 
             .kit-summary-icons {
@@ -1505,8 +1600,9 @@
                     <div class="col-left">
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
                         <h2 class="inspira-title" id="kitTitle">Bloquinho</h2>
-                        <p class="inspira-sub">Peças do catálogo já combinadas numa sugestão pronta pra vitrine —
-                            use como está, ou adapte do seu jeito.</p>
+                        <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
+                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
+                        </p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
@@ -1540,6 +1636,11 @@
                                         <div class="swipe-zone-anchor"></div>
                                     </div>
                                 </div>
+
+                                <!-- expande/fecha o PRÓPRIO frame (não uma
+                                     cópia) — ver setupPhotoFullscreen no JS -->
+                                <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
+                                <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                             </div>
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
@@ -1581,9 +1682,9 @@
                     <div class="decor-col-left">
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
-                        <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. Amplie sua carteira de
-                            clientes com decoração temática — shopping, restaurante, hotel e farmácia também querem
-                            ambientar o espaço na data, e você pode ser quem fornece.</p>
+                        <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. <strong>Amplie sua carteira
+                                de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
+                            também querem ambientar o espaço na data, e <strong>você pode ser quem fornece</strong>.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Itens Deste Cenário</span>
@@ -1606,6 +1707,9 @@
                                     <div class="swipe-zone-anchor"></div>
                                 </div>
                             </div>
+
+                            <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
+                            <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                         </div>
 
                         <!-- indicador de posição — nome do cenário ativo + dots -->
@@ -1620,9 +1724,9 @@
                 <div class="decor-legend" id="decorLegend"></div>
 
                 <div class="inspira-footer">
-                    <p class="inspira-tip"><strong>Dica NYR:</strong> a decoração ambienta o espaço, não a festa —
-                        use os cenários pra te inspirar a decorar vitrine, balcão ou recepção, mesmo fora do
-                        segmento de festas.</p>
+                    <p class="inspira-tip"><strong>Dica NYR:</strong> mostre o cenário pronto pro seu futuro cliente
+                        antes de fechar a venda — quanto mais fácil for visualizar o resultado, mais rápida a
+                        decisão de compra dele.</p>
                     <button class="inspira-btn">Quero Esse Cenário</button>
                 </div>
             </div>
@@ -2325,6 +2429,36 @@
                 tab.addEventListener('click', () => renderDecorKit(i));
             });
         }
+
+        // ─── FOTO EM TELA CHEIA — "promove" o próprio frame (não cria
+        // cópia/modal com conteúdo duplicado). Escopado por frame — cada
+        // .model-frame/.decor-photo-frame tem seus próprios botões. ───
+        function setupPhotoFullscreen(frameSelector) {
+            const frame = document.querySelector(frameSelector);
+            if (!frame) return;
+            const expandBtn = frame.querySelector('.photo-expand-btn');
+            const closeBtn = frame.querySelector('.photo-close-btn');
+            if (!expandBtn || !closeBtn) return;
+
+            function open() {
+                frame.classList.add('is-photo-fullscreen');
+                document.body.style.overflow = 'hidden';
+                // trava o scroll de fundo enquanto a foto ocupa a tela
+            }
+            function close() {
+                frame.classList.remove('is-photo-fullscreen');
+                document.body.style.overflow = '';
+            }
+
+            expandBtn.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && frame.classList.contains('is-photo-fullscreen')) close();
+            });
+        }
+
+        setupPhotoFullscreen('.model-frame');
+        setupPhotoFullscreen('.decor-photo-frame');
 
         // ─── SWIPE-ZONE — scroll-snap nativo como detector de gesto.
         // 3 âncoras vazias (esquerda/centro/direita); a faixa sempre
