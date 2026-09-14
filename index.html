@@ -525,7 +525,8 @@
             grid-area: model;
         }
 
-        .model-stack, .decor-photo-stack {
+        .model-stack,
+        .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -712,7 +713,8 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow, .decor-nav-arrow {
+        .model-nav-arrow,
+        .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -731,7 +733,8 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover, .decor-nav-arrow:hover {
+        .model-nav-arrow:hover,
+        .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -745,7 +748,8 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator, .decor-switcher-indicator {
+        .kit-switcher-indicator,
+        .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -753,7 +757,8 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label, .decor-switcher-label {
+        .kit-switcher-label,
+        .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -762,18 +767,21 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count, .decor-switcher-count {
+        .kit-switcher-count,
+        .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots, .decor-switcher-dots {
+        .kit-switcher-dots,
+        .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot, .decor-dot {
+        .kit-dot,
+        .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -782,7 +790,8 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active, .decor-dot.active {
+        .kit-dot.active,
+        .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1376,7 +1385,7 @@
             #inspira-view-acessorios .inspira-eyebrow,
             #inspira-view-acessorios .inspira-title {
                 position: absolute;
-                top: 12px;
+                top: -4px;
                 left: 12px;
                 max-width: 58%;
                 text-align: left;
@@ -1392,7 +1401,7 @@
             }
 
             #inspira-view-acessorios .inspira-title {
-                top: 34px;
+                top: 18px;
                 line-height: 0.95;
                 font-size: 24px !important;
                 /* mesmo motivo do eyebrow acima — o clamp() geral
@@ -1439,7 +1448,8 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow, .decor-nav-arrow {
+            .model-nav-arrow,
+            .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
@@ -1571,8 +1581,9 @@
                     <div class="decor-col-left">
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
-                        <p class="inspira-sub" id="decorSub">Itens do catálogo já combinados numa sugestão de
-                            ambientação pronta pra vitrine.</p>
+                        <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. Amplie sua carteira de
+                            clientes com decoração temática — shopping, restaurante, hotel e farmácia também querem
+                            ambientar o espaço na data, e você pode ser quem fornece.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Itens Deste Cenário</span>
@@ -1610,7 +1621,7 @@
 
                 <div class="inspira-footer">
                     <p class="inspira-tip"><strong>Dica NYR:</strong> a decoração ambienta o espaço, não a festa —
-                        use os cenários pra inspirar o lojista a decorar vitrine, balcão ou recepção, mesmo fora do
+                        use os cenários pra te inspirar a decorar vitrine, balcão ou recepção, mesmo fora do
                         segmento de festas.</p>
                     <button class="inspira-btn">Quero Esse Cenário</button>
                 </div>
@@ -1849,12 +1860,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp' }
                 ],
-                 hotspots: [
+                hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-                  
+
                 ]
             }
         ];
@@ -1903,25 +1914,25 @@
         const DECOR_KITS = [
             {
                 name: 'Arco-Íris',
-                fullTitle: 'Loja de Festas',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/ARCO-IRIS_gon179.webp',
                 alt: 'Cenário decorado — parede de loja de festas com sombrinhas, varal e máscara coloridos',
                 palette: { primary: '#D98C00', cta: '#E63946', light: '#FDF6E3', mid: '#2E8B57', badge: '#1E88E5', label: '#6B4413', border: '#D98C00' },
                 products: [
-                    { code: 'MOD-360/943', name: 'Sombrinha + Espiral Carnaval', desc: 'Sombrinha 50cm + kit 6 espirais sortidos.' },
+                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.' },
+                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.' },
                     { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.' },
                     { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.' }
                 ],
                 hotspots: [
-                    { x: 30, y: 30, productIndex: 0 },
-                    { x: 65, y: 40, productIndex: 1 },
-                    { x: 45, y: 70, productIndex: 2 }
+                    { x: 20, y: 25, productIndex: 0 },
+                    { x: 20, y: 45, productIndex: 1 },
+                    { x: 65, y: 40, productIndex: 2 },
+                    { x: 45, y: 70, productIndex: 3 }
                 ]
             },
             {
                 name: 'Dourado',
-                fullTitle: 'Shopping Dourado',
-                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/DOURADO_dbdiqi.webp',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789398780/DOURADO_jvyrmn.webp',
                 alt: 'Cenário decorado — painel dourado de shopping com cortina metalizada e máscaras',
                 palette: { primary: '#B8860B', cta: '#D4A017', light: '#FDF6E0', mid: '#E8C158', badge: '#8B6508', label: '#4A3505', border: '#B8860B' },
                 products: [
@@ -1939,7 +1950,6 @@
             },
             {
                 name: 'Folia',
-                fullTitle: 'Restaurante Folia',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/FOLIA_absqkv.webp',
                 alt: 'Cenário decorado — parede de restaurante com banner Folia, bandeirinhas e máscara coloridos',
                 palette: { primary: '#C0392B', cta: '#2980B9', light: '#FAF3E8', mid: '#F1C40F', badge: '#27AE60', label: '#5C3A21', border: '#C0392B' },
@@ -1958,7 +1968,6 @@
             },
             {
                 name: 'Prata-Rose',
-                fullTitle: 'Hotel Prata-Rose',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PRATA-ROSE_miulvc.webp',
                 alt: 'Cenário decorado — lobby de hotel com cortinas prata e rose gold e máscaras metalizadas',
                 palette: { primary: '#B76E79', cta: '#A45A64', light: '#FAF4F2', mid: '#C9A66B', badge: '#8B3A42', label: '#5C2A30', border: '#B76E79' },
@@ -1977,7 +1986,6 @@
             },
             {
                 name: 'Penas',
-                fullTitle: 'Farmácia',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PENAS_trwzc8.webp',
                 alt: 'Cenário decorado — vitrine de farmácia com painel de penas Carnaval e adesivos coloridos',
                 palette: { primary: '#8E44AD', cta: '#E91E63', light: '#F8F5FC', mid: '#F39C12', badge: '#16A085', label: '#4A235A', border: '#8E44AD' },
@@ -2214,7 +2222,7 @@
             }
 
             // col-left — título e resumo de itens
-            document.getElementById('decorTitle').textContent = kit.fullTitle;
+            document.getElementById('decorTitle').textContent = kit.name;
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
                 const icon = p.image
@@ -2570,9 +2578,9 @@
             const topBase = frameRect.top - containerRect.top;
 
             eyebrow.style.left = left + 'px';
-            eyebrow.style.top = (topBase + 12) + 'px';
+            eyebrow.style.top = (topBase + 2) + 'px';
             title.style.left = left + 'px';
-            title.style.top = (topBase + 34) + 'px';
+            title.style.top = (topBase + 24) + 'px';
             // inofensivo fora do mobile — o CSS só aplica position:absolute
             // dentro do @media (max-width:564px), então esses estilos
             // inline ficam sem efeito visual nas outras larguras

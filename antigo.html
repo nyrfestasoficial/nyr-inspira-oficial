@@ -614,7 +614,14 @@
             height: clamp(27px, 2.58vw + 12.44px, 46px);
             border-radius: 8px;
             object-fit: cover;
-            border: 1px solid rgba(var(--season-primary-rgb), 0.2);
+        }
+
+        /* placeholder-swatch some com a borda tracejada só nesse contexto
+           (ícone pequeno do resumo) — os placeholders maiores (foto de
+           produto/cenário) continuam com a borda, não mencionados no
+           pedido */
+        .kit-summary-icons .placeholder-swatch {
+            border: none;
         }
 
         .kit-summary-icons span {
@@ -834,6 +841,46 @@
                scrollToCard() no JS */
         }
 
+        /* ─── SWIPE-ZONE — scroll-snap nativo usado como DETECTOR de
+           gesto (não é um carrossel de slides de verdade — só 3 âncoras
+           vazias). Mesma técnica já usada nos carrosséis da LP principal
+           (SERVICES/PRODUCTS/REDE COMERCIAL), adaptada aqui porque nosso
+           conteúdo troca por substituição (renderKit/renderDecorKit), não
+           por múltiplas fotos pré-renderizadas lado a lado. z-index
+           abaixo do hotspot(3)/decor-marker(2), então cliques neles
+           continuam funcionando normalmente; deslizar em qualquer outro
+           ponto da foto aciona a troca de kit — ver setupSwipeZone no JS. */
+        .swipe-zone {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: none;
+            /* cada contexto liga a sua faixa de largura própria, nas
+               media queries no fim do arquivo (≤900px Acessórios,
+               ≤800px Decoração) */
+        }
+
+        .swipe-zone-track {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .swipe-zone-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .swipe-zone-anchor {
+            flex: 0 0 100%;
+            height: 100%;
+            scroll-snap-align: start;
+        }
+
         .hotspot::after {
             content: '';
             position: absolute;
@@ -945,6 +992,17 @@
             gap: 4px;
             flex-wrap: wrap;
             margin-bottom: 6px;
+        }
+
+        /* dentro da legenda de Decoração especificamente, ref e nome vão
+           cada um em sua própria linha — diferente de Acessórios, onde
+           ficam lado a lado. Escopado só pra .decor-legend-body pra não
+           afetar os product-callout de Acessórios, que usam essa mesma
+           classe .product-callout-title-row */
+        .decor-legend-body .product-callout-title-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
         }
 
         .product-callout-ref {
@@ -1189,6 +1247,20 @@
             }
         }
 
+        /* ─── swipe-zone: liga por contexto, larguras diferentes a
+           pedido (Acessórios ≤900px, Decoração ≤800px) ─── */
+        @media (max-width: 900px) {
+            #kitSwipeZone {
+                display: block;
+            }
+        }
+
+        @media (max-width: 800px) {
+            #decorSwipeZone {
+                display: block;
+            }
+        }
+
         /* ─── BREAKPOINT B (564px — recalculado, não é mais 535px) —
            col-left e col-model já não cabem mais lado a lado; tudo
            empilha numa coluna só. O valor 564px não é arredondamento
@@ -1313,7 +1385,7 @@
             #inspira-view-acessorios .inspira-eyebrow,
             #inspira-view-acessorios .inspira-title {
                 position: absolute;
-                top: 12px;
+                top: -4px;
                 left: 12px;
                 max-width: 58%;
                 text-align: left;
@@ -1329,7 +1401,7 @@
             }
 
             #inspira-view-acessorios .inspira-title {
-                top: 34px;
+                top: 18px;
                 line-height: 0.95;
                 font-size: 24px !important;
                 /* mesmo motivo do eyebrow acima — o clamp() geral
@@ -1456,6 +1528,18 @@
                                     alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
 
                                 <div id="hotspotsLayer"></div>
+
+                                <!-- faixa de gesto — scroll-snap nativo como
+                                     detector de swipe, não carrossel de
+                                     slides de verdade (ver setupSwipeZone
+                                     no JS). Só ativa ≤900px via CSS. -->
+                                <div class="swipe-zone" id="kitSwipeZone">
+                                    <div class="swipe-zone-track">
+                                        <div class="swipe-zone-anchor"></div>
+                                        <div class="swipe-zone-anchor"></div>
+                                        <div class="swipe-zone-anchor"></div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
@@ -1512,6 +1596,15 @@
                             <img class="decor-photo" id="decorPhoto" src="" alt="">
                             <div class="decor-photo-placeholder" id="decorPhotoPlaceholder"></div>
                             <div id="decorMarkersLayer"></div>
+
+                            <!-- mesma faixa de gesto, só ativa ≤800px -->
+                            <div class="swipe-zone" id="decorSwipeZone">
+                                <div class="swipe-zone-track">
+                                    <div class="swipe-zone-anchor"></div>
+                                    <div class="swipe-zone-anchor"></div>
+                                    <div class="swipe-zone-anchor"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- indicador de posição — nome do cenário ativo + dots -->
@@ -1825,14 +1918,16 @@
                 alt: 'Cenário decorado — parede de loja de festas com sombrinhas, varal e máscara coloridos',
                 palette: { primary: '#D98C00', cta: '#E63946', light: '#FDF6E3', mid: '#2E8B57', badge: '#1E88E5', label: '#6B4413', border: '#D98C00' },
                 products: [
-                    { code: 'MOD-360/943', name: 'Sombrinha + Espiral Carnaval', desc: 'Sombrinha 50cm + kit 6 espirais sortidos.' },
+                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.' },
+                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.' },
                     { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.' },
                     { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.' }
                 ],
                 hotspots: [
-                    { x: 30, y: 30, productIndex: 0 },
-                    { x: 65, y: 40, productIndex: 1 },
-                    { x: 45, y: 70, productIndex: 2 }
+                    { x: 20, y: 25, productIndex: 0 },
+                    { x: 20, y: 45, productIndex: 1 },
+                    { x: 65, y: 40, productIndex: 2 },
+                    { x: 45, y: 70, productIndex: 3 }
                 ]
             },
             {
@@ -2235,6 +2330,53 @@
             });
         }
 
+        // ─── SWIPE-ZONE — scroll-snap nativo como detector de gesto.
+        // 3 âncoras vazias (esquerda/centro/direita); a faixa sempre
+        // começa e volta centralizada depois de cada gesto. Ao invés de
+        // reagir a cada pixel rolado, espera o gesto "sossegar" —
+        // scrollend nos navegadores que suportam, debounce manual nos
+        // que não suportam ainda (progressive enhancement). ───
+        function setupSwipeZone(zoneId, onPrev, onNext) {
+            const zone = document.getElementById(zoneId);
+            if (!zone) return;
+            const track = zone.querySelector('.swipe-zone-track');
+
+            function centerTrack() {
+                track.scrollLeft = track.offsetWidth;
+            }
+            centerTrack();
+
+            function handleSettled() {
+                const idx = Math.round(track.scrollLeft / track.offsetWidth);
+                if (idx === 0) onPrev();
+                else if (idx === 2) onNext();
+                centerTrack();
+            }
+
+            if ('onscrollend' in window) {
+                track.addEventListener('scrollend', handleSettled, { passive: true });
+            } else {
+                let timer = null;
+                track.addEventListener('scroll', () => {
+                    clearTimeout(timer);
+                    timer = setTimeout(handleSettled, 120);
+                }, { passive: true });
+            }
+
+            // exposto pra updateAll() re-centralizar quando a tela muda
+            // de tamanho — sem isso, cruzar o breakpoint (a faixa ligando
+            // com offsetWidth desatualizado) podia disparar uma troca
+            // de kit fantasma no primeiro gesto seguinte
+            zone._recenterSwipe = centerTrack;
+        }
+
+        setupSwipeZone('kitSwipeZone',
+            () => renderKit(activeKitIndex - 1),
+            () => renderKit(activeKitIndex + 1));
+        setupSwipeZone('decorSwipeZone',
+            () => renderDecorKit(activeDecorIndex - 1),
+            () => renderDecorKit(activeDecorIndex + 1));
+
         buildTabs();
         buildDots();
         buildDecorDots();
@@ -2440,9 +2582,9 @@
             const topBase = frameRect.top - containerRect.top;
 
             eyebrow.style.left = left + 'px';
-            eyebrow.style.top = (topBase + 12) + 'px';
+            eyebrow.style.top = (topBase - 4) + 'px';
             title.style.left = left + 'px';
-            title.style.top = (topBase + 34) + 'px';
+            title.style.top = (topBase + 18) + 'px';
             // inofensivo fora do mobile — o CSS só aplica position:absolute
             // dentro do @media (max-width:564px), então esses estilos
             // inline ficam sem efeito visual nas outras larguras
@@ -2668,6 +2810,8 @@
             updateDecorNavArrowPosition();
             updateMobileOverlay();
             drawConnectors();
+            document.getElementById('kitSwipeZone')?._recenterSwipe?.();
+            document.getElementById('decorSwipeZone')?._recenterSwipe?.();
         }
         window.addEventListener('load', updateAll);
         window.addEventListener('resize', updateAll);
