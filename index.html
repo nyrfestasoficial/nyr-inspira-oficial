@@ -13,8 +13,10 @@
         :root {
             --white: #ffffff;
             --black: #0d0d0d;
+            --gray-1: #f5f5f5;
             --gray-2: #e0e0e0;
             --gray-text: #6b6b6b;
+            --brand-orange: #f4a000;
             --radius-card: 16px;
             --transition: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
             /* sazonalidade corrente da seção = Carnaval (Bloquinho) —
@@ -407,7 +409,7 @@
             font-family: 'Anton', sans-serif;
             font-size: 14px;
             color: var(--season-label);
-            margin-bottom: 4px;
+            margin-bottom: 1px;
         }
 
         .decor-legend-desc {
@@ -447,6 +449,9 @@
                 aspect-ratio: 1 / 1;
                 border-radius: 10px;
                 flex-shrink: 0;
+                background: #ffffff;
+                /* sem o cinza de fundo nessa faixa — fica branco puro,
+                   igual product-callout-photo (que nunca teve fundo próprio) */
             }
 
             .decor-legend-number {
@@ -459,6 +464,18 @@
 
             .decor-legend-body {
                 padding: 2px 0 0;
+            }
+
+            /* ≤465px: ref+nome voltam a dividir a mesma linha, igual
+               Acessórios — a separação em linhas próprias (regra em
+               .decor-legend-body .product-callout-title-row, acima na
+               folha) é pro layout de card vertical (>465px); aqui o
+               layout já virou horizontal (como col-right), então faz
+               sentido seguir o mesmo padrão */
+            .decor-legend-body .product-callout-title-row {
+                flex-direction: row;
+                align-items: baseline;
+                gap: 4px;
             }
         }
 
@@ -525,8 +542,7 @@
             grid-area: model;
         }
 
-        .model-stack,
-        .decor-photo-stack {
+        .model-stack, .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -720,8 +736,7 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow,
-        .decor-nav-arrow {
+        .model-nav-arrow, .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -740,8 +755,7 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover,
-        .decor-nav-arrow:hover {
+        .model-nav-arrow:hover, .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -755,8 +769,7 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator,
-        .decor-switcher-indicator {
+        .kit-switcher-indicator, .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -764,8 +777,7 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label,
-        .decor-switcher-label {
+        .kit-switcher-label, .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -774,21 +786,18 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count,
-        .decor-switcher-count {
+        .kit-switcher-count, .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots,
-        .decor-switcher-dots {
+        .kit-switcher-dots, .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot,
-        .decor-dot {
+        .kit-dot, .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -797,8 +806,7 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active,
-        .decor-dot.active {
+        .kit-dot.active, .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -890,8 +898,8 @@
 
         /* ─── FOTO EM TELA CHEIA — "promove" o próprio .model-frame /
            .decor-photo-frame que já existe (não é um modal com conteúdo
-           duplicado) — hotspots, swipe-zone, tudo continua funcionando,
-           porque é o mesmo elemento, só reposicionado via CSS. ─── */
+           duplicado) — mas hotspots/marcadores/swipe são desligados nesse
+           estado (ver regras abaixo e JS), já que aqui é só visualização. ─── */
         .photo-expand-btn {
             position: absolute;
             bottom: 10px;
@@ -912,23 +920,32 @@
                clicável, mesmo se algum marcador cair perto do canto */
         }
 
+        /* réplica de .modal-video-close da LP — 36px, sem borda, com blur,
+           em vez do botão maior/com borda que tínhamos antes */
         .photo-close-btn {
             position: absolute;
             top: 16px;
             right: 16px;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            border: none;
             background: rgba(255, 255, 255, 0.15);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            font-size: 22px;
+            font-size: 20px;
             line-height: 1;
             display: none;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 6;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background 0.2s;
+            z-index: 1001;
+        }
+
+        .photo-close-btn:hover {
+            background: rgba(255, 255, 255, 0.28);
         }
 
         .is-photo-fullscreen .photo-close-btn {
@@ -939,10 +956,36 @@
             display: none;
         }
 
+        /* hotspots, marcadores e a faixa de swipe somem em tela cheia —
+           aqui é só visualização, trocar de kit/produto não faz sentido
+           dentro desse estado (e evita o bug de reposicionamento da
+           swipe-zone ao redimensionar o frame — ver JS) */
+        .is-photo-fullscreen #hotspotsLayer,
+        .is-photo-fullscreen #decorMarkersLayer,
+        .is-photo-fullscreen .swipe-zone {
+            display: none;
+        }
+
+        /* camada de fundo clicável — cobre tudo atrás da foto; clicar
+           nela fecha o modo tela cheia (igual .modal-video-overlay da
+           LP), sem interferir no clique na foto em si */
+        .photo-fullscreen-backdrop {
+            display: none;
+        }
+
+        .is-photo-fullscreen .photo-fullscreen-backdrop {
+            display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
         /* especificidade de 2 classes (0-2-0) vence qualquer regra de
            media query que define largura/altura de .model-frame ou
            .decor-photo-frame (todas com especificidade 0-1-0) — não
-           precisa de !important nem duplicar regra por breakpoint */
+           precisa de !important nem duplicar regra por breakpoint.
+           Fundo replicando .modal-video-overlay da LP: preto da marca
+           semi-transparente + blur, não mais preto quase opaco. */
         .model-frame.is-photo-fullscreen,
         .decor-photo-frame.is-photo-fullscreen {
             position: fixed;
@@ -952,23 +995,33 @@
             max-width: none;
             aspect-ratio: unset;
             margin: 0;
-            background: rgba(0, 0, 0, 0.92);
+            background: rgba(13, 13, 13, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 999;
+            padding: 24px;
+            box-sizing: border-box;
         }
 
         .model-frame.is-photo-fullscreen .model-photo,
         .decor-photo-frame.is-photo-fullscreen .decor-photo {
+            position: relative;
+            z-index: 1;
             width: auto;
             height: auto;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             /* contain, não cover — em tela cheia queremos ver a foto
-               inteira, não cortada pra preencher a proporção do frame */
+               inteira, não cortada pra preencher a proporção do frame.
+               overflow-y:auto entra só se, mesmo assim, a foto ainda não
+               couber (proporção muito alta numa tela muito baixa) —
+               nunca a página por trás rola, só a própria foto */
+            overflow-y: auto;
         }
 
         .hotspot::after {
@@ -1543,13 +1596,437 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow,
-            .decor-nav-arrow {
+            .model-nav-arrow, .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
             }
         }
+        /* ─── FAB (WhatsApp + Instagram) — réplica exata do .fab-group da
+           LP. Cores fixas da marca (não --season-*), já que é elemento
+           utilitário/transacional, não temático por kit. ─── */
+        .fab-group {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            cursor: pointer;
+            border: none;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        .fab svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+        }
+
+        .fab-instagram {
+            background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            box-shadow: 0 4px 20px rgba(220, 39, 67, 0.4);
+        }
+
+        .fab-whatsapp {
+            background: #25D366;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.45);
+        }
+
+        .fab-whatsapp::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid rgba(37, 211, 102, 0.4);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.35);
+                opacity: 0;
+            }
+        }
+
+        /* ─── FORMULÁRIO DE CONTATO (modal-wa) — réplica do da LP.
+           Coleta Razão Social + CNPJ de verdade antes de montar a
+           mensagem final do WhatsApp; compartilhado por todos os
+           gatilhos de contato (fab-whatsapp, inspira-btn,
+           modal-video-wa-btn). ─── */
+        .modal-wa {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-wa[hidden] {
+            display: none;
+        }
+
+        .modal-wa-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal-wa-card {
+            position: relative;
+            z-index: 1;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 36px 32px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(244, 160, 0, 0.2);
+            animation: modal-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes modal-in {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-wa-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.06);
+            color: #666;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .modal-wa-close:hover {
+            background: rgba(0, 0, 0, 0.12);
+            color: #0d0d0d;
+        }
+
+        .modal-wa-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .modal-wa-icon {
+            width: 40px;
+            height: 40px;
+            fill: #25D366;
+            flex-shrink: 0;
+        }
+
+        .modal-wa-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #0d0d0d;
+            line-height: 1.1;
+        }
+
+        .modal-wa-sub {
+            font-size: 13px;
+            color: #6b6b6b;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #6b6b6b;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #f5f5f5;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            color: #0d0d0d;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            border-color: #f4a000;
+            background: #ffffff;
+        }
+
+        .form-input::placeholder {
+            color: #b0b0b0;
+        }
+
+        .form-input.error {
+            border-color: #e53935;
+        }
+
+        .field-error {
+            display: block;
+            font-size: 11px;
+            color: #e53935;
+            margin-top: 5px;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            min-height: 0;
+        }
+
+        .field-error.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal-form-submit {
+            width: 100%;
+            padding: 15px;
+            background: #25D366;
+            color: #ffffff;
+            font-family: 'Anton', sans-serif;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            margin-top: 8px;
+        }
+
+        .modal-form-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .modal-form-submit svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .modal-form-note {
+            font-size: 11px;
+            color: #b0b0b0;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* ─── MODAL DE VÍDEO (modal-video) — réplica da LP, com
+           conteúdo dinâmico por produto (nome/descrição) e um
+           placeholder no lugar do vídeo real, que ainda não existe ─── */
+        .modal-video {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-video[hidden] {
+            display: none;
+        }
+
+        .modal-video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(13, 13, 13, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .modal-video-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: min(400px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+        }
+
+        .modal-video-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: background 0.2s;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .modal-video-close:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .modal-video-card {
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+            animation: modal-video-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes modal-video-in {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* placeholder no lugar do <iframe> da LP — ainda não temos vídeo
+           real pra cada produto */
+        .modal-video-media {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background: #0d0d0d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-video-placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .modal-video-info {
+            padding: 24px 22px 28px;
+            background: #ffffff;
+        }
+
+        .modal-video-product-name {
+            font-family: 'Anton', sans-serif;
+            font-size: 18px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #0d0d0d;
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .modal-video-product-desc {
+            font-size: 13px;
+            color: #6b6b6b;
+            line-height: 1.65;
+            margin-bottom: 20px;
+        }
+
+        .modal-video-wa-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #25D366;
+            color: #ffffff;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 13px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        .modal-video-wa-btn:hover {
+            opacity: 0.88;
+        }
+
+        .modal-video-wa-btn svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
     </style>
 </head>
 
@@ -1601,8 +2078,7 @@
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
                         <h2 class="inspira-title" id="kitTitle">Bloquinho</h2>
                         <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
-                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
-                        </p>
+                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
@@ -1639,6 +2115,7 @@
 
                                 <!-- expande/fecha o PRÓPRIO frame (não uma
                                      cópia) — ver setupPhotoFullscreen no JS -->
+                                <div class="photo-fullscreen-backdrop"></div>
                                 <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
                                 <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                             </div>
@@ -1662,7 +2139,7 @@
                     <p class="inspira-tip"><strong>Dica NYR:</strong> combine cores, brilhos e acessórios do
                         catálogo pra criar looks únicos por vitrine — quanto mais peças combinadas, maior o ticket
                         médio da venda.</p>
-                    <button class="inspira-btn">Quero Esse Kit</button>
+                    <button class="inspira-btn">Falar com Atendente</button>
                 </div>
             </div>
             <!-- /VIEW: ACESSÓRIOS -->
@@ -1683,7 +2160,7 @@
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
                         <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. <strong>Amplie sua carteira
-                                de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
+                            de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
                             também querem ambientar o espaço na data, e <strong>você pode ser quem fornece</strong>.</p>
 
                         <div class="kit-summary-card">
@@ -1708,6 +2185,7 @@
                                 </div>
                             </div>
 
+                            <div class="photo-fullscreen-backdrop"></div>
                             <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
                             <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                         </div>
@@ -1727,11 +2205,91 @@
                     <p class="inspira-tip"><strong>Dica NYR:</strong> mostre o cenário pronto pro seu futuro cliente
                         antes de fechar a venda — quanto mais fácil for visualizar o resultado, mais rápida a
                         decisão de compra dele.</p>
-                    <button class="inspira-btn">Quero Esse Cenário</button>
+                    <button class="inspira-btn">Falar com Atendente</button>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- FABs — réplica do .fab-group da LP -->
+    <div class="fab-group">
+        <a href="https://www.instagram.com/nyrfestas.artigosdefesta" class="fab fab-instagram" target="_blank"
+            rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+        </a>
+        <a href="#" class="fab fab-whatsapp" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.129.558 4.126 1.532 5.856L.057 23.784a.5.5 0 0 0 .602.617l6.077-1.43A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.524-5.18-1.434l-.37-.22-3.827.901.928-3.73-.242-.384A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- FORMULÁRIO DE CONTATO — compartilhado por todos os gatilhos
+         (fab-whatsapp, inspira-btn, modal-video-wa-btn) -->
+    <div id="modal-wa" class="modal-wa" role="dialog" aria-modal="true" aria-label="Falar com Atendente" hidden>
+        <div class="modal-wa-overlay"></div>
+        <div class="modal-wa-card">
+            <button class="modal-wa-close" aria-label="Fechar">&times;</button>
+            <div class="modal-wa-header">
+                <svg class="modal-wa-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.129.558 4.126 1.532 5.856L.057 23.784a.5.5 0 0 0 .602.617l6.077-1.43A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.524-5.18-1.434l-.37-.22-3.827.901.928-3.73-.242-.384A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                </svg>
+                <div>
+                    <p class="modal-wa-title">Falar com Atendente</p>
+                    <p class="modal-wa-sub">Preencha seus dados para iniciar o contato</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="modal-razao-social">Razão Social</label>
+                <input class="form-input" type="text" id="modal-razao-social" placeholder="Nome da sua empresa"
+                    autocomplete="organization">
+                <span class="field-error" id="err-razao-social"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="modal-cnpj">CNPJ</label>
+                <input class="form-input" type="text" id="modal-cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+                <span class="field-error" id="err-cnpj"></span>
+            </div>
+            <button class="modal-form-submit" id="modal-btn-whatsapp">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.129.558 4.126 1.532 5.856L.057 23.784a.5.5 0 0 0 .602.617l6.077-1.43A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.524-5.18-1.434l-.37-.22-3.827.901.928-3.73-.242-.384A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                </svg>
+                Enviar pelo WhatsApp
+            </button>
+            <p class="modal-form-note">Apenas lojistas com CNPJ ativo</p>
+        </div>
+    </div>
+
+    <!-- MODAL DE VÍDEO — conteúdo dinâmico preenchido por JS ao clicar
+         num product-callout-video-btn (Acessórios ou Decoração) -->
+    <div id="modal-video" class="modal-video" role="dialog" aria-modal="true" aria-label="Vídeo do produto" hidden>
+        <div class="modal-video-overlay"></div>
+        <div class="modal-video-wrapper">
+            <button class="modal-video-close" aria-label="Fechar">&times;</button>
+            <div class="modal-video-card">
+                <div class="modal-video-media">
+                    <p class="modal-video-placeholder">Vídeo em breve</p>
+                </div>
+                <div class="modal-video-info">
+                    <p class="modal-video-product-name" id="modal-video-product-name"></p>
+                    <p class="modal-video-product-desc" id="modal-video-product-desc"></p>
+                    <button class="modal-video-wa-btn" id="modal-video-wa-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.129.558 4.126 1.532 5.856L.057 23.784a.5.5 0 0 0 .602.617l6.077-1.43A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.524-5.18-1.434l-.37-.22-3.827.901.928-3.73-.242-.384A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                        </svg>
+                        Falar com Atendente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ─── OS 10 KITS — dados reais do catálogo, paleta extraída das
@@ -1964,12 +2522,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp' }
                 ],
-                hotspots: [
+                 hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-
+                  
                 ]
             }
         ];
@@ -2009,6 +2567,17 @@
             return `${r}, ${g}, ${b}`;
         }
 
+        // gera a versão redimensionada de uma imagem do Cloudinary — só
+        // pro slot pequeno do kit-summary-icon (46px exibido). Downscale
+        // é seguro pra qualidade independente do tamanho de origem (300px
+        // em Acessórios, 800px em Decoração) — nunca faz upscale, só
+        // reduz. product-callout-photo/decor-legend-photo continuam com
+        // a imagem original, sem passar por aqui.
+        function iconUrl(url) {
+            if (!url || !url.includes('/upload/')) return url;
+            return url.replace('/upload/', '/upload/w_140,h_140,c_fit,q_auto,f_auto/');
+        }
+
         // ─── CENÁRIOS DE DECORAÇÃO — mesma estrutura do KITS (name, image,
         // palette, products, hotspots), só que "hotspots" aqui vira marcador
         // numerado tolerante (não precisa acertar pixel exato de um objeto
@@ -2022,10 +2591,10 @@
                 alt: 'Cenário decorado — parede de loja de festas com sombrinhas, varal e máscara coloridos',
                 palette: { primary: '#D98C00', cta: '#E63946', light: '#FDF6E3', mid: '#2E8B57', badge: '#1E88E5', label: '#6B4413', border: '#D98C00' },
                 products: [
-                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.' },
-                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.' },
-                    { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.' },
-                    { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.' }
+                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483921/INSPIRA-DECORACAO_ARCO-IRIS_MOD-360_hdjcul.webp' },
+                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483920/INSPIRA-DECORACAO_ARCO-IRIS_MOD-943_ixcmjj.webp' },
+                    { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789484114/INSPIRA-DECORACAO_ARCO-IRIS_MOD-1195_jrkgnj.webp' },
+                    { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483921/INSPIRA-DECORACAO_ARCO-IRIS_MOD-921_gbeacz.webp' }
                 ],
                 hotspots: [
                     { x: 20, y: 25, productIndex: 0 },
@@ -2040,10 +2609,10 @@
                 alt: 'Cenário decorado — painel dourado de shopping com cortina metalizada e máscaras',
                 palette: { primary: '#B8860B', cta: '#D4A017', light: '#FDF6E0', mid: '#E8C158', badge: '#8B6508', label: '#4A3505', border: '#B8860B' },
                 products: [
-                    { code: 'MOD-1109', name: 'Painel Máscara Fitas Metalizadas', desc: '73x98cm, fitas metalizadas.' },
-                    { code: 'MOD-1110', name: 'Painel Máscara Fitas Sortidas', desc: '50x86cm, cores sortidas.' },
-                    { code: 'MOD-653', name: 'Cortina Shimmer Wall', desc: '2x1m, metalizada dourada.' },
-                    { code: 'MOD-648', name: 'Cortina Metalizada Dourada', desc: '2x1m, acabamento liso.' }
+                    { code: 'MOD-1109', name: 'Painel Máscara Fitas Metalizadas', desc: '73x98cm, fitas metalizadas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483889/INSPIRA-DECORACAO_DOURADO_MOD-1109_zy1fbu.webp' },
+                    { code: 'MOD-1110', name: 'Painel Máscara Fitas Sortidas', desc: '50x86cm, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483890/INSPIRA-DECORACAO_DOURADO_MOD-1110_puvaej.webp' },
+                    { code: 'MOD-653', name: 'Cortina Shimmer Wall', desc: '2x1m, metalizada dourada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483888/INSPIRA-DECORACAO_DOURADO_MOD-653_i6vxwp.webp' },
+                    { code: 'MOD-648', name: 'Cortina Metalizada Dourada', desc: '2x1m, acabamento liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483890/INSPIRA-DECORACAO_DOURADO_MOD-648_a4evxr.webp' }
                 ],
                 hotspots: [
                     { x: 25, y: 35, productIndex: 0 },
@@ -2058,10 +2627,10 @@
                 alt: 'Cenário decorado — parede de restaurante com banner Folia, bandeirinhas e máscara coloridos',
                 palette: { primary: '#C0392B', cta: '#2980B9', light: '#FAF3E8', mid: '#F1C40F', badge: '#27AE60', label: '#5C3A21', border: '#C0392B' },
                 products: [
-                    { code: 'MOD-1177', name: 'Varal Folia de Papel', desc: 'Tema Carnaval, papel.' },
-                    { code: 'MOD-1183', name: 'Varal Decorativo Carnaval', desc: 'Mesmo formato do varal folia.' },
-                    { code: 'MOD-1175', name: 'Painel Máscara de Papel', desc: '53x27cm, metalizado.' },
-                    { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.' }
+                    { code: 'MOD-1177', name: 'Varal Folia de Papel', desc: 'Tema Carnaval, papel.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483791/INSPIRA-DECORACAO_FOLIA_MOD-1177_ucgzri.webp' },
+                    { code: 'MOD-1183', name: 'Varal Decorativo Carnaval', desc: 'Mesmo formato do varal folia.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483790/INSPIRA-DECORACAO_FOLIA_MOD-1183_ykuzej.webp' },
+                    { code: 'MOD-1175', name: 'Painel Máscara de Papel', desc: '53x27cm, metalizado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789484038/INSPIRA-DECORACAO_FOLIA_MOD-1175_gaim5y.webp' },
+                    { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483791/INSPIRA-DECORACAO_FOLIA_MOD-1178_mowzki.webp' }
                 ],
                 hotspots: [
                     { x: 35, y: 20, productIndex: 0 },
@@ -2076,10 +2645,10 @@
                 alt: 'Cenário decorado — lobby de hotel com cortinas prata e rose gold e máscaras metalizadas',
                 palette: { primary: '#B76E79', cta: '#A45A64', light: '#FAF4F2', mid: '#C9A66B', badge: '#8B3A42', label: '#5C2A30', border: '#B76E79' },
                 products: [
-                    { code: 'MOD-1171', name: 'Painel Máscara de Papel', desc: '53x30cm, metalizado.' },
-                    { code: 'MOD-1105', name: 'Painel Máscara Plástico', desc: '73x33cm, acabamento liso.' },
-                    { code: 'MOD-987', name: 'Cortina Ondulada Prata', desc: '2x1m, metalizada.' },
-                    { code: 'MOD-739', name: 'Cortina Holográfica Rose Gold', desc: '2x1m, metalizada.' }
+                    { code: 'MOD-1171', name: 'Painel Máscara de Papel', desc: '53x30cm, metalizado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-1171_exj2lb.webp' },
+                    { code: 'MOD-1105', name: 'Painel Máscara Plástico', desc: '73x33cm, acabamento liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-1105_xmo4gg.webp' },
+                    { code: 'MOD-987', name: 'Cortina Ondulada Prata', desc: '2x1m, metalizada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-987_fqsryk.webp' },
+                    { code: 'MOD-739', name: 'Cortina Holográfica Rose Gold', desc: '2x1m, metalizada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-739_m14fiz.webp' }
                 ],
                 hotspots: [
                     { x: 25, y: 25, productIndex: 0 },
@@ -2094,9 +2663,9 @@
                 alt: 'Cenário decorado — vitrine de farmácia com painel de penas Carnaval e adesivos coloridos',
                 palette: { primary: '#8E44AD', cta: '#E91E63', light: '#F8F5FC', mid: '#F39C12', badge: '#16A085', label: '#4A235A', border: '#8E44AD' },
                 products: [
-                    { code: 'MOD-1180', name: 'Painel Papel Cartonado', desc: '90x60cm, rígido, vívido.' },
-                    { code: 'MOD-1186', name: 'Kit Enfeite de Papel', desc: '4 peças, 15x20cm.' },
-                    { code: 'MOD-1151', name: 'Cartela de Adesivo Grande', desc: 'Autocolante.' }
+                    { code: 'MOD-1180', name: 'Painel Papel Cartonado', desc: '90x60cm, rígido, vívido.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483860/INSPIRA-DECORACAO_PENAS_MOD-1180_j9uxba.webp' },
+                    { code: 'MOD-1186', name: 'Kit Enfeite de Papel', desc: '4 peças, 15x20cm.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483861/INSPIRA-DECORACAO_PENAS_MOD-1186_twxjia.webp' },
+                    { code: 'MOD-1151', name: 'Cartela de Adesivo Grande', desc: 'Autocolante.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483860/INSPIRA-DECORACAO_PENAS_MOD-1151_uih11d.webp' }
                 ],
                 hotspots: [
                     { x: 30, y: 30, productIndex: 0 },
@@ -2223,7 +2792,7 @@
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
                 const icon = p.image
-                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    ? `<span class="kit-summary-icon"><img src="${iconUrl(p.image)}" alt="${p.name}"></span>`
                     : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
                 return `${icon}${sep}`;
             }).join('');
@@ -2262,7 +2831,7 @@
                             <h3 class="product-callout-name">${p.name}</h3>
                         </div>
                         <p class="product-callout-desc">${p.desc}</p>
-                        <button class="product-callout-video-btn">
+                        <button class="product-callout-video-btn" data-product-name="${p.name}" data-product-desc="${p.desc}">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             Ver Vídeo
                         </button>
@@ -2330,7 +2899,7 @@
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
                 const icon = p.image
-                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    ? `<span class="kit-summary-icon"><img src="${iconUrl(p.image)}" alt="${p.name}"></span>`
                     : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
                 return `${icon}${sep}`;
             }).join('');
@@ -2362,7 +2931,7 @@
                             <div class="decor-legend-name">${p.name}</div>
                         </div>
                         <p class="decor-legend-desc">${p.desc}</p>
-                        <button class="product-callout-video-btn">
+                        <button class="product-callout-video-btn" data-product-name="${p.name}" data-product-desc="${p.desc}">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             Ver Vídeo
                         </button>
@@ -2438,6 +3007,7 @@
             if (!frame) return;
             const expandBtn = frame.querySelector('.photo-expand-btn');
             const closeBtn = frame.querySelector('.photo-close-btn');
+            const backdrop = frame.querySelector('.photo-fullscreen-backdrop');
             if (!expandBtn || !closeBtn) return;
 
             function open() {
@@ -2452,6 +3022,9 @@
 
             expandBtn.addEventListener('click', open);
             closeBtn.addEventListener('click', close);
+            // clicar fora da foto (no backdrop) fecha — igual
+            // .modal-video-overlay da LP; clicar na própria foto não
+            if (backdrop) backdrop.addEventListener('click', close);
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && frame.classList.contains('is-photo-fullscreen')) close();
             });
@@ -2470,6 +3043,9 @@
             const zone = document.getElementById(zoneId);
             if (!zone) return;
             const track = zone.querySelector('.swipe-zone-track');
+            // frame ancestral (.model-frame ou .decor-photo-frame) — usado
+            // só pra checar se está em tela cheia antes de trocar de kit
+            const frame = zone.closest('.model-frame, .decor-photo-frame');
 
             function centerTrack() {
                 track.scrollLeft = track.offsetWidth;
@@ -2478,8 +3054,17 @@
 
             function handleSettled() {
                 const idx = Math.round(track.scrollLeft / track.offsetWidth);
-                if (idx === 0) onPrev();
-                else if (idx === 2) onNext();
+                // travado em tela cheia: tanto pelo pedido explícito (não
+                // faz sentido trocar de kit ali) quanto porque é a causa
+                // raiz do bug do tablet — o redimensionamento brusco do
+                // frame pra 100vw/100vh (e de volta) desalinha o scroll
+                // da faixa, e o navegador reajustando sozinho dispara
+                // esse mesmo evento como se fosse um gesto do usuário
+                const isFullscreen = frame && frame.classList.contains('is-photo-fullscreen');
+                if (!isFullscreen) {
+                    if (idx === 0) onPrev();
+                    else if (idx === 2) onNext();
+                }
                 centerTrack();
             }
 
@@ -2945,6 +3530,164 @@
         }
         window.addEventListener('load', updateAll);
         window.addEventListener('resize', updateAll);
+
+        // ─── FORMULÁRIO DE CONTATO (modal-wa) — validação, máscara de
+        // CNPJ e montagem da mensagem final, mesma lógica da LP. ───
+        const WA_NUM = '5511994698952';
+
+        function validarRS(v) {
+            const s = v.trim();
+            if (!s.length) return 'Campo obrigatório';
+            if (s.length < 3) return 'Mínimo de 3 caracteres';
+            if (/^\d+$/.test(s)) return 'Insira o nome da empresa';
+            return null;
+        }
+
+        function validarCNPJ(v) {
+            const n = v.replace(/\D/g, '');
+            if (!n.length) return 'Campo obrigatório';
+            if (n.length !== 14) return 'CNPJ incompleto';
+            if (/^(\d)\1+$/.test(n)) return 'CNPJ inválido';
+            let s = 0, w = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            for (let i = 0; i < 12; i++) s += parseInt(n[i]) * w[i];
+            let r = s % 11; let d1 = r < 2 ? 0 : 11 - r;
+            if (parseInt(n[12]) !== d1) return 'CNPJ inválido';
+            s = 0; w = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+            for (let i = 0; i < 13; i++) s += parseInt(n[i]) * w[i];
+            r = s % 11; let d2 = r < 2 ? 0 : 11 - r;
+            if (parseInt(n[13]) !== d2) return 'CNPJ inválido';
+            return null;
+        }
+
+        function setFieldError(inp, errEl, msg) {
+            inp.classList.add('error');
+            errEl.textContent = msg;
+            errEl.classList.add('visible');
+        }
+
+        function clearFieldError(inp, errEl) {
+            inp.classList.remove('error');
+            errEl.textContent = '';
+            errEl.classList.remove('visible');
+        }
+
+        function applyMaskCNPJ(input) {
+            input.addEventListener('input', function () {
+                let v = this.value.replace(/\D/g, '').slice(0, 14);
+                v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+                v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                v = v.replace(/(\d{4})(\d)/, '$1-$2');
+                this.value = v;
+            });
+        }
+
+        // mensagem padronizada — {rs}/{cnpj} substituídos pelo dado real
+        // digitado no formulário, nunca texto fixo
+        function buildWAMsg(rs, cnpj) {
+            const msg = `Olá, Nyr Festas! Cheguei até aqui pelo NYR Inspira e gostaria de mais informações. Razão Social: ${rs} | CNPJ: ${cnpj}`;
+            return msg.split('\n').map(encodeURIComponent).join('%0A');
+        }
+
+        (function () {
+            const modal = document.getElementById('modal-wa');
+            const overlay = modal.querySelector('.modal-wa-overlay');
+            const closeBtn = modal.querySelector('.modal-wa-close');
+            const inputRS = document.getElementById('modal-razao-social');
+            const inputCNPJ = document.getElementById('modal-cnpj');
+            const errRS = document.getElementById('err-razao-social');
+            const errCNPJ = document.getElementById('err-cnpj');
+
+            function openModal() {
+                inputRS.value = '';
+                inputCNPJ.value = '';
+                clearFieldError(inputRS, errRS);
+                clearFieldError(inputCNPJ, errCNPJ);
+                modal.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => inputRS.focus(), 60);
+            }
+
+            function closeModal() {
+                modal.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            applyMaskCNPJ(inputCNPJ);
+            inputRS.addEventListener('input', () => clearFieldError(inputRS, errRS));
+            inputCNPJ.addEventListener('input', () => clearFieldError(inputCNPJ, errCNPJ));
+
+            document.getElementById('modal-btn-whatsapp').addEventListener('click', () => {
+                const rs = inputRS.value.trim();
+                const cnpj = inputCNPJ.value.trim();
+                const rsErr = validarRS(rs);
+                const cnpjErr = validarCNPJ(cnpj);
+                if (rsErr) setFieldError(inputRS, errRS, rsErr);
+                if (cnpjErr) setFieldError(inputCNPJ, errCNPJ, cnpjErr);
+                if (rsErr || cnpjErr) return;
+                window.open(`https://wa.me/${WA_NUM}?text=${buildWAMsg(rs, cnpj)}`, '_blank', 'noopener');
+                closeModal();
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', closeModal);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
+            });
+
+            // gatilhos compartilhados — fab-whatsapp, os dois inspira-btn,
+            // e o modal-video-wa-btn (delegado, já que o modal de vídeo
+            // sempre existe no DOM, só muda o produto mostrado)
+            document.addEventListener('click', function (e) {
+                const trigger = e.target.closest('.fab-whatsapp, .inspira-btn, #modal-video-wa-btn');
+                if (!trigger) return;
+                e.preventDefault();
+                // se o clique veio de dentro do modal de vídeo, fecha ele
+                // primeiro — não faz sentido os dois abertos ao mesmo tempo
+                const videoModal = document.getElementById('modal-video');
+                if (trigger.id === 'modal-video-wa-btn' && videoModal && !videoModal.hasAttribute('hidden')) {
+                    videoModal.setAttribute('hidden', '');
+                }
+                openModal();
+            });
+        })();
+
+        // ─── MODAL DE VÍDEO — conteúdo dinâmico por produto, placeholder
+        // no lugar do vídeo real (ainda não existe). Delegado no
+        // document, já que os botões são recriados a cada renderKit/
+        // renderDecorKit. ───
+        (function () {
+            const modal = document.getElementById('modal-video');
+            const overlay = modal.querySelector('.modal-video-overlay');
+            const closeBtn = modal.querySelector('.modal-video-close');
+            const nameEl = document.getElementById('modal-video-product-name');
+            const descEl = document.getElementById('modal-video-product-desc');
+
+            function openModal(name, desc) {
+                nameEl.textContent = name;
+                descEl.textContent = desc;
+                modal.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            document.addEventListener('click', function (e) {
+                const trigger = e.target.closest('.product-callout-video-btn');
+                if (!trigger) return;
+                e.preventDefault();
+                openModal(trigger.dataset.productName || '', trigger.dataset.productDesc || '');
+            });
+
+            closeBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', closeModal);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
+            });
+        })();
     </script>
 
 </body>

@@ -576,6 +576,13 @@
             line-height: 1.5;
             color: rgba(var(--season-label-rgb), 0.7);
             margin: clamp(6px, 1.09vw - 0.13px, 14px) 0 clamp(3px, 0.41vw + 0.70px, 6px);
+            text-align: left;
+            /* explícito aqui, não só herdado de .col-left/.decor-col-left
+               — em ≤564px, .col-left também vira display:contents, e
+               herança de propriedade através de display:contents é
+               historicamente instável entre navegadores. Deixar
+               explícito na própria regra remove essa dependência por
+               completo, pras duas abas, em qualquer largura. */
         }
 
         .kit-summary-card {
@@ -879,6 +886,89 @@
             flex: 0 0 100%;
             height: 100%;
             scroll-snap-align: start;
+        }
+
+        /* ─── FOTO EM TELA CHEIA — "promove" o próprio .model-frame /
+           .decor-photo-frame que já existe (não é um modal com conteúdo
+           duplicado) — hotspots, swipe-zone, tudo continua funcionando,
+           porque é o mesmo elemento, só reposicionado via CSS. ─── */
+        .photo-expand-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55);
+            color: #ffffff;
+            border: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 4;
+            /* acima do swipe-zone(1)/decor-marker(2)/hotspot(3) — sempre
+               clicável, mesmo se algum marcador cair perto do canto */
+        }
+
+        .photo-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 22px;
+            line-height: 1;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 6;
+        }
+
+        .is-photo-fullscreen .photo-close-btn {
+            display: flex;
+        }
+
+        .is-photo-fullscreen .photo-expand-btn {
+            display: none;
+        }
+
+        /* especificidade de 2 classes (0-2-0) vence qualquer regra de
+           media query que define largura/altura de .model-frame ou
+           .decor-photo-frame (todas com especificidade 0-1-0) — não
+           precisa de !important nem duplicar regra por breakpoint */
+        .model-frame.is-photo-fullscreen,
+        .decor-photo-frame.is-photo-fullscreen {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            aspect-ratio: unset;
+            margin: 0;
+            background: rgba(0, 0, 0, 0.92);
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .model-frame.is-photo-fullscreen .model-photo,
+        .decor-photo-frame.is-photo-fullscreen .decor-photo {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            /* contain, não cover — em tela cheia queremos ver a foto
+               inteira, não cortada pra preencher a proporção do frame */
         }
 
         .hotspot::after {
@@ -1321,7 +1411,7 @@
 
             .inspira-sub {
                 order: 3;
-                text-align: center;
+                text-align: left;
                 margin: 0;
             }
 
@@ -1412,6 +1502,11 @@
             .col-right {
                 text-align: center;
                 align-items: stretch;
+            }
+
+            .decor-grid {
+                gap: 18px;
+                /* reduzido de 36px só nessa faixa — pedido explícito */
             }
 
             .kit-summary-icons {
@@ -1505,8 +1600,9 @@
                     <div class="col-left">
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
                         <h2 class="inspira-title" id="kitTitle">Bloquinho</h2>
-                        <p class="inspira-sub">Peças do catálogo já combinadas numa sugestão pronta pra vitrine —
-                            use como está, ou adapte do seu jeito.</p>
+                        <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
+                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
+                        </p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
@@ -1540,6 +1636,11 @@
                                         <div class="swipe-zone-anchor"></div>
                                     </div>
                                 </div>
+
+                                <!-- expande/fecha o PRÓPRIO frame (não uma
+                                     cópia) — ver setupPhotoFullscreen no JS -->
+                                <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
+                                <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                             </div>
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
@@ -1581,8 +1682,9 @@
                     <div class="decor-col-left">
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
-                        <p class="inspira-sub" id="decorSub">Itens do catálogo já combinados numa sugestão de
-                            ambientação pronta pra vitrine.</p>
+                        <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. <strong>Amplie sua carteira
+                                de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
+                            também querem ambientar o espaço na data, e <strong>você pode ser quem fornece</strong>.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Itens Deste Cenário</span>
@@ -1605,6 +1707,9 @@
                                     <div class="swipe-zone-anchor"></div>
                                 </div>
                             </div>
+
+                            <button class="photo-expand-btn" aria-label="Ver foto em tela cheia">⛶</button>
+                            <button class="photo-close-btn" aria-label="Fechar tela cheia">×</button>
                         </div>
 
                         <!-- indicador de posição — nome do cenário ativo + dots -->
@@ -1619,9 +1724,9 @@
                 <div class="decor-legend" id="decorLegend"></div>
 
                 <div class="inspira-footer">
-                    <p class="inspira-tip"><strong>Dica NYR:</strong> a decoração ambienta o espaço, não a festa —
-                        use os cenários pra inspirar o lojista a decorar vitrine, balcão ou recepção, mesmo fora do
-                        segmento de festas.</p>
+                    <p class="inspira-tip"><strong>Dica NYR:</strong> mostre o cenário pronto pro seu futuro cliente
+                        antes de fechar a venda — quanto mais fácil for visualizar o resultado, mais rápida a
+                        decisão de compra dele.</p>
                     <button class="inspira-btn">Quero Esse Cenário</button>
                 </div>
             </div>
@@ -1904,6 +2009,17 @@
             return `${r}, ${g}, ${b}`;
         }
 
+        // gera a versão redimensionada de uma imagem do Cloudinary — só
+        // pro slot pequeno do kit-summary-icon (46px exibido). Downscale
+        // é seguro pra qualidade independente do tamanho de origem (300px
+        // em Acessórios, 800px em Decoração) — nunca faz upscale, só
+        // reduz. product-callout-photo/decor-legend-photo continuam com
+        // a imagem original, sem passar por aqui.
+        function iconUrl(url) {
+            if (!url || !url.includes('/upload/')) return url;
+            return url.replace('/upload/', '/upload/w_140,h_140,c_fit,q_auto,f_auto/');
+        }
+
         // ─── CENÁRIOS DE DECORAÇÃO — mesma estrutura do KITS (name, image,
         // palette, products, hotspots), só que "hotspots" aqui vira marcador
         // numerado tolerante (não precisa acertar pixel exato de um objeto
@@ -1913,15 +2029,14 @@
         const DECOR_KITS = [
             {
                 name: 'Arco-Íris',
-                fullTitle: 'Loja de Festas',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/ARCO-IRIS_gon179.webp',
                 alt: 'Cenário decorado — parede de loja de festas com sombrinhas, varal e máscara coloridos',
                 palette: { primary: '#D98C00', cta: '#E63946', light: '#FDF6E3', mid: '#2E8B57', badge: '#1E88E5', label: '#6B4413', border: '#D98C00' },
                 products: [
-                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.' },
-                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.' },
-                    { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.' },
-                    { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.' }
+                    { code: 'MOD-360', name: 'Sombrinha Frevo Colorida', desc: 'Cabo de madeira, 50cm diâmetro, 34cm cabo.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483921/INSPIRA-DECORACAO_ARCO-IRIS_MOD-360_hdjcul.webp' },
+                    { code: 'MOD-943', name: 'Espiral Tema Carnaval', desc: 'Kit com 6 peças sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483920/INSPIRA-DECORACAO_ARCO-IRIS_MOD-943_ixcmjj.webp' },
+                    { code: 'MOD-1195', name: 'Painel Máscara c/ Fitas', desc: '90x50cm, fitas coloridas metalizadas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789484114/INSPIRA-DECORACAO_ARCO-IRIS_MOD-1195_jrkgnj.webp' },
+                    { code: 'MOD-921', name: 'Varal Metalizado Colorido', desc: '30x300cm, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483921/INSPIRA-DECORACAO_ARCO-IRIS_MOD-921_gbeacz.webp' }
                 ],
                 hotspots: [
                     { x: 20, y: 25, productIndex: 0 },
@@ -1932,34 +2047,32 @@
             },
             {
                 name: 'Dourado',
-                fullTitle: 'Shopping Dourado',
-                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/DOURADO_dbdiqi.webp',
+                image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789398780/DOURADO_jvyrmn.webp',
                 alt: 'Cenário decorado — painel dourado de shopping com cortina metalizada e máscaras',
                 palette: { primary: '#B8860B', cta: '#D4A017', light: '#FDF6E0', mid: '#E8C158', badge: '#8B6508', label: '#4A3505', border: '#B8860B' },
                 products: [
-                    { code: 'MOD-1109', name: 'Painel Máscara Fitas Metalizadas', desc: '73x98cm, fitas metalizadas.' },
-                    { code: 'MOD-1110', name: 'Painel Máscara Fitas Sortidas', desc: '50x86cm, cores sortidas.' },
-                    { code: 'MOD-653', name: 'Cortina Shimmer Wall', desc: '2x1m, metalizada dourada.' },
-                    { code: 'MOD-648', name: 'Cortina Metalizada Dourada', desc: '2x1m, acabamento liso.' }
+                    { code: 'MOD-1109', name: 'Painel Máscara Fitas Metalizadas', desc: '73x98cm, fitas metalizadas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483889/INSPIRA-DECORACAO_DOURADO_MOD-1109_zy1fbu.webp' },
+                    { code: 'MOD-1110', name: 'Painel Máscara Fitas Sortidas', desc: '50x86cm, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483890/INSPIRA-DECORACAO_DOURADO_MOD-1110_puvaej.webp' },
+                    { code: 'MOD-653', name: 'Cortina Shimmer Wall', desc: '2x1m, metalizada dourada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483888/INSPIRA-DECORACAO_DOURADO_MOD-653_i6vxwp.webp' },
+                    { code: 'MOD-648', name: 'Cortina Metalizada Dourada', desc: '2x1m, acabamento liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483890/INSPIRA-DECORACAO_DOURADO_MOD-648_a4evxr.webp' }
                 ],
                 hotspots: [
-                    { x: 25, y: 35, productIndex: 0 },
-                    { x: 55, y: 25, productIndex: 1 },
-                    { x: 30, y: 65, productIndex: 2 },
-                    { x: 70, y: 55, productIndex: 3 }
+                    { x: 40, y: 35, productIndex: 0 },
+                    { x: 62, y: 25, productIndex: 1 },
+                    { x: 20, y: 65, productIndex: 2 },
+                    { x: 79, y: 55, productIndex: 3 }
                 ]
             },
             {
                 name: 'Folia',
-                fullTitle: 'Restaurante Folia',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138693/FOLIA_absqkv.webp',
                 alt: 'Cenário decorado — parede de restaurante com banner Folia, bandeirinhas e máscara coloridos',
                 palette: { primary: '#C0392B', cta: '#2980B9', light: '#FAF3E8', mid: '#F1C40F', badge: '#27AE60', label: '#5C3A21', border: '#C0392B' },
                 products: [
-                    { code: 'MOD-1177', name: 'Varal Folia de Papel', desc: 'Tema Carnaval, papel.' },
-                    { code: 'MOD-1183', name: 'Varal Decorativo Carnaval', desc: 'Mesmo formato do varal folia.' },
-                    { code: 'MOD-1175', name: 'Painel Máscara de Papel', desc: '53x27cm, metalizado.' },
-                    { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.' }
+                    { code: 'MOD-1177', name: 'Varal Folia de Papel', desc: 'Tema Carnaval, papel.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483791/INSPIRA-DECORACAO_FOLIA_MOD-1177_ucgzri.webp' },
+                    { code: 'MOD-1183', name: 'Varal Decorativo Carnaval', desc: 'Mesmo formato do varal folia.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483790/INSPIRA-DECORACAO_FOLIA_MOD-1183_ykuzej.webp' },
+                    { code: 'MOD-1175', name: 'Painel Máscara de Papel', desc: '53x27cm, metalizado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789484038/INSPIRA-DECORACAO_FOLIA_MOD-1175_gaim5y.webp' },
+                    { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483791/INSPIRA-DECORACAO_FOLIA_MOD-1178_mowzki.webp' }
                 ],
                 hotspots: [
                     { x: 35, y: 20, productIndex: 0 },
@@ -1970,15 +2083,14 @@
             },
             {
                 name: 'Prata-Rose',
-                fullTitle: 'Hotel Prata-Rose',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PRATA-ROSE_miulvc.webp',
                 alt: 'Cenário decorado — lobby de hotel com cortinas prata e rose gold e máscaras metalizadas',
                 palette: { primary: '#B76E79', cta: '#A45A64', light: '#FAF4F2', mid: '#C9A66B', badge: '#8B3A42', label: '#5C2A30', border: '#B76E79' },
                 products: [
-                    { code: 'MOD-1171', name: 'Painel Máscara de Papel', desc: '53x30cm, metalizado.' },
-                    { code: 'MOD-1105', name: 'Painel Máscara Plástico', desc: '73x33cm, acabamento liso.' },
-                    { code: 'MOD-987', name: 'Cortina Ondulada Prata', desc: '2x1m, metalizada.' },
-                    { code: 'MOD-739', name: 'Cortina Holográfica Rose Gold', desc: '2x1m, metalizada.' }
+                    { code: 'MOD-1171', name: 'Painel Máscara de Papel', desc: '53x30cm, metalizado.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-1171_exj2lb.webp' },
+                    { code: 'MOD-1105', name: 'Painel Máscara Plástico', desc: '73x33cm, acabamento liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-1105_xmo4gg.webp' },
+                    { code: 'MOD-987', name: 'Cortina Ondulada Prata', desc: '2x1m, metalizada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-987_fqsryk.webp' },
+                    { code: 'MOD-739', name: 'Cortina Holográfica Rose Gold', desc: '2x1m, metalizada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-739_m14fiz.webp' }
                 ],
                 hotspots: [
                     { x: 25, y: 25, productIndex: 0 },
@@ -1989,14 +2101,13 @@
             },
             {
                 name: 'Penas',
-                fullTitle: 'Farmácia',
                 image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789138694/PENAS_trwzc8.webp',
                 alt: 'Cenário decorado — vitrine de farmácia com painel de penas Carnaval e adesivos coloridos',
                 palette: { primary: '#8E44AD', cta: '#E91E63', light: '#F8F5FC', mid: '#F39C12', badge: '#16A085', label: '#4A235A', border: '#8E44AD' },
                 products: [
-                    { code: 'MOD-1180', name: 'Painel Papel Cartonado', desc: '90x60cm, rígido, vívido.' },
-                    { code: 'MOD-1186', name: 'Kit Enfeite de Papel', desc: '4 peças, 15x20cm.' },
-                    { code: 'MOD-1151', name: 'Cartela de Adesivo Grande', desc: 'Autocolante.' }
+                    { code: 'MOD-1180', name: 'Painel Papel Cartonado', desc: '90x60cm, rígido, vívido.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483860/INSPIRA-DECORACAO_PENAS_MOD-1180_j9uxba.webp' },
+                    { code: 'MOD-1186', name: 'Kit Enfeite de Papel', desc: '4 peças, 15x20cm.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483861/INSPIRA-DECORACAO_PENAS_MOD-1186_twxjia.webp' },
+                    { code: 'MOD-1151', name: 'Cartela de Adesivo Grande', desc: 'Autocolante.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483860/INSPIRA-DECORACAO_PENAS_MOD-1151_uih11d.webp' }
                 ],
                 hotspots: [
                     { x: 30, y: 30, productIndex: 0 },
@@ -2123,7 +2234,7 @@
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
                 const icon = p.image
-                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    ? `<span class="kit-summary-icon"><img src="${iconUrl(p.image)}" alt="${p.name}"></span>`
                     : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
                 return `${icon}${sep}`;
             }).join('');
@@ -2226,11 +2337,11 @@
             }
 
             // col-left — título e resumo de itens
-            document.getElementById('decorTitle').textContent = kit.fullTitle;
+            document.getElementById('decorTitle').textContent = kit.name;
             const iconsHtml = kit.products.map((p, i) => {
                 const sep = i < kit.products.length - 1 ? '<span>+</span>' : '';
                 const icon = p.image
-                    ? `<span class="kit-summary-icon"><img src="${p.image}" alt="${p.name}"></span>`
+                    ? `<span class="kit-summary-icon"><img src="${iconUrl(p.image)}" alt="${p.name}"></span>`
                     : `<span class="placeholder-swatch" style="width:46px;height:46px;border-radius:8px;font-size:9px;">${p.name.split(' ')[0].toUpperCase()}</span>`;
                 return `${icon}${sep}`;
             }).join('');
@@ -2329,6 +2440,36 @@
                 tab.addEventListener('click', () => renderDecorKit(i));
             });
         }
+
+        // ─── FOTO EM TELA CHEIA — "promove" o próprio frame (não cria
+        // cópia/modal com conteúdo duplicado). Escopado por frame — cada
+        // .model-frame/.decor-photo-frame tem seus próprios botões. ───
+        function setupPhotoFullscreen(frameSelector) {
+            const frame = document.querySelector(frameSelector);
+            if (!frame) return;
+            const expandBtn = frame.querySelector('.photo-expand-btn');
+            const closeBtn = frame.querySelector('.photo-close-btn');
+            if (!expandBtn || !closeBtn) return;
+
+            function open() {
+                frame.classList.add('is-photo-fullscreen');
+                document.body.style.overflow = 'hidden';
+                // trava o scroll de fundo enquanto a foto ocupa a tela
+            }
+            function close() {
+                frame.classList.remove('is-photo-fullscreen');
+                document.body.style.overflow = '';
+            }
+
+            expandBtn.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && frame.classList.contains('is-photo-fullscreen')) close();
+            });
+        }
+
+        setupPhotoFullscreen('.model-frame');
+        setupPhotoFullscreen('.decor-photo-frame');
 
         // ─── SWIPE-ZONE — scroll-snap nativo como detector de gesto.
         // 3 âncoras vazias (esquerda/centro/direita); a faixa sempre
@@ -2582,9 +2723,9 @@
             const topBase = frameRect.top - containerRect.top;
 
             eyebrow.style.left = left + 'px';
-            eyebrow.style.top = (topBase - 4) + 'px';
+            eyebrow.style.top = (topBase + 2) + 'px';
             title.style.left = left + 'px';
-            title.style.top = (topBase + 18) + 'px';
+            title.style.top = (topBase + 24) + 'px';
             // inofensivo fora do mobile — o CSS só aplica position:absolute
             // dentro do @media (max-width:564px), então esses estilos
             // inline ficam sem efeito visual nas outras larguras
