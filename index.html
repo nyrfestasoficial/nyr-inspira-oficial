@@ -429,6 +429,13 @@
             .decor-grid {
                 grid-template-columns: 1fr;
             }
+
+            .decor-marker {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+                border-width: 1.5px;
+            }
         }
 
         /* ─── ≤465px: decor-legend vira lista horizontal, igual
@@ -537,7 +544,8 @@
             grid-area: model;
         }
 
-        .model-stack, .decor-photo-stack {
+        .model-stack,
+        .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -731,7 +739,8 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow, .decor-nav-arrow {
+        .model-nav-arrow,
+        .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -750,7 +759,8 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover, .decor-nav-arrow:hover {
+        .model-nav-arrow:hover,
+        .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -764,7 +774,8 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator, .decor-switcher-indicator {
+        .kit-switcher-indicator,
+        .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -772,7 +783,8 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label, .decor-switcher-label {
+        .kit-switcher-label,
+        .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -781,18 +793,21 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count, .decor-switcher-count {
+        .kit-switcher-count,
+        .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots, .decor-switcher-dots {
+        .kit-switcher-dots,
+        .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot, .decor-dot {
+        .kit-dot,
+        .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -801,7 +816,8 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active, .decor-dot.active {
+        .kit-dot.active,
+        .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1186,8 +1202,15 @@
         .product-callout-video-btn {
             display: inline-flex;
             align-items: center;
+            align-self: flex-start;
             gap: 4px;
             margin-top: auto;
+            /* align-self:flex-start — sem isso, dentro de
+               .decor-legend-body (flex-column, stretch por padrão), o
+               botão esticava pra 100% da largura do card. Título/desc
+               continuam esticando normalmente (sem align-self), porque
+               precisam da largura cheia pra quebrar linha certo — só o
+               botão precisava sair do stretch */
             /* empurra o botão pro fundo do card — só tem efeito real
                dentro de .decor-legend-body (que é flex-column); em
                .product-callout-body (Acessórios, não é flex) isso não
@@ -1225,6 +1248,7 @@
         .product-callout-video-btn-no-video {
             display: inline-flex;
             align-items: center;
+            align-self: flex-start;
             gap: 4px;
             margin-top: auto;
             padding: clamp(3.25px, 0.39vw, 3.9px) clamp(5.85px, 0.65vw, 7.8px);
@@ -1666,12 +1690,14 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow, .decor-nav-arrow {
+            .model-nav-arrow,
+            .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
             }
         }
+
         /* ─── FAB (WhatsApp + Instagram) — réplica exata do .fab-group da
            LP. Cores fixas da marca (não --season-*), já que é elemento
            utilitário/transacional, não temático por kit. ─── */
@@ -2114,7 +2140,6 @@
             fill: currentColor;
             flex-shrink: 0;
         }
-
     </style>
 </head>
 
@@ -2164,9 +2189,10 @@
                     <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
                     <div class="col-left">
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
-                        <h2 class="inspira-title" id="kitTitle">Bloquinho</h2>
+                        <h2 class="inspira-title" id="kitTitle">Tropical</h2>
                         <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
-                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.</p>
+                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
+                        </p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
@@ -2210,8 +2236,8 @@
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
                             <div class="kit-switcher-indicator">
-                                <span class="kit-switcher-label">Bloquinho · <span class="kit-switcher-count">1 de
-                                        3</span></span>
+                                <span class="kit-switcher-label">Tropical · <span class="kit-switcher-count">1 de
+                                        10</span></span>
                                 <div class="kit-switcher-dots" id="kitDots"></div>
                             </div>
                         </div>
@@ -2248,7 +2274,7 @@
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
                         <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. <strong>Amplie sua carteira
-                            de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
+                                de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
                             também querem ambientar o espaço na data, e <strong>você pode ser quem fornece</strong>.</p>
 
                         <div class="kit-summary-card">
@@ -2611,12 +2637,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp', video: 'https://www.youtube.com/embed/hcrMCME1ttA' }
                 ],
-                 hotspots: [
+                hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-                  
+
                 ]
             }
         ];
@@ -2704,10 +2730,10 @@
                     { code: 'MOD-921', name: 'Varal Metalizado', desc: '30x300cm, cores sortidas.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483921/INSPIRA-DECORACAO_ARCO-IRIS_MOD-921_gbeacz.webp' }
                 ],
                 hotspots: [
-                    { x: 20, y: 25, productIndex: 0 },
-                    { x: 20, y: 45, productIndex: 1 },
-                    { x: 65, y: 40, productIndex: 2 },
-                    { x: 45, y: 70, productIndex: 3 }
+                    { x: 23, y: 34, productIndex: 0 },
+                    { x: 22, y: 50, productIndex: 1 },
+                    { x: 50, y: 50, productIndex: 2 },
+                    { x: 50, y: 10, productIndex: 3 }
                 ]
             },
             {
@@ -2722,10 +2748,10 @@
                     { code: 'MOD-648', name: 'Cortina Metalizada', desc: '2x1m, acabamento liso.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483890/INSPIRA-DECORACAO_DOURADO_MOD-648_a4evxr.webp' }
                 ],
                 hotspots: [
-                    { x: 25, y: 35, productIndex: 0 },
-                    { x: 55, y: 25, productIndex: 1 },
-                    { x: 30, y: 65, productIndex: 2 },
-                    { x: 70, y: 55, productIndex: 3 }
+                    { x: 41, y: 35, productIndex: 0 },
+                    { x: 62, y: 25, productIndex: 1 },
+                    { x: 20, y: 65, productIndex: 2 },
+                    { x: 80, y: 55, productIndex: 3 }
                 ]
             },
             {
@@ -2740,8 +2766,8 @@
                     { code: 'MOD-1178', name: 'Kit Enfeite Decorativo', desc: 'Octógonos, círculos, confete e serpentina.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483791/INSPIRA-DECORACAO_FOLIA_MOD-1178_mowzki.webp' }
                 ],
                 hotspots: [
-                    { x: 35, y: 20, productIndex: 0 },
-                    { x: 65, y: 20, productIndex: 1 },
+                    { x: 35, y: 16, productIndex: 0 },
+                    { x: 68, y: 33.5, productIndex: 1 },
                     { x: 50, y: 55, productIndex: 2 },
                     { x: 20, y: 45, productIndex: 3 }
                 ]
@@ -2758,8 +2784,8 @@
                     { code: 'MOD-739', name: 'Cortina Holográfica', desc: '2x1m, metalizada.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483448/INSPIRA-DECORACAO_PRATA-ROSE_MOD-739_m14fiz.webp' }
                 ],
                 hotspots: [
-                    { x: 25, y: 25, productIndex: 0 },
-                    { x: 55, y: 30, productIndex: 1 },
+                    { x: 28, y: 15, productIndex: 0 },
+                    { x: 51, y: 38, productIndex: 1 },
                     { x: 20, y: 55, productIndex: 2 },
                     { x: 70, y: 55, productIndex: 3 }
                 ]
@@ -2775,9 +2801,9 @@
                     { code: 'MOD-1151', name: 'Cartela de Adesivo', desc: 'Autocolante.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1789483860/INSPIRA-DECORACAO_PENAS_MOD-1151_uih11d.webp', video: 'https://www.youtube.com/embed/O3k9lYL1ezg' }
                 ],
                 hotspots: [
-                    { x: 30, y: 30, productIndex: 0 },
-                    { x: 65, y: 40, productIndex: 1 },
-                    { x: 45, y: 70, productIndex: 2 }
+                    { x: 80, y: 28, productIndex: 0 },
+                    { x: 71, y: 63, productIndex: 1 },
+                    { x: 25, y: 29, productIndex: 2 }
                 ]
             }
         ];
@@ -3592,13 +3618,33 @@
             // ainda é uma caixa real); os outros 3 cobrem o mobile
             // especificamente, onde .col-left vira display:contents e
             // perde a caixa única — mas eles continuam sendo caixas de
-            // verdade, só o PAI deles é que "sumiu"
-            const dampTargets = [
-                document.querySelector('.col-left'),
-                document.querySelector('.inspira-sub'),
-                document.querySelector('.inspira-tabs'),
-                document.querySelector('.kit-summary-card')
-            ].filter(Boolean);
+            // verdade, só o PAI deles é que "sumiu". Em Decoração, só
+            // .decor-col-left basta: diferente de .col-left, ela NUNCA
+            // vira display:contents (não faz parte da lista que achata a
+            // hierarquia no mobile), então continua uma caixa real em
+            // qualquer largura, sem precisar do detalhamento extra.
+            // BUG CORRIGIDO: essa lista era fixa e só buscava elementos
+            // de Acessórios — mesmo as classes compartilhadas
+            // (.inspira-sub/.inspira-tabs/.kit-summary-card) sempre
+            // resolviam pra instância de Acessórios (primeira no DOM),
+            // que fica com getBoundingClientRect() zerado quando
+            // escondida — resultado: Decoração nunca tinha proteção
+            // nenhuma. Agora recalculada a cada frame, conforme o modo
+            // ativo, reaproveitando a MESMA função/fórmula de redução —
+            // não é uma proteção "parecida", é a mesma, só mirando em
+            // elementos diferentes por modo.
+            function getDampTargets() {
+                const isDecor = !document.getElementById('inspira-view-decoracao').hidden;
+                if (isDecor) {
+                    return [document.querySelector('.decor-col-left')].filter(Boolean);
+                }
+                return [
+                    document.querySelector('.col-left'),
+                    document.querySelector('.inspira-sub'),
+                    document.querySelector('.inspira-tabs'),
+                    document.querySelector('.kit-summary-card')
+                ].filter(Boolean);
+            }
 
             // mede cada elemento a cada frame, convertendo pra coordenadas
             // do canvas (não da viewport) — precisa ser "ao vivo" porque
@@ -3609,7 +3655,7 @@
             function getDampBoxes() {
                 const cr = canvas.getBoundingClientRect();
                 const boxes = [];
-                for (const el of dampTargets) {
+                for (const el of getDampTargets()) {
                     const r = el.getBoundingClientRect();
                     if (r.width === 0 && r.height === 0) continue;
                     boxes.push({
