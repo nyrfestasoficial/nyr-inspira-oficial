@@ -86,6 +86,15 @@
             }
         }
 
+        #inspira-loader::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            pointer-events: none;
+        }
+
         #inspira-loader.slide-out {
             transform: translateY(-100%);
         }
@@ -96,6 +105,8 @@
             align-items: center;
             gap: 18px;
             position: relative;
+            z-index: 2;
+            /* acima do véu escuro (::before, z-index:1) */
         }
 
         /* logo — começa fora da tela embaixo, sobe com fade-in */
@@ -193,7 +204,7 @@
         }
 
         .inspira-loader-ring.animating {
-            animation: inspira-draw-ring 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: inspira-draw-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes inspira-draw-ring {
@@ -2621,22 +2632,25 @@
                     else { titleEl.onload = resolve; titleEl.onerror = resolve; }
                 })
             ]).then(() => {
-                // Passo 1 — logo sobe
-                loaderImg.classList.add('animating');
-
-                // Passo 2 — título aparece (acompanha o assentamento da
-                // logo, sem beat de timing próprio — "abaixo da logo,
-                // acima do anel", como combinado)
-                setTimeout(() => {
-                    titleEl.classList.add('animating');
-                }, 600);
-
-                // Passo 3 — anel aparece e se desenha depois que a logo assenta
-                const RING_DELAY = 1050;
-                const RING_DRAW = 1800;
+                const INITIAL_DELAY = 700; // pausa antes de qualquer coisa começar
+                const TITLE_AT = 1400;
+                const RING_DELAY = 2050;
+                const RING_DRAW = 2200;
                 const PAUSE = 300;
                 const SLIDE = 700;
+                // total: 2050+2200+300+700 = 5250ms (~5,25s)
 
+                // Passo 1 — logo sobe (atrasado, não mais imediato)
+                setTimeout(() => {
+                    loaderImg.classList.add('animating');
+                }, INITIAL_DELAY);
+
+                // Passo 2 — título aparece
+                setTimeout(() => {
+                    titleEl.classList.add('animating');
+                }, TITLE_AT);
+
+                // Passo 3 — anel aparece e se desenha
                 setTimeout(() => {
                     ringWrap.classList.add('animating');
                     void ring.offsetWidth; // força reflow, anima limpo
@@ -2654,7 +2668,6 @@
                         document.dispatchEvent(new Event('nyr-loader-done'));
                     }, SLIDE);
                 }, RING_DELAY + RING_DRAW + PAUSE);
-                // total: ~1050+1800+300+700 = 3850ms (~3,85s)
             });
         })();
 
