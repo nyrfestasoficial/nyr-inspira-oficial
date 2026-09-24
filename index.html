@@ -43,6 +43,178 @@
             --season-label-rgb: 136, 14, 79;
         }
 
+        /* ─── LOADER — fundo preto liso (ao contrário da LP, que usa
+           branco + textura). Anel mantém o laranja da marca. z-index
+           acima de TUDO nessa página, inclusive a foto em tela cheia
+           (999) e os modais (999) — por isso 3000. ─── */
+        #inspira-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background-color: var(--black);
+            /* mobile é o padrão (mobile-first) — tablet/desktop sobrescrevem
+               abaixo. background-size em px explícito (não "cover") porque
+               cada arte foi gerada numa resolução de referência própria
+               (375x840 mobile / 768x1024 tablet / 1440x900 desktop) — o
+               tamanho aqui precisa bater com essa referência pra exibir
+               na densidade certa (as imagens são 2-3x maiores em pixel
+               real, pensadas pra tela retina). background-repeat cobre
+               só a sobra de borda em telas um pouco maiores que a
+               referência — não é a estratégia principal, a imagem única
+               já cobre a tela sozinha na maioria dos casos. */
+            background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248609/mario-background-nyr-inspira-mobile_xnmrz6.png');
+            background-size: 375px 840px;
+            background-position: top center;
+            background-repeat: repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 700ms cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #inspira-loader {
+                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248607/mario-background-nyr-inspira-tablet_dbz55r.png');
+                background-size: 768px 1024px;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            #inspira-loader {
+                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248606/mario-background-nyr-inspira-desktop_qx8lwf.png');
+                background-size: 1440px 900px;
+            }
+        }
+
+        #inspira-loader.slide-out {
+            transform: translateY(-100%);
+        }
+
+        .inspira-loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+        }
+
+        /* logo — começa fora da tela embaixo, sobe com fade-in */
+        .inspira-loader-logo {
+            width: 140px;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transform: translateY(65vh);
+        }
+
+        .inspira-loader-logo.animating {
+            animation: inspira-logo-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes inspira-logo-rise {
+            from {
+                transform: translateY(65vh);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* título — legenda abaixo da logo, acima do anel. Simples
+           fade-in, acompanhando o assentamento da logo (sem beat de
+           timing próprio, pra não alongar a sequência) */
+        .inspira-loader-title {
+            width: 480px;
+            max-width: 78vw;
+            height: auto;
+            display: block;
+            /* imagem WebP (1440x690px, fundo transparente), substituindo
+               o texto vivo — "Blueberry" é fonte comercial da biblioteca
+               do Canva, que proíbe uso do arquivo fora da própria
+               plataforma (checado no contrato de licença). 480px é o
+               tamanho de exibição calculado (~5x o texto HTML anterior,
+               já considerando o empilhamento em 2 linhas — largura de
+               "Inspira" sozinha, não a soma com "Nyr"). max-width:78vw
+               evita que ultrapasse a tela em celulares estreitos. */
+            opacity: 0;
+            margin-top: -4px;
+        }
+
+        .inspira-loader-title.animating {
+            animation: inspira-title-fade 0.8s ease-out forwards;
+        }
+
+        @keyframes inspira-title-fade {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inspira-loader-ring-wrap {
+            width: 52px;
+            height: 52px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 6px;
+        }
+
+        .inspira-loader-ring-wrap.animating {
+            opacity: 1;
+        }
+
+        .inspira-loader-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .inspira-loader-track {
+            fill: none;
+            stroke: rgba(244, 160, 0, 0.2);
+            stroke-width: 2;
+        }
+
+        .inspira-loader-ring {
+            fill: none;
+            stroke: var(--brand-orange);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-dasharray: 138.23;
+            stroke-dashoffset: 138.23;
+        }
+
+        .inspira-loader-ring.animating {
+            animation: inspira-draw-ring 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes inspira-draw-ring {
+            from {
+                stroke-dashoffset: 138.23;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* trava de animação — nenhuma animação contínua do site roda
+           enquanto o body tiver essa classe (removida via JS só quando
+           o loader termina). O confete (JS, não CSS) tem sua própria
+           trava equivalente — ver 'nyr-loader-done' no script. */
+        .pre-load .hotspot::after,
+        .pre-load .fab-whatsapp::before {
+            animation: none !important;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -79,22 +251,6 @@
             cursor: pointer;
             border: none;
             background: none;
-        }
-
-        .sandbox-note {
-            max-width: 680px;
-            margin: 28px auto 0;
-            padding: 14px 18px;
-            background: #fff3d6;
-            border: 1px solid #e0b34d;
-            border-radius: 10px;
-            font-size: 13px;
-            color: #6b4c00;
-            text-align: center;
-        }
-
-        .sandbox-note b {
-            color: #4a3400;
         }
 
         /* ═══════════════════════════════════════════════
@@ -2143,14 +2299,32 @@
     </style>
 </head>
 
-<body>
+<body class="pre-load">
 
-    <div class="sandbox-note">
-        🧪 Protótipo v6.0 — <b>Creepster removida, fontes de Carnaval aplicadas</b>: os 3 eyebrows ("NYR
-        Inspira" no cabeçalho fixo e "Monte Seu Look" na col-left) agora usam <b>Anton</b>; o título do kit
-        ("Bloquinho") usa <b>Caveat</b> (script, peso 700). Removi o <code>text-transform: uppercase</code> do
-        título — fontes script perdem a caligrafia em caixa alta, como vimos no comparativo. Import do Google
-        Fonts atualizado (Creepster trocada por Caveat).
+    <!-- LOADER — mesma mecânica da LP (logo sobe, anel se desenha,
+         desliza pra fora), adaptado: fundo preto liso (não branco/
+         textura), logo com borda (pensada pra fundo escuro), e o
+         título "NYR Inspira" como legenda entre a logo e o anel.
+         Nenhuma animação do site (confete, pulso de hotspot/FAB) roda
+         antes desse loader terminar — ver classe .pre-load no body e o
+         evento 'nyr-loader-done' mais abaixo no JS. -->
+    <div id="inspira-loader">
+        <div class="inspira-loader-content">
+            <img class="inspira-loader-logo"
+                src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1784644787/LOGO-NYR-BORDA_easifb.webp"
+                alt="Nyr Festas">
+            <img class="inspira-loader-title"
+                src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790164845/Design_sem_nome_1_fnzj2s.png"
+                alt="Nyr Inspira">
+            <div class="inspira-loader-ring-wrap">
+                <svg class="inspira-loader-svg" viewBox="0 0 52 52">
+                    <g transform="translate(26,26) rotate(-90)">
+                        <circle class="inspira-loader-track" cx="0" cy="0" r="22" />
+                        <circle class="inspira-loader-ring" cx="0" cy="0" r="22" />
+                    </g>
+                </svg>
+            </div>
+        </div>
     </div>
 
     <section class="inspira">
@@ -2210,8 +2384,8 @@
                                 <svg class="connector-svg" id="connectorSvg"></svg>
 
                                 <img class="model-photo" id="modelPhoto"
-                                    src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1786128099/landingPage_nyr-inspira_nt9iwv.png"
-                                    alt="Modelo vestindo saia de franjas, máscara de Carnaval, meia arrastão, colar havaiano e luva">
+                                    src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187877/INSPIRA_TROPICAL_wcj818.webp"
+                                    alt="Modelo vestindo look tropical havaiano">
 
                                 <div id="hotspotsLayer"></div>
 
@@ -2407,6 +2581,83 @@
     </div>
 
     <script>
+        // ─── LOADER — mesma mecânica da LP (Promise.all esperando fontes
+        // + logo, depois sequência: logo sobe → título aparece → anel se
+        // desenha → loader desliza pra fora). "Faça com a LP" = mesma
+        // lógica de disparo: roda em TODA carga da página, sem
+        // localStorage/flag de "só na primeira visita" — igual a LP.
+        function lockScroll() {
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        }
+        function unlockScroll() {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+        lockScroll(); // trava o scroll durante o loader
+
+        // sinalizador que o confete (mais abaixo) espera antes de
+        // iniciar seu próprio loop — ver 'nyr-loader-done'
+        window.__nyrLoaderDone = false;
+
+        (function () {
+            const loader = document.getElementById('inspira-loader');
+            const loaderImg = loader.querySelector('.inspira-loader-logo');
+            const titleEl = loader.querySelector('.inspira-loader-title');
+            const ringWrap = loader.querySelector('.inspira-loader-ring-wrap');
+            const ring = loader.querySelector('.inspira-loader-ring');
+
+            Promise.all([
+                document.fonts.ready,
+                new Promise(resolve => {
+                    if (loaderImg.complete && loaderImg.naturalWidth > 0) resolve();
+                    else { loaderImg.onload = resolve; loaderImg.onerror = resolve; }
+                }),
+                new Promise(resolve => {
+                    // titleEl agora é <img> (era texto) — mais pesada que
+                    // a logo, então também precisa entrar na espera, senão
+                    // a animação podia começar antes dela estar pronta
+                    if (titleEl.complete && titleEl.naturalWidth > 0) resolve();
+                    else { titleEl.onload = resolve; titleEl.onerror = resolve; }
+                })
+            ]).then(() => {
+                // Passo 1 — logo sobe
+                loaderImg.classList.add('animating');
+
+                // Passo 2 — título aparece (acompanha o assentamento da
+                // logo, sem beat de timing próprio — "abaixo da logo,
+                // acima do anel", como combinado)
+                setTimeout(() => {
+                    titleEl.classList.add('animating');
+                }, 600);
+
+                // Passo 3 — anel aparece e se desenha depois que a logo assenta
+                const RING_DELAY = 1050;
+                const RING_DRAW = 1800;
+                const PAUSE = 300;
+                const SLIDE = 700;
+
+                setTimeout(() => {
+                    ringWrap.classList.add('animating');
+                    void ring.offsetWidth; // força reflow, anima limpo
+                    ring.classList.add('animating');
+                }, RING_DELAY);
+
+                // Passo 4 — desliza o loader pra fora depois que o anel termina
+                setTimeout(() => {
+                    loader.classList.add('slide-out');
+                    setTimeout(() => {
+                        loader.remove();
+                        unlockScroll();
+                        document.body.classList.remove('pre-load');
+                        window.__nyrLoaderDone = true;
+                        document.dispatchEvent(new Event('nyr-loader-done'));
+                    }, SLIDE);
+                }, RING_DELAY + RING_DRAW + PAUSE);
+                // total: ~1050+1800+300+700 = 3850ms (~3,85s)
+            });
+        })();
+
         // ─── OS 10 KITS — dados reais do catálogo, paleta extraída das
         // fotos, hotspots calibrados visualmente em cima da imagem real
         // de cada kit.
@@ -3702,7 +3953,16 @@
             }
 
             initConfetti();
-            requestAnimationFrame(loop);
+            // não inicia o loop já — espera o loader terminar. Se por
+            // algum motivo esse código rodar DEPOIS do loader já ter
+            // terminado (raro, mas possível dependendo de timing de
+            // carregamento), __nyrLoaderDone já estará true e começa na
+            // hora; senão, escuta o evento disparado quando o loader some.
+            if (window.__nyrLoaderDone) {
+                requestAnimationFrame(loop);
+            } else {
+                document.addEventListener('nyr-loader-done', () => requestAnimationFrame(loop), { once: true });
+            }
         })();
 
         function updateAll() {
