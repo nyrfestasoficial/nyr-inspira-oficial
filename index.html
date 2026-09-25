@@ -62,7 +62,7 @@
                só a sobra de borda em telas um pouco maiores que a
                referência — não é a estratégia principal, a imagem única
                já cobre a tela sozinha na maioria dos casos. */
-            background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248609/mario-background-nyr-inspira-mobile_xnmrz6.png');
+            background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790262975/INSPIRA_PAGE-LOADER_BACKGROUND-MOBILE_odfdte.webp');
             background-size: 375px 840px;
             background-position: top center;
             background-repeat: repeat;
@@ -74,14 +74,14 @@
 
         @media (min-width: 601px) and (max-width: 1024px) {
             #inspira-loader {
-                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248607/mario-background-nyr-inspira-tablet_dbz55r.png');
+                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790262976/INSPIRA_PAGE-LOADER_BACKGROUND-TABLET_vdlx1p.webp');
                 background-size: 768px 1024px;
             }
         }
 
         @media (min-width: 1025px) {
             #inspira-loader {
-                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790248606/mario-background-nyr-inspira-desktop_qx8lwf.png');
+                background-image: url('https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790262976/INSPIRA_PAGE-LOADER_BACKGROUND-DESKTOP_twzmmx.webp');
                 background-size: 1440px 900px;
             }
         }
@@ -711,8 +711,7 @@
             grid-area: model;
         }
 
-        .model-stack,
-        .decor-photo-stack {
+        .model-stack, .decor-photo-stack {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -906,8 +905,7 @@
            "top" é definido via JS (updateNavArrowPosition), pra alinhar
            verticalmente com o centro do .model-frame mesmo a seção
            inteira (com cabeçalho + rodapé) sendo mais alta que a foto. ─── */
-        .model-nav-arrow,
-        .decor-nav-arrow {
+        .model-nav-arrow, .decor-nav-arrow {
             position: absolute;
             width: 48px;
             height: 48px;
@@ -926,8 +924,7 @@
             z-index: 5;
         }
 
-        .model-nav-arrow:hover,
-        .decor-nav-arrow:hover {
+        .model-nav-arrow:hover, .decor-nav-arrow:hover {
             background: var(--season-cta);
             color: #ffffff;
             border-color: var(--season-cta);
@@ -941,8 +938,7 @@
         }
 
         /* ─── indicador de kit ativo (nome + dots), sincronizado com as tabs ─── */
-        .kit-switcher-indicator,
-        .decor-switcher-indicator {
+        .kit-switcher-indicator, .decor-switcher-indicator {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -950,8 +946,7 @@
             margin-top: 22px;
         }
 
-        .kit-switcher-label,
-        .decor-switcher-label {
+        .kit-switcher-label, .decor-switcher-label {
             font-family: 'Anton', sans-serif;
             font-size: clamp(18px, 1.8vw, 24px);
             font-weight: 400;
@@ -960,21 +955,18 @@
             text-transform: uppercase;
         }
 
-        .kit-switcher-count,
-        .decor-switcher-count {
+        .kit-switcher-count, .decor-switcher-count {
             opacity: 0.6;
             font-family: 'Barlow Condensed', sans-serif;
             font-weight: 600;
         }
 
-        .kit-switcher-dots,
-        .decor-switcher-dots {
+        .kit-switcher-dots, .decor-switcher-dots {
             display: flex;
             gap: 10px;
         }
 
-        .kit-dot,
-        .decor-dot {
+        .kit-dot, .decor-dot {
             width: 11px;
             height: 11px;
             border-radius: 50%;
@@ -983,8 +975,7 @@
             transition: background var(--transition), transform var(--transition);
         }
 
-        .kit-dot.active,
-        .decor-dot.active {
+        .kit-dot.active, .decor-dot.active {
             background: var(--season-cta);
             transform: scale(1.3);
         }
@@ -1857,14 +1848,12 @@
                 padding: 7px 16px;
             }
 
-            .model-nav-arrow,
-            .decor-nav-arrow {
+            .model-nav-arrow, .decor-nav-arrow {
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
             }
         }
-
         /* ─── FAB (WhatsApp + Instagram) — réplica exata do .fab-group da
            LP. Cores fixas da marca (não --season-*), já que é elemento
            utilitário/transacional, não temático por kit. ─── */
@@ -2307,6 +2296,7 @@
             fill: currentColor;
             flex-shrink: 0;
         }
+
     </style>
 </head>
 
@@ -2325,7 +2315,7 @@
                 src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1784644787/LOGO-NYR-BORDA_easifb.webp"
                 alt="Nyr Festas">
             <img class="inspira-loader-title"
-                src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790164845/Design_sem_nome_1_fnzj2s.png"
+                src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1790262975/INSPIRA_PAGE-LOADER_TITULO_j6tu0g.webp"
                 alt="Nyr Inspira">
             <div class="inspira-loader-ring-wrap">
                 <svg class="inspira-loader-svg" viewBox="0 0 52 52">
@@ -2376,8 +2366,7 @@
                         <span class="inspira-eyebrow">Sugestão de Kit</span>
                         <h2 class="inspira-title" id="kitTitle">Tropical</h2>
                         <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
-                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
-                        </p>
+                            <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.</p>
 
                         <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
@@ -2459,7 +2448,7 @@
                         <span class="inspira-eyebrow">Sugestão de Cenário</span>
                         <h2 class="inspira-title" id="decorTitle">Cenário</h2>
                         <p class="inspira-sub" id="decorSub">Carnaval não é só acessório. <strong>Amplie sua carteira
-                                de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
+                            de clientes</strong> com decoração temática — shopping, restaurante, hotel e farmácia
                             também querem ambientar o espaço na data, e <strong>você pode ser quem fornece</strong>.</p>
 
                         <div class="kit-summary-card">
@@ -2901,12 +2890,12 @@
                     { code: 'MOD-688', name: 'Saia Tulê', desc: '30cm, preta lisa.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788956903/INSPIRA_ANJO-NEGRO_MOD-688_mpwd0u.webp' },
                     { code: 'MOD-1077', name: 'Meia-Calça Arrastão', desc: '7/8, preta, par.', image: 'https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788957608/INSPIRA_ANJO-NEGRO_MOD-1077_hg5x50.webp', video: 'https://www.youtube.com/embed/hcrMCME1ttA' }
                 ],
-                hotspots: [
+                 hotspots: [
                     { x: 44, y: 9, productIndex: 0 },   // tiara anjo preta
                     { x: 76, y: 30, productIndex: 1 },  // asa de anjo preta
                     { x: 48.5, y: 45, productIndex: 2 },  // saia tulê
                     { x: 62, y: 65, productIndex: 3 }  // meia-calça arrastão
-
+                  
                 ]
             }
         ];
