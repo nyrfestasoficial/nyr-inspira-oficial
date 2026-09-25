@@ -86,25 +86,6 @@
             }
         }
 
-        /* ─── REVELAÇÃO ESCALONADA pós-loader — só em Acessórios (a view
-           inicial). Espelha o startHeroSequence() da LP: cada elemento
-           marcado .inspira-reveal nasce escondido, e uma função JS
-           (startInspiraSequence, disparada pelo mesmo 'nyr-loader-done'
-           que libera o confete) vai adicionando .reveal-in em cascata,
-           lendo o atraso de cada um em data-reveal-delay. Efeito simples
-           de propósito: só fade + leve subida, nada do nível da LP
-           (sem split-text, sem logo flutuante). ─── */
-        .inspira-reveal {
-            opacity: 0;
-            transform: translateY(12px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        .inspira-reveal.reveal-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         #inspira-loader::before {
             content: '';
             position: absolute;
@@ -2364,12 +2345,11 @@
 
             <!-- CABEÇALHO — fixo, identidade da seção, nunca muda -->
             <div class="inspira-header">
-                <span class="inspira-header-eyebrow inspira-reveal" data-reveal-delay="0"><span
-                        class="inspira-mode-word">Acessórios</span></span>
-                <h1 class="inspira-header-title inspira-reveal" data-reveal-delay="0">NYR <em>Inspira</em></h1>
+                <span class="inspira-header-eyebrow"><span class="inspira-mode-word">Acessórios</span></span>
+                <h1 class="inspira-header-title">NYR <em>Inspira</em></h1>
 
                 <!-- toggle Acessórios/Decoração — página inicia em Acessórios -->
-                <div class="inspira-mode-toggle inspira-reveal" data-reveal-delay="100" role="tablist">
+                <div class="inspira-mode-toggle" role="tablist">
                     <span class="inspira-mode-pill" aria-hidden="true"></span>
                     <button class="inspira-mode-btn active" data-mode="acessorios" role="tab" aria-selected="true"><span
                             class="mode-dot"></span>Acessórios</button>
@@ -2393,14 +2373,13 @@
 
                     <!-- COLUNA 1 — título do kit ativo + monte seu kit -->
                     <div class="col-left">
-                        <span class="inspira-eyebrow inspira-reveal" data-reveal-delay="350">Sugestão de Kit</span>
-                        <h2 class="inspira-title inspira-reveal" data-reveal-delay="420" id="kitTitle">Tropical</h2>
-                        <p class="inspira-sub inspira-reveal" data-reveal-delay="490"><strong>Peças do catálogo já
-                                combinadas</strong> numa sugestão
+                        <span class="inspira-eyebrow">Sugestão de Kit</span>
+                        <h2 class="inspira-title" id="kitTitle">Tropical</h2>
+                        <p class="inspira-sub"><strong>Peças do catálogo já combinadas</strong> numa sugestão
                             <strong>pronta pra vitrine</strong> — use como está, ou adapte do seu jeito.
                         </p>
 
-                        <div class="kit-summary-card inspira-reveal" data-reveal-delay="560">
+                        <div class="kit-summary-card">
                             <span class="kit-summary-label">Peças Deste Kit</span>
                             <div class="kit-summary-icons" id="kitSummaryIcons"></div>
                             <p>Tudo que seu cliente precisa pra montar um look completo de Carnaval.</p>
@@ -2411,7 +2390,7 @@
                     <!-- COLUNA 2 — foto do modelo + hotspots -->
                     <div class="col-model">
                         <div class="model-stack">
-                            <div class="model-frame inspira-reveal" data-reveal-delay="550">
+                            <div class="model-frame">
                                 <!-- overlay de linhas — desenhadas via JS abaixo, ligando cada hotspot ao card correspondente -->
                                 <svg class="connector-svg" id="connectorSvg"></svg>
 
@@ -2419,7 +2398,7 @@
                                     src="https://res.cloudinary.com/dzt1kqdbc/image/upload/v1788187877/INSPIRA_TROPICAL_wcj818.webp"
                                     alt="Modelo vestindo look tropical havaiano">
 
-                                <div id="hotspotsLayer" class="inspira-reveal" data-reveal-delay="750"></div>
+                                <div id="hotspotsLayer"></div>
 
                                 <!-- faixa de gesto — scroll-snap nativo como
                                      detector de swipe, não carrossel de
@@ -2441,7 +2420,7 @@
                             </div>
 
                             <!-- indicador de posição — nome do kit ativo + dots, sincronizado com as tabs e as setas -->
-                            <div class="kit-switcher-indicator inspira-reveal" data-reveal-delay="800">
+                            <div class="kit-switcher-indicator">
                                 <span class="kit-switcher-label">Tropical · <span class="kit-switcher-count">1 de
                                         10</span></span>
                                 <div class="kit-switcher-dots" id="kitDots"></div>
@@ -2455,7 +2434,7 @@
 
                 </div>
 
-                <div class="inspira-footer inspira-reveal" data-reveal-delay="1000">
+                <div class="inspira-footer">
                     <p class="inspira-tip"><strong>Dica NYR:</strong> combine cores, brilhos e acessórios do
                         catálogo pra criar looks únicos por vitrine — quanto mais peças combinadas, maior o ticket
                         médio da venda.</p>
@@ -3555,37 +3534,6 @@
         document.querySelector('.decor-nav-next')
             .addEventListener('click', () => renderDecorKit(activeDecorIndex + 1));
         renderKit(0);
-
-        // ─── REVELAÇÃO ESCALONADA — marca abas e cards (dinâmicos, só
-        // existem depois de buildTabs()/renderKit() rodarem) com o
-        // mesmo sistema .inspira-reveal/data-reveal-delay usado nos
-        // elementos estáticos do HTML. Só acontece aqui, uma vez, no
-        // carregamento inicial — trocas de kit depois disso regeneram o
-        // HTML sem essa marcação, então não repetem a animação toda
-        // troca de aba (só a entrada da PÁGINA anima, não cada clique).
-        document.querySelectorAll('#inspiraTabs .inspira-tab').forEach((tab, i) => {
-            tab.classList.add('inspira-reveal');
-            tab.dataset.revealDelay = 200 + i * 30;
-        });
-        document.querySelectorAll('#colRightCards .product-callout').forEach((card, i) => {
-            card.classList.add('inspira-reveal');
-            card.dataset.revealDelay = 600 + i * 60;
-        });
-
-        // dispara junto com o confete — mesmo evento 'nyr-loader-done',
-        // mesma lógica de fallback caso esse código rode depois do
-        // loader já ter terminado (raro, mas possível)
-        function startInspiraSequence() {
-            document.querySelectorAll('.inspira-reveal').forEach(el => {
-                const delay = parseInt(el.dataset.revealDelay || '0', 10);
-                setTimeout(() => el.classList.add('reveal-in'), delay);
-            });
-        }
-        if (window.__nyrLoaderDone) {
-            startInspiraSequence();
-        } else {
-            document.addEventListener('nyr-loader-done', startInspiraSequence, { once: true });
-        }
 
         // ─── TOGGLE ACESSÓRIOS / DECORAÇÃO ───
         // Decoração ainda não tem conteúdo real — troca só a UI (fade+slide
